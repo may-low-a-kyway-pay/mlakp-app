@@ -30,7 +30,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
   } = useAuthForm(mode)
 
   return (
-    <Screen scroll={false} contentStyle={styles.screen}>
+    <Screen contentStyle={styles.screen}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>

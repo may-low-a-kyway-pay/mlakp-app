@@ -1,0 +1,234 @@
+import { StyleSheet } from 'react-native'
+import { colors, shadows } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
+
+export const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 18,
+    paddingTop: 12,
+  },
+  iconButton: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.surfaceVariant,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 42,
+    justifyContent: 'center',
+    width: 42,
+  },
+  headerText: {
+    flex: 1,
+  },
+  title: {
+    color: colors.text,
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.bold,
+  },
+  subtitle: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.medium,
+    marginTop: 2,
+  },
+  filters: {
+    gap: 10,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  filterChip: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.surfaceVariant,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    minHeight: 36,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+  },
+  filterChipActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  filterText: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
+  },
+  filterTextActive: {
+    color: colors.white,
+  },
+  stateBlock: {
+    alignItems: 'center',
+    gap: 10,
+    paddingTop: 24,
+  },
+  stateText: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
+  },
+  errorBlock: {
+    backgroundColor: colors.dangerSoft,
+    marginHorizontal: 18,
+    marginTop: 14,
+    padding: 14,
+  },
+  errorText: {
+    color: colors.danger,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
+    textAlign: 'center',
+  },
+  list: {
+    gap: 10,
+    paddingBottom: 80,
+    paddingHorizontal: 18,
+    paddingTop: 16,
+  },
+  recordItem: {
+    backgroundColor: colors.surface,
+    borderColor: colors.surfaceVariant,
+    borderRadius: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    minHeight: 84,
+    overflow: 'hidden',
+    ...shadows.card,
+  },
+  statusBar: {
+    width: 5,
+  },
+  itemShell: {
+    flex: 1,
+  },
+  itemContent: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  itemLeft: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 14,
+  },
+  itemText: {
+    flex: 1,
+  },
+  itemName: {
+    color: colors.text,
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+  },
+  itemTitle: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+  },
+  tag: {
+    backgroundColor: colors.surfaceVariant,
+    borderRadius: 6,
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.semibold,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  itemRight: {
+    alignItems: 'flex-end',
+    minWidth: 104,
+  },
+  itemAmount: {
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.bold,
+  },
+  itemLabel: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.medium,
+    marginTop: 4,
+  },
+  emptyCard: {
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 28,
+  },
+  emptyTitle: {
+    color: colors.text,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.bold,
+  },
+  reviewActions: {
+    borderTopColor: colors.surfaceVariant,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'flex-end',
+    paddingBottom: 12,
+    paddingHorizontal: 14,
+  },
+  reviewButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+    minHeight: 36,
+    minWidth: 92,
+    paddingHorizontal: 12,
+  },
+  acceptButton: {
+    backgroundColor: colors.primary,
+  },
+  rejectButton: {
+    backgroundColor: colors.surface,
+    borderColor: colors.danger,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  actionPressed: {
+    opacity: 0.65,
+  },
+  reviewButtonText: {
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
+  },
+  acceptButtonText: {
+    color: colors.white,
+  },
+  rejectButtonText: {
+    color: colors.danger,
+  },
+})
