@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, shadows } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export const styles = StyleSheet.create({
   screen: {
@@ -26,14 +27,16 @@ export const styles = StyleSheet.create({
   },
   heading: {
     color: colors.text,
-    fontSize: 40,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.hero,
+    fontWeight: typography.weight.bold,
     textAlign: 'center',
   },
   subheading: {
     color: colors.textMuted,
-    fontSize: 17,
-    lineHeight: 24,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    lineHeight: typography.lineHeight.bodyLarge,
     textAlign: 'center',
   },
   form: {
@@ -50,13 +53,15 @@ export const styles = StyleSheet.create({
   },
   label: {
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.medium,
   },
   linkText: {
     color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.medium,
   },
   inputShell: {
     alignItems: 'center',
@@ -72,13 +77,15 @@ export const styles = StyleSheet.create({
   input: {
     color: colors.text,
     flex: 1,
-    fontSize: 18,
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
   },
   errorText: {
     color: colors.danger,
-    fontSize: 15,
-    fontWeight: '600',
-    lineHeight: 20,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
+    lineHeight: typography.lineHeight.bodySmall,
   },
   primaryButton: {
     alignItems: 'center',
@@ -95,9 +102,10 @@ export const styles = StyleSheet.create({
     opacity: 0.72,
   },
   primaryText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '700',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
   },
   dividerRow: {
     alignItems: 'center',
@@ -112,22 +120,25 @@ export const styles = StyleSheet.create({
   },
   dividerText: {
     color: colors.textSoft,
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
   },
   registerText: {
     color: colors.textMuted,
-    fontSize: 17,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
     textAlign: 'center',
   },
   registerLink: {
     color: colors.primary,
-    fontWeight: '700',
+    fontWeight: typography.weight.semibold,
   },
   terms: {
     color: colors.textSoft,
-    fontSize: 15,
-    lineHeight: 22,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    lineHeight: typography.lineHeight.body,
     marginTop: 26,
     paddingHorizontal: 18,
     textAlign: 'center',

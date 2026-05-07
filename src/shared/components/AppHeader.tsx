@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 type AppHeaderProps = {
   showProfile?: boolean
@@ -50,8 +51,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.primaryBright,
-    fontSize: 21,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.semibold,
   },
   iconButton: {
     alignItems: 'center',

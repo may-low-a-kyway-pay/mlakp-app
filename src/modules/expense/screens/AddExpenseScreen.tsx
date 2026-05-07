@@ -79,7 +79,7 @@ export function AddExpenseScreen() {
                 keyboardType="decimal-pad"
                 onChangeText={setAmount}
                 placeholder="0.00"
-                placeholderTextColor="#c8ccdc"
+                placeholderTextColor={colors.outline}
                 style={styles.amountInput}
                 value={amount}
               />
@@ -207,7 +207,7 @@ export function AddExpenseScreen() {
                       />
                     ) : (
                       <View style={styles.checkbox}>
-                        <Ionicons color="#ffffff" name="checkmark" size={20} />
+                        <Ionicons color={colors.white} name="checkmark" size={20} />
                       </View>
                     )}
                   </View>
@@ -237,10 +237,10 @@ export function AddExpenseScreen() {
             style={[styles.createButton, !canSubmit ? styles.createButtonDisabled : null]}
           >
             {isSubmitting ? (
-              <ActivityIndicator color="#ffffff" />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <>
-                <Ionicons color="#ffffff" name="checkmark-circle-outline" size={24} />
+                <Ionicons color={colors.white} name="checkmark-circle-outline" size={24} />
                 <Text style={styles.createText}>Create Expense</Text>
               </>
             )}
@@ -286,7 +286,7 @@ export function AddExpenseScreen() {
                         </View>
                       </View>
                       <View style={[styles.checkbox, isSelected ? null : styles.checkboxInactive]}>
-                        {isSelected ? <Ionicons color="#ffffff" name="checkmark" size={23} /> : null}
+                        {isSelected ? <Ionicons color={colors.white} name="checkmark" size={23} /> : null}
                       </View>
                     </Pressable>
                   )

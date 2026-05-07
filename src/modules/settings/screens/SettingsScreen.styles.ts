@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export const styles = StyleSheet.create({
   content: {
@@ -11,8 +12,9 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontSize: 34,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.screenTitle,
+    fontWeight: typography.weight.bold,
     marginBottom: 26,
     marginTop: 22,
   },
@@ -39,13 +41,15 @@ export const styles = StyleSheet.create({
   },
   settingLabel: {
     color: colors.text,
-    fontSize: 24,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.semibold,
   },
   settingSublabel: {
     color: colors.textMuted,
-    fontSize: 18,
-    lineHeight: 25,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    lineHeight: typography.lineHeight.bodyLarge,
     marginTop: 2,
   },
   divider: {
@@ -84,13 +88,15 @@ export const styles = StyleSheet.create({
   },
   signOutText: {
     color: colors.danger,
-    fontSize: 20,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.bold,
   },
   version: {
     color: colors.textSoft,
-    fontSize: 16,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.semibold,
     marginTop: 20,
     textAlign: 'center',
   },

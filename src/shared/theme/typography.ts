@@ -1,0 +1,35 @@
+import { Platform } from 'react-native'
+
+export const typography = {
+  family: Platform.select({
+    web: 'Inter, system-ui, sans-serif',
+    android: 'sans-serif',
+    ios: 'System',
+    default: undefined,
+  }),
+  size: {
+    caption: 12,
+    label: 14,
+    bodySmall: 15,
+    body: 16,
+    bodyLarge: 17,
+    titleSmall: 18,
+    title: 22,
+    section: 24,
+    screenTitle: 30,
+    hero: 40,
+    amount: 64,
+  },
+  lineHeight: {
+    bodySmall: 21,
+    body: 22,
+    bodyLarge: 24,
+    title: 28,
+  },
+  weight: {
+    regular: '400' as const,
+    medium: '600' as const,
+    semibold: '700' as const,
+    bold: '800' as const,
+  },
+}
