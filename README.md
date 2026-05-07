@@ -1,50 +1,324 @@
-# Welcome to your Expo app 👋
+# MLAKP App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+MLAKP App is the Expo / React Native client for the MLAKP shared expense tracker. It connects to the MLAKP backend API for authentication, groups, dashboard balances, debt status changes, and expense creation.
 
-## Get started
+The app is built with Expo Router, React Native, TypeScript, axios, and feature-based folders under `src/modules`.
 
-1. Install dependencies
+## Prerequisites
 
-   ```bash
-   npm install
-   ```
+Install these before starting from a fresh machine:
 
-2. Start the app
+- Git
+- Node.js 20 or newer
+- npm, included with Node.js
+- Expo tooling through `npx expo`
+- One runtime target:
+  - Expo Go on a physical iOS or Android device
+  - Android Studio emulator
+  - iOS Simulator on macOS
+  - Browser for web testing
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+This frontend expects the MLAKP backend API to be running. In the combined workspace, the backend is usually the sibling folder:
 
 ```bash
-npm run reset-project
+../mlakp-backend
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Clone The Project
 
-## Learn more
+Clone the repository and enter the app directory:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+git clone <repo-url> mlakp-app
+cd mlakp-app
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Install Dependencies
 
-## Join the community
+Install JavaScript dependencies from the lockfile:
 
-Join our community of developers creating universal apps.
+```bash
+npm install
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Configure Environment
+
+Create your local environment file from the example:
+
+```bash
+cp .env.example .env
+```
+
+The app reads these variables at startup:
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://localhost:8080
+EXPO_PUBLIC_API_TIMEOUT_MS=10000
+```
+
+`EXPO_PUBLIC_API_BASE_URL` is the backend API URL used by the shared axios client. Choose the value based on where the app runs:
+
+```bash
+# Web or iOS Simulator on the same machine as the backend
+EXPO_PUBLIC_API_BASE_URL=http://localhost:8080
+
+# Android Emulator talking to a backend on the host machine
+EXPO_PUBLIC_API_BASE_URL=http://10.0.2.2:8080
+
+# Physical device on the same Wi-Fi as your dev machine
+EXPO_PUBLIC_API_BASE_URL=http://<your-computer-lan-ip>:8080
+```
+
+Examples for finding your LAN IP:
+
+```bash
+# Linux
+hostname -I
+
+# macOS
+ipconfig getifaddr en0
+```
+
+Restart Expo after changing `.env`. Expo only loads public environment variables when the dev server starts.
+
+## Start The Backend
+
+From the combined workspace, run the backend first:
+
+```bash
+cd ../mlakp-backend
+cp .env.example .env
+make migrate-up
+make run
+```
+
+The expected default API base URL is:
+
+```bash
+http://localhost:8080
+```
+
+Check the backend README if your local database, port, or migration setup is different.
+
+## Run The App
+
+Start the Expo dev server:
+
+```bash
+npm start
+```
+
+Then choose a target from the Expo terminal:
+
+- Press `a` for Android emulator
+- Press `i` for iOS simulator
+- Press `w` for web
+- Scan the QR code with Expo Go for a physical device
+
+You can also use the direct scripts:
+
+```bash
+npm run android
+npm run ios
+npm run web
+```
+
+For a physical device outside normal LAN access, start Expo with tunnel mode:
+
+```bash
+npm run start:tunnel
+```
+
+## Verify The Setup
+
+Run lint:
+
+```bash
+npm run lint
+```
+
+Check formatting:
+
+```bash
+npm run format:check
+```
+
+To auto-format files:
+
+```bash
+npm run format
+```
+
+Basic manual verification:
+
+1. Start the backend.
+2. Start the Expo app.
+3. Register or log in.
+4. Open Dashboard and Groups.
+5. Create a group.
+6. Open Add Expense and submit an expense for selected group members.
+
+If login fails immediately, confirm the app can reach `EXPO_PUBLIC_API_BASE_URL` from the selected device or emulator.
+
+## Available Scripts
+
+| Command                | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| `npm start`            | Start Expo dev server.                             |
+| `npm run android`      | Start Expo and open Android target.                |
+| `npm run ios`          | Start Expo and open iOS target.                    |
+| `npm run web`          | Start Expo for web.                                |
+| `npm run lint`         | Run Expo ESLint checks.                            |
+| `npm run format`       | Format the project with Prettier.                  |
+| `npm run format:check` | Check Prettier formatting without writing changes. |
+| `npm run start:tunnel` | Start Expo with cache clear and tunnel mode.       |
+
+## App Routes
+
+Expo Router maps files in `app/` to screens:
+
+```text
+app/
+  _layout.tsx              Root stack layout and navigation theme
+  index.tsx                Login entry screen
+  login.tsx                Login route
+  register.tsx             Registration route
+  add-expense.tsx          Add expense modal route
+  (tabs)/
+    _layout.tsx            Bottom tab layout
+    dashboard.tsx          Dashboard tab
+    groups.tsx             Groups tab
+    activity.tsx           Activity tab
+    settings.tsx           Settings tab
+```
+
+The root stack starts at `login`, then navigates into the tab group after authentication.
+
+## Folder Structure
+
+```text
+.
+  app/                     Expo Router route files
+  assets/                  App icons, splash image, favicon, and static images
+  src/
+    modules/               Feature modules
+      auth/                Login, register, logout, auth session storage, auth API calls
+      dashboard/           Dashboard totals, unsettled balances, debt accept/reject actions
+      groups/              Group list/detail UI, group API calls, member display helpers
+      expense/             Add expense UI, split payload builder, expense API calls
+      activity/            Activity tab UI and placeholder/local data
+      settings/            Settings tab UI and sign-out action
+    shared/                Cross-feature code
+      api/                 Shared axios API client and auth header attachment
+      components/          Reusable screen, card, avatar, and header components
+      theme/               Shared color tokens
+  app.json                 Expo application configuration
+  eslint.config.js         Expo ESLint configuration
+  package.json             npm scripts and dependencies
+  package-lock.json        Locked dependency versions
+  tsconfig.json            TypeScript configuration and path aliases
+  .env.example             Environment variable template
+```
+
+## Feature Module Pattern
+
+Most feature folders follow the same shape:
+
+```text
+src/modules/<feature>/
+  api/                     HTTP calls for the feature
+  hooks/                   Screen state and feature workflows
+  screens/                 React Native screen components and styles
+  types/                   API and UI TypeScript types
+  utils/                   Formatting and mapping helpers
+```
+
+Not every feature needs every folder. Keep new code close to the feature that owns it. Put only truly reusable code under `src/shared`.
+
+## API Layer
+
+All HTTP traffic goes through:
+
+```text
+src/shared/api/client.ts
+```
+
+That client:
+
+- requires `EXPO_PUBLIC_API_BASE_URL`
+- requires positive numeric `EXPO_PUBLIC_API_TIMEOUT_MS`
+- sends `Accept: application/json`
+- sends `Content-Type: application/json`
+- attaches `Authorization: Bearer <token>` when an access token exists
+
+Feature API files describe endpoint-specific requests:
+
+```text
+src/modules/auth/api/authApi.ts       /v1/auth/login, /v1/auth/register, /v1/auth/logout
+src/modules/dashboard/api/dashboardApi.ts  /v1/dashboard, /v1/debts/{debtID}
+src/modules/groups/api/groupsApi.ts   /v1/groups, /v1/groups/{groupID}
+src/modules/expense/api/expenseApi.ts /v1/expenses
+```
+
+## Path Aliases
+
+The project uses the `@/` alias for imports from the project root:
+
+```ts
+import { apiClient } from '@/src/shared/api/client'
+```
+
+Prefer this style over long relative imports for app and source files.
+
+## Development Notes
+
+- Keep backend response contracts aligned with the TypeScript types under each module.
+- Restart Expo after changing `.env`.
+- Use `10.0.2.2` for Android emulator access to a backend running on the host machine.
+- Use your computer LAN IP for a physical device.
+- Keep generated Expo cache and local environment files out of commits.
+
+## Troubleshooting
+
+### Missing environment variable
+
+If the app throws `Missing required environment variable`, confirm `.env` exists and includes:
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=...
+EXPO_PUBLIC_API_TIMEOUT_MS=10000
+```
+
+Then restart Expo.
+
+### Android emulator cannot reach backend
+
+Use:
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://10.0.2.2:8080
+```
+
+`localhost` inside the Android emulator points to the emulator itself, not your computer.
+
+### Physical device cannot reach backend
+
+Use your computer LAN IP:
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://192.168.x.x:8080
+```
+
+Make sure the phone and computer are on the same Wi-Fi and the backend listens on an address reachable from the network.
+
+### Expo tunnel is slow or unavailable
+
+Prefer normal LAN mode when the device and computer are on the same network. Use tunnel mode only when LAN access is blocked:
+
+```bash
+npm run start:tunnel
+```
+
+### API returns 401
+
+Log in again from the app. The shared API client attaches the saved access token automatically when one exists.
