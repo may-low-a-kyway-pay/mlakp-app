@@ -9,6 +9,10 @@ export function displayNameForMember(member: GroupMember) {
 }
 
 export function secondaryTextForMember(member: GroupMember) {
+  if (member.user?.id === member.user_id && member.user.username.trim()) {
+    return `@${member.user.username.trim()}`
+  }
+
   if (member.user?.id === member.user_id && member.user.email.trim()) {
     return member.user.email.trim()
   }

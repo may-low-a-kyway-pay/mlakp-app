@@ -15,7 +15,11 @@ export function Screen({ children, contentStyle, scroll = true }: ScreenProps) {
 
   return (
     <SafeAreaView style={styles.root}>
-      <ScrollView contentContainerStyle={[styles.content, contentStyle]} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={[styles.content, contentStyle]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         {children}
       </ScrollView>
     </SafeAreaView>
@@ -28,6 +32,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flexGrow: 1,
     padding: 18,
     paddingBottom: 120,
   },

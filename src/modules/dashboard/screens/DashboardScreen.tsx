@@ -49,10 +49,12 @@ export function DashboardScreen() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Unsettled Balances</Text>
-          <Pressable style={styles.viewAll}>
-            <Text style={styles.viewAllText}>View all</Text>
-            <Ionicons color={colors.primary} name="chevron-forward" size={18} />
-          </Pressable>
+          <Link asChild href="/debts">
+            <Pressable style={styles.viewAll}>
+              <Text style={styles.viewAllText}>View all</Text>
+              <Ionicons color={colors.primary} name="chevron-forward" size={18} />
+            </Pressable>
+          </Link>
         </View>
 
         <View style={styles.list}>

@@ -8,6 +8,7 @@ type AuthMode = 'login' | 'register'
 export function useAuthForm(mode: AuthMode) {
   const isRegister = mode === 'register'
   const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -19,6 +20,11 @@ export function useAuthForm(mode: AuthMode) {
 
     if (isRegister && !name.trim()) {
       setError('Name is required.')
+      return
+    }
+
+    if (isRegister && !username.trim()) {
+      setError('Username is required.')
       return
     }
 
@@ -35,7 +41,7 @@ export function useAuthForm(mode: AuthMode) {
     setIsSubmitting(true)
     try {
       const authData = isRegister
-        ? await register({ email: email.trim(), name: name.trim(), password })
+        ? await register({ email: email.trim(), name: name.trim(), password, username: username.trim() })
         : await login({ email: email.trim(), password })
 
       await saveAuthSession(authData)
@@ -63,7 +69,9 @@ export function useAuthForm(mode: AuthMode) {
     setName,
     setPassword,
     setShowPassword,
+    setUsername,
     showPassword,
     submit,
+    username,
   }
 }

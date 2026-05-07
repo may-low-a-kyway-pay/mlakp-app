@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { logout } from '@/src/modules/auth/api/authApi'
-import { clearAuthSession } from '@/src/modules/auth/services/authSession'
+import { clearAuthSession, getAuthSession, updateStoredUser } from '@/src/modules/auth/services/authSession'
 import { settingsItems } from '@/src/modules/settings/data/settingsData'
 import { styles } from '@/src/modules/settings/screens/SettingsScreen.styles'
+import { getUserErrorMessage, updateUsername } from '@/src/modules/users/api/usersApi'
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
@@ -13,6 +14,38 @@ import { colors } from '@/src/shared/theme/colors'
 
 export function SettingsScreen() {
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isSavingUsername, setIsSavingUsername] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [username, setUsername] = useState('')
+
+  async function openProfile() {
+    const session = await getAuthSession()
+    setUsername(session?.user.username ?? '')
+    setProfileError(null)
+    setIsProfileOpen(true)
+  }
+
+  async function saveUsername() {
+    const trimmedUsername = username.trim()
+    if (!trimmedUsername) {
+      setProfileError('Username is required.')
+      return
+    }
+
+    setProfileError(null)
+    setIsSavingUsername(true)
+
+    try {
+      const user = await updateUsername(trimmedUsername)
+      await updateStoredUser(user)
+      setIsProfileOpen(false)
+    } catch (caughtError) {
+      setProfileError(getUserErrorMessage(caughtError))
+    } finally {
+      setIsSavingUsername(false)
+    }
+  }
 
   async function signOut() {
     if (isSigningOut) {
@@ -40,7 +73,7 @@ export function SettingsScreen() {
         <Card style={styles.settingsCard}>
           {settingsItems.map((item, index) => (
             <View key={item.label}>
-              <Pressable style={styles.settingRow}>
+              <Pressable onPress={item.action === 'profile' ? openProfile : undefined} style={styles.settingRow}>
                 <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>
                   <Ionicons color={item.color} name={item.icon} size={28} />
                 </View>
@@ -79,6 +112,46 @@ export function SettingsScreen() {
         </Pressable>
         <Text style={styles.version}>App Version 2.4.1 (Build 890)</Text>
       </View>
+
+      <Modal animationType="fade" onRequestClose={() => setIsProfileOpen(false)} transparent visible={isProfileOpen}>
+        <View style={styles.modalOverlay}>
+          <Card style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Profile Information</Text>
+              <Pressable onPress={() => setIsProfileOpen(false)} style={styles.closeButton}>
+                <Ionicons color={colors.textMuted} name="close" size={24} />
+              </Pressable>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <Text style={styles.label}>Username</Text>
+              <TextInput
+                autoCapitalize="none"
+                onChangeText={setUsername}
+                placeholder="username"
+                placeholderTextColor={colors.outline}
+                style={styles.input}
+                value={username}
+              />
+            </View>
+
+            {profileError ? <Text style={styles.errorText}>{profileError}</Text> : null}
+
+            <Pressable
+              disabled={isSavingUsername}
+              onPress={saveUsername}
+              style={[styles.saveButton, isSavingUsername && styles.disabled]}
+            >
+              {isSavingUsername ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <Ionicons color={colors.white} name="checkmark" size={22} />
+              )}
+              {!isSavingUsername ? <Text style={styles.saveText}>Save Username</Text> : null}
+            </Pressable>
+          </Card>
+        </View>
+      </Modal>
     </Screen>
   )
 }

@@ -1,7 +1,19 @@
 import { ApiErrorResponse } from '@/src/modules/auth/types/authTypes'
-import { GroupDetailsResponse, GroupListResponse, GroupResponse } from '@/src/modules/groups/types/groupTypes'
+import {
+  GroupDetailsResponse,
+  GroupListResponse,
+  GroupMember,
+  GroupResponse,
+} from '@/src/modules/groups/types/groupTypes'
 import { apiClient } from '@/src/shared/api/client'
 import { isAxiosError } from 'axios'
+
+type AddGroupMemberResponse = {
+  success: true
+  data: {
+    member: GroupMember
+  }
+}
 
 export async function listGroups() {
   const response = await apiClient.get<GroupListResponse>('/v1/groups')
@@ -16,6 +28,11 @@ export async function createGroup(name: string) {
 export async function getGroup(groupID: string) {
   const response = await apiClient.get<GroupDetailsResponse>(`/v1/groups/${groupID}`)
   return response.data.data
+}
+
+export async function addGroupMember(groupID: string, username: string) {
+  const response = await apiClient.post<AddGroupMemberResponse>(`/v1/groups/${groupID}/members`, { username })
+  return response.data.data.member
 }
 
 export function getGroupsErrorMessage(error: unknown) {

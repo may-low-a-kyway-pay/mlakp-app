@@ -31,6 +31,22 @@ export async function saveAuthSession(data: AuthTokenData) {
   }
 }
 
+export async function updateStoredUser(user: StoredAuth['user']) {
+  const session = await getAuthSession()
+  if (!session) {
+    return
+  }
+
+  memoryAuth = {
+    ...session,
+    user,
+  }
+
+  if (canUseLocalStorage()) {
+    window.localStorage.setItem(authStorageKey, JSON.stringify(memoryAuth))
+  }
+}
+
 export async function getAuthSession() {
   if (memoryAuth) {
     return memoryAuth

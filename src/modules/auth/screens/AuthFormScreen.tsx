@@ -23,12 +23,14 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
     setName,
     setPassword,
     setShowPassword,
+    setUsername,
     showPassword,
     submit,
+    username,
   } = useAuthForm(mode)
 
   return (
-    <Screen scroll={false} contentStyle={styles.screen}>
+    <Screen contentStyle={styles.screen}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
@@ -54,6 +56,23 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                     placeholderTextColor={colors.outline}
                     style={styles.input}
                     value={name}
+                  />
+                </View>
+              </View>
+            ) : null}
+
+            {isRegister ? (
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Username</Text>
+                <View style={styles.inputShell}>
+                  <Ionicons color={colors.outline} name="at-outline" size={26} />
+                  <TextInput
+                    autoCapitalize="none"
+                    onChangeText={setUsername}
+                    placeholder="thomas"
+                    placeholderTextColor={colors.outline}
+                    style={styles.input}
+                    value={username}
                   />
                 </View>
               </View>

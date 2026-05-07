@@ -9,6 +9,7 @@ export type Group = {
 export type GroupMemberUser = {
   id: string
   name: string
+  username: string
   email: string
 }
 

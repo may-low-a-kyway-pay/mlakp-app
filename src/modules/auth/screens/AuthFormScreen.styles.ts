@@ -6,6 +6,7 @@ export const styles = StyleSheet.create({
   screen: {
     justifyContent: 'center',
     padding: 18,
+    paddingBottom: 32,
   },
   keyboard: {
     width: '100%',
