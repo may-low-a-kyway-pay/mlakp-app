@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, shadows } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export const styles = StyleSheet.create({
   root: {
@@ -32,12 +33,14 @@ export const styles = StyleSheet.create({
   },
   balanceLabel: {
     color: colors.textMuted,
-    fontSize: 15,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
   },
   balanceAmount: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.screenTitle,
+    fontWeight: typography.weight.bold,
   },
   stateBlock: {
     alignItems: 'center',
@@ -47,8 +50,9 @@ export const styles = StyleSheet.create({
   },
   stateText: {
     color: colors.textMuted,
-    fontSize: 15,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
   },
   errorBlock: {
     alignItems: 'center',
@@ -60,8 +64,9 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
     textAlign: 'center',
   },
   retryButton: {
@@ -74,9 +79,10 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   retryText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '800',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.bold,
   },
   sectionHeader: {
     alignItems: 'center',
@@ -87,8 +93,9 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: 24,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.section,
+    fontWeight: typography.weight.semibold,
   },
   viewAll: {
     alignItems: 'center',
@@ -97,8 +104,9 @@ export const styles = StyleSheet.create({
   },
   viewAllText: {
     color: colors.primary,
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
   },
   list: {
     gap: 10,
@@ -140,8 +148,9 @@ export const styles = StyleSheet.create({
   },
   itemName: {
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
   },
   titleRow: {
     alignItems: 'center',
@@ -152,14 +161,16 @@ export const styles = StyleSheet.create({
   },
   itemTitle: {
     color: colors.textMuted,
-    fontSize: 14,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
   },
   tag: {
     backgroundColor: colors.surfaceVariant,
     borderRadius: 6,
     color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.semibold,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
@@ -168,13 +179,15 @@ export const styles = StyleSheet.create({
     minWidth: 104,
   },
   itemAmount: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.bold,
   },
   itemLabel: {
     color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.medium,
     marginTop: 4,
   },
   emptyCard: {
@@ -184,13 +197,15 @@ export const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontSize: 17,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.bold,
   },
   emptyText: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    lineHeight: typography.lineHeight.bodySmall,
     maxWidth: 280,
     textAlign: 'center',
   },
@@ -237,11 +252,12 @@ export const styles = StyleSheet.create({
     opacity: 0.65,
   },
   reviewButtonText: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
   },
   acceptButtonText: {
-    color: '#ffffff',
+    color: colors.white,
   },
   rejectButtonText: {
     color: colors.danger,

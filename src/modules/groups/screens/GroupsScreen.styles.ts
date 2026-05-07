@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export const styles = StyleSheet.create({
   content: {
@@ -18,8 +19,9 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontSize: 30,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.screenTitle,
+    fontWeight: typography.weight.bold,
   },
   addButton: {
     alignItems: 'center',
@@ -36,8 +38,9 @@ export const styles = StyleSheet.create({
   },
   stateText: {
     color: colors.textMuted,
-    fontSize: 15,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
   },
   errorBlock: {
     alignItems: 'center',
@@ -47,8 +50,9 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontSize: 15,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.semibold,
     textAlign: 'center',
   },
   retryButton: {
@@ -61,9 +65,10 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   retryText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '800',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.bold,
   },
   emptyCard: {
     alignItems: 'center',
@@ -72,13 +77,15 @@ export const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.bold,
   },
   emptyText: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 21,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    lineHeight: typography.lineHeight.bodySmall,
     textAlign: 'center',
   },
   list: {
@@ -104,12 +111,14 @@ export const styles = StyleSheet.create({
   },
   groupName: {
     color: colors.text,
-    fontSize: 20,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
   },
   groupMembers: {
     color: colors.textMuted,
-    fontSize: 15,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
     marginTop: 4,
   },
   right: {
@@ -118,7 +127,7 @@ export const styles = StyleSheet.create({
   },
   modalOverlay: {
     alignItems: 'center',
-    backgroundColor: 'rgba(25, 28, 30, 0.34)',
+    backgroundColor: colors.overlay,
     flex: 1,
     justifyContent: 'center',
     padding: 18,
@@ -135,8 +144,9 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     color: colors.text,
-    fontSize: 22,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.bold,
   },
   closeButton: {
     alignItems: 'center',
@@ -149,15 +159,17 @@ export const styles = StyleSheet.create({
   },
   label: {
     color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.semibold,
   },
   input: {
     borderColor: colors.outline,
     borderRadius: 12,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 17,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
     height: 54,
     paddingHorizontal: 16,
   },
@@ -174,8 +186,9 @@ export const styles = StyleSheet.create({
     opacity: 0.72,
   },
   createText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '800',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.bold,
   },
 })

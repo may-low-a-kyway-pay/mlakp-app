@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { colors } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 type AvatarProps = {
   initials: string
@@ -42,7 +43,8 @@ const styles = StyleSheet.create({
     width: 48,
   },
   initialsText: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
   },
 })

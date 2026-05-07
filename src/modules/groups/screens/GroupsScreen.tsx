@@ -30,7 +30,7 @@ export function GroupsScreen() {
         <View style={styles.titleRow}>
           <Text style={styles.title}>Groups</Text>
           <Pressable onPress={() => setIsCreateOpen(true)} style={styles.addButton}>
-            <Ionicons color="#ffffff" name="add" size={22} />
+            <Ionicons color={colors.white} name="add" size={22} />
           </Pressable>
         </View>
 
@@ -45,7 +45,7 @@ export function GroupsScreen() {
           <View style={styles.errorBlock}>
             <Text style={styles.errorText}>{error}</Text>
             <Pressable onPress={loadGroups} style={styles.retryButton}>
-              <Ionicons color="#ffffff" name="refresh" size={18} />
+              <Ionicons color={colors.white} name="refresh" size={18} />
               <Text style={styles.retryText}>Retry</Text>
             </Pressable>
           </View>
@@ -105,9 +105,9 @@ export function GroupsScreen() {
               style={[styles.createButton, isCreating && styles.disabledButton]}
             >
               {isCreating ? (
-                <ActivityIndicator color="#ffffff" />
+                <ActivityIndicator color={colors.white} />
               ) : (
-                <Ionicons color="#ffffff" name="checkmark" size={22} />
+                <Ionicons color={colors.white} name="checkmark" size={22} />
               )}
               {!isCreating ? <Text style={styles.createText}>Create Group</Text> : null}
             </Pressable>

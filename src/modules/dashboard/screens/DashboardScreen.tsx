@@ -41,7 +41,7 @@ export function DashboardScreen() {
           <View style={styles.errorBlock}>
             <Text style={styles.errorText}>{error}</Text>
             <Pressable onPress={loadDashboard} style={styles.retryButton}>
-              <Ionicons color="#ffffff" name="refresh" size={18} />
+              <Ionicons color={colors.white} name="refresh" size={18} />
               <Text style={styles.retryText}>Retry</Text>
             </Pressable>
           </View>
@@ -116,7 +116,7 @@ export function DashboardScreen() {
                           (pressed || isUpdating) && styles.actionPressed,
                         ]}
                       >
-                        <Ionicons color="#ffffff" name="checkmark" size={16} />
+                        <Ionicons color={colors.white} name="checkmark" size={16} />
                         <Text style={[styles.reviewButtonText, styles.acceptButtonText]}>
                           {isUpdating ? 'Updating' : 'Accept'}
                         </Text>
@@ -132,7 +132,7 @@ export function DashboardScreen() {
 
       <Link asChild href="/add-expense">
         <Pressable style={styles.fab}>
-          <Ionicons color="#ffffff" name="add" size={40} />
+          <Ionicons color={colors.white} name="add" size={40} />
         </Pressable>
       </Link>
     </Screen>

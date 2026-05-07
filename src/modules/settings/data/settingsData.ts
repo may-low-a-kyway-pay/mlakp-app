@@ -3,7 +3,7 @@ import { colors } from '@/src/shared/theme/colors'
 export const settingsItems = [
   {
     bg: colors.primaryBright,
-    color: '#ffffff',
+    color: colors.white,
     icon: 'person-outline' as const,
     label: 'Profile Information',
     sublabel: 'Update your username and details',

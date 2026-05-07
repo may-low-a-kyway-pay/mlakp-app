@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router'
 import React from 'react'
 
 import { colors } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export default function TabLayout() {
   return (
@@ -21,8 +22,9 @@ export default function TabLayout() {
           paddingTop: 6,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
+          fontFamily: typography.family,
+          fontSize: typography.size.caption,
+          fontWeight: typography.weight.medium,
         },
         tabBarStyle: {
           backgroundColor: colors.surface,

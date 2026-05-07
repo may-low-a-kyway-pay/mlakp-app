@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export const styles = StyleSheet.create({
   content: {
@@ -11,8 +12,9 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontSize: 34,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.screenTitle,
+    fontWeight: typography.weight.bold,
     marginBottom: 22,
     marginTop: 22,
   },
@@ -37,17 +39,20 @@ export const styles = StyleSheet.create({
   },
   itemTitle: {
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
   },
   status: {
     color: colors.textMuted,
-    fontSize: 15,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
     marginTop: 4,
   },
   amount: {
     color: colors.success,
-    fontSize: 17,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.bold,
   },
 })

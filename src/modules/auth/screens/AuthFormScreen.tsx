@@ -32,7 +32,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
-            <Ionicons color="#c9d4ff" name="wallet-outline" size={42} />
+            <Ionicons color={colors.primarySoft} name="wallet-outline" size={42} />
           </View>
           <Text style={styles.heading}>{isRegister ? 'Create Account' : 'Welcome Back'}</Text>
           <Text style={styles.subheading}>
@@ -108,11 +108,11 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
               style={[styles.primaryButton, isSubmitting && styles.disabledButton]}
             >
               {isSubmitting ? (
-                <ActivityIndicator color="#ffffff" />
+                <ActivityIndicator color={colors.white} />
               ) : (
                 <Text style={styles.primaryText}>{isRegister ? 'Register' : 'Login'}</Text>
               )}
-              {!isSubmitting ? <Ionicons color="#ffffff" name="arrow-forward" size={24} /> : null}
+              {!isSubmitting ? <Ionicons color={colors.white} name="arrow-forward" size={24} /> : null}
             </Pressable>
           </View>
 

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, shadows } from '@/src/shared/theme/colors'
+import { typography } from '@/src/shared/theme/typography'
 
 export const styles = StyleSheet.create({
   content: {
@@ -28,8 +29,9 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     color: colors.text,
-    fontSize: 27,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.section,
+    fontWeight: typography.weight.bold,
   },
   amountSection: {
     alignItems: 'center',
@@ -39,8 +41,9 @@ export const styles = StyleSheet.create({
   },
   amountLabel: {
     color: colors.textMuted,
-    fontSize: 18,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.medium,
   },
   amountRow: {
     alignItems: 'center',
@@ -49,14 +52,16 @@ export const styles = StyleSheet.create({
   },
   currency: {
     color: colors.text,
-    fontSize: 68,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.amount,
+    fontWeight: typography.weight.bold,
     opacity: 0.48,
   },
   amountInput: {
     color: colors.text,
-    fontSize: 68,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.amount,
+    fontWeight: typography.weight.bold,
     minWidth: 190,
     paddingVertical: 0,
   },
@@ -71,8 +76,9 @@ export const styles = StyleSheet.create({
   floatingLabel: {
     backgroundColor: colors.surface,
     color: colors.textMuted,
-    fontSize: 17,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.medium,
     left: 18,
     paddingHorizontal: 6,
     position: 'absolute',
@@ -92,15 +98,17 @@ export const styles = StyleSheet.create({
   titleInput: {
     color: colors.text,
     flex: 1,
-    fontSize: 19,
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
   },
   fieldBlock: {
     gap: 10,
   },
   inputLabel: {
     color: colors.textMuted,
-    fontSize: 16,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.semibold,
   },
   groupList: {
     flexDirection: 'row',
@@ -120,8 +128,9 @@ export const styles = StyleSheet.create({
   },
   groupPillText: {
     color: colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
   },
   groupPillTextActive: {
     color: colors.primary,
@@ -150,15 +159,17 @@ export const styles = StyleSheet.create({
     width: 44,
   },
   meText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '800',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.bold,
   },
   payerName: {
     color: colors.text,
     flexShrink: 1,
-    fontSize: 22,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.semibold,
   },
   splitCard: {
     gap: 24,
@@ -180,8 +191,9 @@ export const styles = StyleSheet.create({
   },
   splitTitle: {
     color: colors.text,
-    fontSize: 29,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.screenTitle,
+    fontWeight: typography.weight.bold,
   },
   segmented: {
     backgroundColor: colors.surfaceVariant,
@@ -206,13 +218,15 @@ export const styles = StyleSheet.create({
   },
   segmentActiveText: {
     color: colors.success,
-    fontSize: 17,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.bold,
   },
   segmentInactiveText: {
     color: colors.textMuted,
-    fontSize: 17,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.semibold,
   },
   participants: {
     gap: 16,
@@ -240,18 +254,21 @@ export const styles = StyleSheet.create({
     width: 50,
   },
   participantInitials: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.bold,
   },
   participantName: {
     color: colors.text,
-    fontSize: 21,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.semibold,
   },
   participantNote: {
     color: colors.textSoft,
-    fontSize: 15,
-    fontWeight: '600',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
   },
   checkbox: {
     alignItems: 'center',
@@ -271,8 +288,9 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 17,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.semibold,
     height: 46,
     paddingHorizontal: 12,
     textAlign: 'right',
@@ -288,8 +306,9 @@ export const styles = StyleSheet.create({
   },
   summaryText: {
     color: colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
   },
   loadingMembers: {
     alignItems: 'center',
@@ -298,8 +317,9 @@ export const styles = StyleSheet.create({
   },
   helperText: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 21,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    lineHeight: typography.lineHeight.bodySmall,
   },
   errorBlock: {
     backgroundColor: colors.dangerSoft,
@@ -310,9 +330,10 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontSize: 14,
-    fontWeight: '700',
-    lineHeight: 20,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
+    lineHeight: typography.lineHeight.bodySmall,
     textAlign: 'center',
   },
   bottomAction: {
@@ -337,13 +358,14 @@ export const styles = StyleSheet.create({
     elevation: 0,
   },
   createText: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: '700',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.titleSmall,
+    fontWeight: typography.weight.semibold,
   },
   modalOverlay: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.32)',
+    backgroundColor: colors.overlay,
     flex: 1,
     justifyContent: 'center',
     padding: 18,
@@ -361,8 +383,9 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     color: colors.text,
-    fontSize: 22,
-    fontWeight: '800',
+    fontFamily: typography.family,
+    fontSize: typography.size.title,
+    fontWeight: typography.weight.bold,
   },
   closeButton: {
     alignItems: 'center',
@@ -391,8 +414,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   doneText: {
-    color: '#ffffff',
-    fontSize: 17,
-    fontWeight: '800',
+    color: colors.white,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodyLarge,
+    fontWeight: typography.weight.bold,
   },
 })
