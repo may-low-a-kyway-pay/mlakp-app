@@ -1,3 +1,3 @@
-import { AddExpenseScreen } from '@/src/modules/expense/AddExpenseScreen';
+import { AddExpenseScreen } from '@/src/modules/expense/screens/AddExpenseScreen'
 
-export default AddExpenseScreen;
+export default AddExpenseScreen

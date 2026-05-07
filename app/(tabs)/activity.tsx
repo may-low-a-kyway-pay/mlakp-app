@@ -1,3 +1,3 @@
-import { ActivityScreen } from '@/src/modules/activity/ActivityScreen';
+import { ActivityScreen } from '@/src/modules/activity/screens/ActivityScreen'
 
-export default ActivityScreen;
+export default ActivityScreen

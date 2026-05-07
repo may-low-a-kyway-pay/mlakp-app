@@ -1,22 +1,22 @@
-import { getAccessToken } from '@/src/modules/auth/tokenStore';
-import { create } from 'axios';
+import { getAccessToken } from '@/src/modules/auth/services/authSession'
+import { create } from 'axios'
 
 function requiredEnv(name: string, value: string | undefined) {
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw new Error(`Missing required environment variable: ${name}`)
   }
 
-  return value;
+  return value
 }
 
 function requiredNumberEnv(name: string, rawValue: string | undefined) {
-  const value = Number(requiredEnv(name, rawValue));
+  const value = Number(requiredEnv(name, rawValue))
 
   if (!Number.isFinite(value) || value <= 0) {
-    throw new Error(`Environment variable ${name} must be a positive number`);
+    throw new Error(`Environment variable ${name} must be a positive number`)
   }
 
-  return value;
+  return value
 }
 
 export const apiClient = create({
@@ -26,14 +26,15 @@ export const apiClient = create({
     'Content-Type': 'application/json',
   },
   timeout: requiredNumberEnv('EXPO_PUBLIC_API_TIMEOUT_MS', process.env.EXPO_PUBLIC_API_TIMEOUT_MS),
-});
+})
 
 apiClient.interceptors.request.use(async (config) => {
-  const accessToken = await getAccessToken();
+  // Keep auth attachment centralized so feature modules only describe endpoint-specific payloads.
+  const accessToken = await getAccessToken()
 
   if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers.Authorization = `Bearer ${accessToken}`
   }
 
-  return config;
-});
+  return config
+})

@@ -1,13 +1,13 @@
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import 'react-native-reanimated'
 
-import { colors } from '@/src/shared/theme/colors';
+import { colors } from '@/src/shared/theme/colors'
 
 export const unstable_settings = {
   initialRouteName: 'login',
-};
+}
 
 export default function RootLayout() {
   const navigationTheme = {
@@ -19,7 +19,7 @@ export default function RootLayout() {
       primary: colors.primary,
       text: colors.text,
     },
-  };
+  }
 
   return (
     <ThemeProvider value={navigationTheme}>
@@ -31,5 +31,5 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
-  );
+  )
 }

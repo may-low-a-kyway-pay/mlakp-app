@@ -17,7 +17,7 @@ export const colors = {
   dangerSoft: '#ffdad6',
   tertiary: '#8e4b00',
   tertiarySoft: '#ffdcc3',
-};
+}
 
 export const shadows = {
   card: {
@@ -34,4 +34,4 @@ export const shadows = {
     shadowOffset: { width: 0, height: 8 },
     elevation: 8,
   },
-};
+}

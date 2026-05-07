@@ -1,10 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '@/src/shared/theme/colors';
+import { Ionicons } from '@expo/vector-icons'
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { colors } from '@/src/shared/theme/colors'
 
 type AppHeaderProps = {
-  showProfile?: boolean;
-};
+  showProfile?: boolean
+}
 
 export function AppHeader({ showProfile = true }: AppHeaderProps) {
   return (
@@ -24,7 +24,7 @@ export function AppHeader({ showProfile = true }: AppHeaderProps) {
         <Ionicons color={colors.primaryBright} name="notifications-outline" size={28} />
       </Pressable>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -59,4 +59,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 44,
   },
-});
+})
