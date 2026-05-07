@@ -1,3 +1,3 @@
-import { DashboardScreen } from '@/src/modules/dashboard/DashboardScreen';
+import { DashboardScreen } from '@/src/modules/dashboard/screens/DashboardScreen'
 
-export default DashboardScreen;
+export default DashboardScreen

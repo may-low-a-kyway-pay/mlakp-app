@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons'
+import { Tabs } from 'expo-router'
+import React from 'react'
 
-import { colors } from '@/src/shared/theme/colors';
+import { colors } from '@/src/shared/theme/colors'
 
 export default function TabLayout() {
   return (
@@ -68,5 +68,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-  );
+  )
 }

@@ -1,3 +1,3 @@
-import { GroupsScreen } from '@/src/modules/groups/GroupsScreen';
+import { GroupsScreen } from '@/src/modules/groups/screens/GroupsScreen'
 
-export default GroupsScreen;
+export default GroupsScreen

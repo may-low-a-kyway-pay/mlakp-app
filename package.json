@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "start:tunnel": "expo start -c --tunnel"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
