@@ -12,18 +12,18 @@ export const styles = StyleSheet.create({
   },
   balanceGrid: {
     flexDirection: 'row',
-    gap: 18,
+    gap: 12,
     paddingHorizontal: 18,
     paddingTop: 20,
     paddingBottom: 24,
   },
   balanceCard: {
     flex: 1,
-    borderRadius: 14,
-    gap: 18,
-    minHeight: 108,
-    paddingHorizontal: 18,
-    paddingVertical: 20,
+    borderRadius: 12,
+    gap: 14,
+    minHeight: 100,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
   },
   balanceLabelRow: {
     alignItems: 'center',
@@ -32,11 +32,11 @@ export const styles = StyleSheet.create({
   },
   balanceLabel: {
     color: colors.textMuted,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
   },
   balanceAmount: {
-    fontSize: 31,
+    fontSize: 28,
     fontWeight: '800',
   },
   stateBlock: {
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
   },
   stateText: {
     color: colors.textMuted,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
   },
   errorBlock: {
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
     textAlign: 'center',
   },
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: 27,
+    fontSize: 24,
     fontWeight: '700',
   },
   viewAll: {
@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
   },
   viewAllText: {
     color: colors.primary,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
   list: {
@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
   balanceItem: {
     backgroundColor: colors.surface,
     borderColor: colors.surfaceVariant,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     minHeight: 84,
@@ -118,13 +118,16 @@ export const styles = StyleSheet.create({
   statusBar: {
     width: 5,
   },
+  itemShell: {
+    flex: 1,
+  },
   itemContent: {
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
   },
   itemLeft: {
     alignItems: 'center',
@@ -137,7 +140,7 @@ export const styles = StyleSheet.create({
   },
   itemName: {
     color: colors.text,
-    fontSize: 21,
+    fontSize: 18,
     fontWeight: '700',
   },
   titleRow: {
@@ -149,7 +152,7 @@ export const styles = StyleSheet.create({
   },
   itemTitle: {
     color: colors.textMuted,
-    fontSize: 16,
+    fontSize: 14,
   },
   tag: {
     backgroundColor: colors.surfaceVariant,
@@ -165,12 +168,12 @@ export const styles = StyleSheet.create({
     minWidth: 104,
   },
   itemAmount: {
-    fontSize: 21,
+    fontSize: 18,
     fontWeight: '800',
   },
   itemLabel: {
     color: colors.textMuted,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     marginTop: 4,
   },
@@ -181,12 +184,12 @@ export const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '800',
   },
   emptyText: {
     color: colors.textMuted,
-    fontSize: 15,
+    fontSize: 14,
     lineHeight: 21,
     maxWidth: 280,
     textAlign: 'center',
@@ -194,13 +197,53 @@ export const styles = StyleSheet.create({
   fab: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 22,
+    borderRadius: 20,
     bottom: 24,
-    height: 74,
+    height: 64,
     justifyContent: 'center',
     position: 'absolute',
     right: 28,
-    width: 74,
+    width: 64,
     ...shadows.floating,
+  },
+  reviewActions: {
+    borderTopColor: colors.surfaceVariant,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'flex-end',
+    paddingBottom: 12,
+    paddingHorizontal: 14,
+  },
+  reviewButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+    minHeight: 36,
+    minWidth: 92,
+    paddingHorizontal: 12,
+  },
+  acceptButton: {
+    backgroundColor: colors.primary,
+  },
+  rejectButton: {
+    backgroundColor: colors.surface,
+    borderColor: colors.danger,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  actionPressed: {
+    opacity: 0.65,
+  },
+  reviewButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  acceptButtonText: {
+    color: '#ffffff',
+  },
+  rejectButtonText: {
+    color: colors.danger,
   },
 })

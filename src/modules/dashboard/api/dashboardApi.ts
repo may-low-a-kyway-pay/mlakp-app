@@ -1,5 +1,10 @@
 import { ApiErrorResponse } from '@/src/modules/auth/types/authTypes'
-import { DashboardResponse, DashboardTotals } from '@/src/modules/dashboard/types/dashboardTypes'
+import {
+  DashboardDebtResponse,
+  DashboardResponse,
+  DashboardTotals,
+  DebtTransitionType,
+} from '@/src/modules/dashboard/types/dashboardTypes'
 import { apiClient } from '@/src/shared/api/client'
 import { isAxiosError } from 'axios'
 
@@ -17,6 +22,11 @@ function normalizeDashboard(dashboard: Partial<DashboardTotals> | undefined): Da
 export async function getDashboardSnapshot() {
   const response = await apiClient.get<DashboardResponse>('/v1/dashboard')
   return normalizeDashboard(response.data.data.dashboard)
+}
+
+export async function updateDebtStatus(debtID: string, type: DebtTransitionType) {
+  const response = await apiClient.post<DashboardDebtResponse>(`/v1/debts/${debtID}`, { type })
+  return response.data.data.debt
 }
 
 export function getDashboardErrorMessage(error: unknown) {

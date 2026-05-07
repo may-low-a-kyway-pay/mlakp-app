@@ -6,9 +6,10 @@ import {
   getDashboardErrorMessage,
   getDashboardSnapshot,
   isUnauthorizedDashboardError,
+  updateDebtStatus,
 } from '@/src/modules/dashboard/api/dashboardApi'
 import { moneyLabel } from '@/src/modules/dashboard/utils/dashboardFormatters'
-import { DashboardTotals } from '@/src/modules/dashboard/types/dashboardTypes'
+import { DashboardTotals, DebtTransitionType } from '@/src/modules/dashboard/types/dashboardTypes'
 import { colors } from '@/src/shared/theme/colors'
 
 const emptyDashboard: DashboardTotals = {
@@ -20,6 +21,7 @@ const emptyDashboard: DashboardTotals = {
 export function useDashboard() {
   const [dashboard, setDashboard] = useState<DashboardTotals>(emptyDashboard)
   const [error, setError] = useState<string | null>(null)
+  const [updatingDebtID, setUpdatingDebtID] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const loadDashboard = useCallback(async () => {
@@ -54,6 +56,29 @@ export function useDashboard() {
     }, [loadDashboard]),
   )
 
+  const transitionDebt = useCallback(
+    async (debtID: string, type: DebtTransitionType) => {
+      setError(null)
+      setUpdatingDebtID(debtID)
+
+      try {
+        await updateDebtStatus(debtID, type)
+        await loadDashboard()
+      } catch (caughtError) {
+        if (isUnauthorizedDashboardError(caughtError)) {
+          await clearAuthSession()
+          router.replace('/login')
+          return
+        }
+
+        setError(getDashboardErrorMessage(caughtError))
+      } finally {
+        setUpdatingDebtID(null)
+      }
+    },
+    [loadDashboard],
+  )
+
   const balances = useMemo(
     () => [
       {
@@ -79,6 +104,8 @@ export function useDashboard() {
     error,
     isLoading,
     loadDashboard,
+    transitionDebt,
     unsettled: dashboard.unsettled_balances ?? [],
+    updatingDebtID,
   }
 }

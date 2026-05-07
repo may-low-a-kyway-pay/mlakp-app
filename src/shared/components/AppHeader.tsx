@@ -21,7 +21,7 @@ export function AppHeader({ showProfile = true }: AppHeaderProps) {
       </View>
       <Text style={styles.title}>Debt Tracker</Text>
       <Pressable style={styles.iconButton}>
-        <Ionicons color={colors.primaryBright} name="notifications-outline" size={28} />
+        <Ionicons color={colors.primaryBright} name="notifications-outline" size={24} />
       </Pressable>
     </View>
   )
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.surfaceVariant,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    height: 72,
+    height: 64,
     justifyContent: 'space-between',
     paddingHorizontal: 18,
   },
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.primaryBright,
-    fontSize: 24,
+    fontSize: 21,
     fontWeight: '700',
   },
   iconButton: {
