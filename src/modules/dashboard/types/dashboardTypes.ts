@@ -17,6 +17,19 @@ export type DashboardResponse = {
   }
 }
 
+export type DebtTransitionType = 'accept' | 'reject'
+
+export type DashboardDebtResponse = {
+  success: true
+  data: {
+    debt: {
+      id: string
+      status: string
+      updated_at: string
+    }
+  }
+}
+
 export type DashboardBalanceStatus = 'pending' | 'accepted' | 'partially_settled'
 
 export type DashboardBalanceType = 'owed' | 'receivable'

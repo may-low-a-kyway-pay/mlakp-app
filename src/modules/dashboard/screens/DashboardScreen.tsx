@@ -11,7 +11,7 @@ import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 
 export function DashboardScreen() {
-  const { balances, error, isLoading, loadDashboard, unsettled } = useDashboard()
+  const { balances, error, isLoading, loadDashboard, transitionDebt, unsettled, updatingDebtID } = useDashboard()
 
   return (
     <Screen contentStyle={styles.root} scroll={false}>
@@ -66,28 +66,63 @@ export function DashboardScreen() {
 
           {unsettled.map((item) => {
             const isDebt = item.type === 'owed'
+            const canReview = isDebt && item.status === 'pending'
+            const isUpdating = updatingDebtID === item.id
             return (
               <View key={item.id} style={styles.balanceItem}>
                 <View style={[styles.statusBar, { backgroundColor: isDebt ? colors.danger : colors.success }]} />
-                <View style={styles.itemContent}>
-                  <View style={styles.itemLeft}>
-                    <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
-                    <View style={styles.itemText}>
-                      <Text style={styles.itemName}>{item.other_user.name}</Text>
-                      <View style={styles.titleRow}>
-                        <Text style={styles.itemTitle}>
-                          {item.expense_title || `Expense ${shortID(item.expense_id)}`}
-                        </Text>
-                        <Text style={styles.tag}>{statusLabel(item.status)}</Text>
+                <View style={styles.itemShell}>
+                  <View style={styles.itemContent}>
+                    <View style={styles.itemLeft}>
+                      <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
+                      <View style={styles.itemText}>
+                        <Text style={styles.itemName}>{item.other_user.name}</Text>
+                        <View style={styles.titleRow}>
+                          <Text style={styles.itemTitle}>
+                            {item.expense_title || `Expense ${shortID(item.expense_id)}`}
+                          </Text>
+                          <Text style={styles.tag}>{statusLabel(item.status)}</Text>
+                        </View>
                       </View>
                     </View>
+                    <View style={styles.itemRight}>
+                      <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
+                        {moneyLabel(item.remaining_amount, isDebt ? '-' : '+')}
+                      </Text>
+                      <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
+                    </View>
                   </View>
-                  <View style={styles.itemRight}>
-                    <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
-                      {moneyLabel(item.remaining_amount, isDebt ? '-' : '+')}
-                    </Text>
-                    <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
-                  </View>
+
+                  {canReview ? (
+                    <View style={styles.reviewActions}>
+                      <Pressable
+                        disabled={isUpdating}
+                        onPress={() => transitionDebt(item.id, 'reject')}
+                        style={({ pressed }) => [
+                          styles.reviewButton,
+                          styles.rejectButton,
+                          (pressed || isUpdating) && styles.actionPressed,
+                        ]}
+                      >
+                        <Ionicons color={colors.danger} name="close" size={16} />
+                        <Text style={[styles.reviewButtonText, styles.rejectButtonText]}>Reject</Text>
+                      </Pressable>
+                      <Pressable
+                        disabled={isUpdating}
+                        onPress={() => transitionDebt(item.id, 'accept')}
+                        style={({ pressed }) => [
+                          styles.reviewButton,
+                          styles.acceptButton,
+                          (pressed || isUpdating) && styles.actionPressed,
+                        ]}
+                      >
+                        <Ionicons color="#ffffff" name="checkmark" size={16} />
+                        <Text style={[styles.reviewButtonText, styles.acceptButtonText]}>
+                          {isUpdating ? 'Updating' : 'Accept'}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
                 </View>
               </View>
             )
