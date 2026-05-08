@@ -1,6 +1,16 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native'
+import {
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
 import { useDebtRecords } from '@/src/modules/debts/hooks/useDebtRecords'
 import { styles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
 import { DebtRecordType, DebtStatus } from '@/src/modules/debts/types/debtTypes'
@@ -27,14 +37,26 @@ const typeOptions: { label: string; value: 'all' | DebtRecordType }[] = [
 
 export function DebtRecordsScreen() {
   const {
+    canSubmitPayment,
+    closePayment,
     currentUserID,
     error,
+    isPaymentOpen,
     isLoading,
+    isSubmittingPayment,
     loadRecords,
+    openPayment,
+    paymentAmount,
+    paymentDebt,
+    paymentNote,
+    pendingPaymentDebtIDs,
     records,
+    setPaymentAmount,
+    setPaymentNote,
     setStatusFilter,
     setTypeFilter,
     statusFilter,
+    submitPayment,
     transitionDebt,
     typeFilter,
     updatingDebtID,
@@ -114,6 +136,9 @@ export function DebtRecordsScreen() {
           const type = recordType(item, currentUserID)
           const isDebt = type === 'owed'
           const canReview = isDebt && item.status === 'pending'
+          const hasPendingPayment = pendingPaymentDebtIDs.has(item.id)
+          const canPay =
+            isDebt && (item.status === 'accepted' || item.status === 'partially_settled') && !hasPendingPayment
           const isUpdating = updatingDebtID === item.id
 
           return (
@@ -169,12 +194,97 @@ export function DebtRecordsScreen() {
                     </Pressable>
                   </View>
                 ) : null}
+
+                {canPay ? (
+                  <View style={styles.reviewActions}>
+                    <Pressable
+                      onPress={() => openPayment(item)}
+                      style={({ pressed }) => [styles.payButton, pressed && styles.actionPressed]}
+                    >
+                      <Ionicons color={colors.white} name="card-outline" size={17} />
+                      <Text style={styles.payButtonText}>Mark Payment</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+
+                {hasPendingPayment ? (
+                  <View style={styles.reviewActions}>
+                    <View style={styles.pendingPaymentPill}>
+                      <Ionicons color={colors.tertiary} name="time-outline" size={17} />
+                      <Text style={styles.pendingPaymentText}>Payment pending review</Text>
+                    </View>
+                  </View>
+                ) : null}
               </View>
             </View>
           )
         }}
         showsVerticalScrollIndicator={false}
       />
+
+      <Modal animationType="fade" onRequestClose={closePayment} transparent visible={isPaymentOpen}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>Mark Payment</Text>
+                <Text style={styles.modalSubtitle}>
+                  {paymentDebt ? `Remaining ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
+                </Text>
+              </View>
+              <Pressable onPress={closePayment} style={styles.closeButton}>
+                <Ionicons color={colors.textMuted} name="close" size={24} />
+              </Pressable>
+            </View>
+
+            <View style={styles.paymentAmountBlock}>
+              <Text style={styles.paymentLabel}>Amount</Text>
+              <View style={styles.paymentAmountRow}>
+                <Text style={styles.currency}>฿</Text>
+                <TextInput
+                  keyboardType="decimal-pad"
+                  onChangeText={setPaymentAmount}
+                  placeholder="0.00"
+                  placeholderTextColor={colors.outline}
+                  style={styles.paymentAmountInput}
+                  value={paymentAmount}
+                />
+              </View>
+            </View>
+
+            <View style={styles.paymentField}>
+              <Text style={styles.paymentLabel}>Note</Text>
+              <TextInput
+                multiline
+                onChangeText={setPaymentNote}
+                placeholder="Optional transfer note"
+                placeholderTextColor={colors.outline}
+                style={styles.noteInput}
+                value={paymentNote}
+              />
+            </View>
+
+            <Pressable
+              disabled={!canSubmitPayment}
+              onPress={submitPayment}
+              style={[styles.submitPaymentButton, !canSubmitPayment && styles.submitPaymentButtonDisabled]}
+            >
+              {isSubmittingPayment ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <>
+                  <Ionicons color={colors.white} name="checkmark-circle-outline" size={22} />
+                  <Text style={styles.submitPaymentText}>Submit for Review</Text>
+                </>
+              )}
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </Screen>
   )
 }
