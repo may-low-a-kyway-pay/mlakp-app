@@ -14,7 +14,7 @@ export function AppHeader({ showProfile = true }: AppHeaderProps) {
         {showProfile ? (
           <Image
             source={{
-              uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces',
+              uri: 'https://images.unsplash.com/photo-1611145434336-2324aa4079cd?q=80&w=930&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             }}
             style={styles.avatar}
           />
