@@ -1,6 +1,6 @@
 # MLAKP App
 
-MLAKP App is the Expo / React Native client for the MLAKP shared expense tracker. It connects to the MLAKP backend API for authentication, groups, dashboard balances, debt status changes, and expense creation.
+MLAKP App is the Expo / React Native client for the MLAKP shared expense tracker. It connects to the MLAKP backend API for authentication, groups, dashboard balances, debt status changes, expense creation, debtor payment marking, and creditor payment review.
 
 The app is built with Expo Router, React Native, TypeScript, axios, and feature-based folders under `src/modules`.
 
@@ -157,6 +157,9 @@ Basic manual verification:
 4. Open Dashboard and Groups.
 5. Create a group.
 6. Open Add Expense and submit an expense for selected group members.
+7. Open All Balances from the dashboard and accept a pending debt as the debtor.
+8. Mark a payment against an accepted debt.
+9. Open Activity as the creditor and confirm or reject the pending payment.
 
 If login fails immediately, confirm the app can reach `EXPO_PUBLIC_API_BASE_URL` from the selected device or emulator.
 
@@ -184,6 +187,7 @@ app/
   login.tsx                Login route
   register.tsx             Registration route
   add-expense.tsx          Add expense modal route
+  debts.tsx                Full debt/balance list and debtor payment marking
   (tabs)/
     _layout.tsx            Bottom tab layout
     dashboard.tsx          Dashboard tab
@@ -206,8 +210,11 @@ The root stack starts at `login`, then navigates into the tab group after authen
       dashboard/           Dashboard totals, unsettled balances, debt accept/reject actions
       groups/              Group list/detail UI, group API calls, member display helpers
       expense/             Add expense UI, split payload builder, expense API calls
-      activity/            Activity tab UI and placeholder/local data
+      debts/               Full balance list, debt filters, debt accept/reject, and payment marking
+      payments/            Payment API calls and payment response types
+      activity/            Payment inbox, submitted payment list, and payment review history
       settings/            Settings tab UI and sign-out action
+      users/               User search API used by group member workflows
     shared/                Cross-feature code
       api/                 Shared axios API client and auth header attachment
       components/          Reusable screen, card, avatar, and header components
@@ -256,9 +263,56 @@ Feature API files describe endpoint-specific requests:
 ```text
 src/modules/auth/api/authApi.ts       /v1/auth/login, /v1/auth/register, /v1/auth/logout
 src/modules/dashboard/api/dashboardApi.ts  /v1/dashboard, /v1/debts/{debtID}
+src/modules/debts/api/debtsApi.ts     /v1/debts
 src/modules/groups/api/groupsApi.ts   /v1/groups, /v1/groups/{groupID}
 src/modules/expense/api/expenseApi.ts /v1/expenses
+src/modules/payments/api/paymentsApi.ts /v1/payments, /v1/debts/{debtID}/payments
+src/modules/users/api/usersApi.ts     /v1/users/search
 ```
+
+## Current Product Flows
+
+### Authentication
+
+- `app/index.tsx` and `app/login.tsx` show the login experience.
+- `app/register.tsx` handles registration.
+- Successful auth stores tokens through `src/modules/auth/services/authSession.ts`.
+- Settings sign-out calls backend logout and clears the local session.
+
+### Groups
+
+- The Groups tab lists the current user's groups.
+- Group details can show members and pending add-member UI.
+- User search is backed by `/v1/users/search`.
+
+### Expense Creation
+
+- `app/add-expense.tsx` opens the Add Expense workflow.
+- The payer is locked to the current user.
+- The user chooses a group and selects participants from group members.
+- Supported split modes are equal and manual exact amounts.
+- Expense creation calls `/v1/expenses`; the backend creates pending debt rows for selected participants.
+
+### Debts And Balances
+
+- Dashboard shows total `you_owe`, total `you_get`, and an unsettled balance preview.
+- `app/debts.tsx` shows the full debt list.
+- Filters:
+  - type: `All`, `You Owe`, `You Get`
+  - status: `All`, `Pending`, `Accepted`, `Partial`, `Settled`, `Rejected`
+- Debtors can accept or reject pending debt requests.
+- Debtors can mark payment only for accepted or partially settled debts.
+- If a payment is already pending creditor review for a debt, the app shows `Payment pending review` instead of another Mark Payment action.
+
+### Payments And Activity
+
+- The Activity tab is the payment inbox.
+- `To review` lists pending payments received by the current user as creditor.
+- `Submitted` lists pending payments sent by the current user as debtor.
+- `History` lists confirmed and rejected payment records, with `All`, `Confirmed`, and `Rejected` subfilters.
+- Creditors confirm or reject pending payments from Activity.
+- Confirming a payment updates the debt balance on the backend.
+- Rejecting a payment leaves the debt amount unchanged and allows the debtor to submit again.
 
 ## Path Aliases
 
