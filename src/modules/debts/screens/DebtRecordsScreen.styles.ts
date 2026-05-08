@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     paddingHorizontal: 18,
-    paddingTop: 12,
+    paddingTop: 18,
   },
   iconButton: {
     alignItems: 'center',
@@ -28,13 +28,13 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontFamily: typography.family,
-    fontSize: typography.size.title,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.screenTitle,
     fontWeight: typography.weight.bold,
   },
   subtitle: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.medium,
     marginTop: 2,
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
   },
   filterText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -79,7 +79,7 @@ export const styles = StyleSheet.create({
   },
   stateText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodySmall,
     fontWeight: typography.weight.medium,
   },
@@ -91,7 +91,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
     textAlign: 'center',
@@ -137,7 +137,7 @@ export const styles = StyleSheet.create({
   },
   itemName: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
   },
@@ -157,7 +157,7 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.surfaceVariant,
     borderRadius: 6,
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.caption,
     fontWeight: typography.weight.semibold,
     paddingHorizontal: 8,
@@ -168,13 +168,13 @@ export const styles = StyleSheet.create({
     minWidth: 104,
   },
   itemAmount: {
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.bold,
   },
   itemLabel: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.caption,
     fontWeight: typography.weight.medium,
     marginTop: 4,
@@ -186,7 +186,7 @@ export const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodyLarge,
     fontWeight: typography.weight.bold,
   },
@@ -221,7 +221,7 @@ export const styles = StyleSheet.create({
     opacity: 0.65,
   },
   reviewButtonText: {
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -243,7 +243,7 @@ export const styles = StyleSheet.create({
   },
   payButtonText: {
     color: colors.white,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -260,7 +260,7 @@ export const styles = StyleSheet.create({
   },
   pendingPaymentText: {
     color: colors.tertiary,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -286,13 +286,13 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
   },
   modalSubtitle: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.medium,
     marginTop: 4,
@@ -309,7 +309,7 @@ export const styles = StyleSheet.create({
   },
   paymentLabel: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -326,14 +326,14 @@ export const styles = StyleSheet.create({
   },
   currency: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
   },
   paymentAmountInput: {
     color: colors.text,
     flex: 1,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
     paddingVertical: 0,
@@ -355,10 +355,10 @@ export const styles = StyleSheet.create({
   submitPaymentButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 10,
+    borderRadius: 24,
     flexDirection: 'row',
-    gap: 10,
-    height: 54,
+    gap: 8,
+    height: 52,
     justifyContent: 'center',
   },
   submitPaymentButtonDisabled: {
@@ -366,7 +366,7 @@ export const styles = StyleSheet.create({
   },
   submitPaymentText: {
     color: colors.white,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.body,
     fontWeight: typography.weight.bold,
   },

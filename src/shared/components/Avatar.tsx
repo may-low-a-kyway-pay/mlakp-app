@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     width: 48,
   },
   initialsText: {
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
   },

@@ -19,13 +19,13 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.screenTitle,
     fontWeight: typography.weight.bold,
   },
   subtitle: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.medium,
     marginTop: 4,
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
   },
   filterText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -86,7 +86,7 @@ export const styles = StyleSheet.create({
   },
   stateText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodySmall,
     fontWeight: typography.weight.medium,
   },
@@ -98,7 +98,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
     textAlign: 'center',
@@ -128,7 +128,7 @@ export const styles = StyleSheet.create({
   },
   itemTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
   },
@@ -140,7 +140,7 @@ export const styles = StyleSheet.create({
   },
   amount: {
     color: colors.success,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodyLarge,
     fontWeight: typography.weight.bold,
   },
@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
   },
   metaText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.caption,
     fontWeight: typography.weight.semibold,
   },
@@ -193,7 +193,7 @@ export const styles = StyleSheet.create({
     opacity: 0.65,
   },
   reviewButtonText: {
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -210,7 +210,7 @@ export const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodyLarge,
     fontWeight: typography.weight.bold,
   },

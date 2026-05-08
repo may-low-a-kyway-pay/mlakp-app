@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderColor: colors.surfaceVariant,
-    borderRadius: 18,
+    borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     padding: 18,
     ...shadows.card,

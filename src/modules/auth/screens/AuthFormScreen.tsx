@@ -34,7 +34,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
-            <Ionicons color={colors.primarySoft} name="wallet-outline" size={42} />
+            <Ionicons color={colors.primarySoft} name="wallet-outline" size={32} />
           </View>
           <Text style={styles.heading}>{isRegister ? 'Create Account' : 'Welcome Back'}</Text>
           <Text style={styles.subheading}>
@@ -48,7 +48,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
               <View style={styles.fieldGroup}>
                 <Text style={styles.label}>Name</Text>
                 <View style={styles.inputShell}>
-                  <Ionicons color={colors.outline} name="person-outline" size={26} />
+                  <Ionicons color={colors.outline} name="person-outline" size={24} />
                   <TextInput
                     autoCapitalize="words"
                     onChangeText={setName}
@@ -65,7 +65,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
               <View style={styles.fieldGroup}>
                 <Text style={styles.label}>Username</Text>
                 <View style={styles.inputShell}>
-                  <Ionicons color={colors.outline} name="at-outline" size={26} />
+                  <Ionicons color={colors.outline} name="at-outline" size={24} />
                   <TextInput
                     autoCapitalize="none"
                     onChangeText={setUsername}
@@ -81,7 +81,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>Email Address</Text>
               <View style={styles.inputShell}>
-                <Ionicons color={colors.outline} name="mail-outline" size={26} />
+                <Ionicons color={colors.outline} name="mail-outline" size={24} />
                 <TextInput
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -104,7 +104,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                 ) : null}
               </View>
               <View style={styles.inputShell}>
-                <Ionicons color={colors.outline} name="lock-closed-outline" size={26} />
+                <Ionicons color={colors.outline} name="lock-closed-outline" size={24} />
                 <TextInput
                   onChangeText={setPassword}
                   placeholder="........"
@@ -114,7 +114,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   value={password}
                 />
                 <Pressable onPress={() => setShowPassword((current) => !current)}>
-                  <Ionicons color={colors.outline} name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={26} />
+                  <Ionicons color={colors.outline} name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={24} />
                 </Pressable>
               </View>
             </View>

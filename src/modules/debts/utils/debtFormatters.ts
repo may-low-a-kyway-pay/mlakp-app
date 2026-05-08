@@ -1,4 +1,5 @@
 import { DebtRecord } from '@/src/modules/debts/types/debtTypes'
+import { formatMoneyLabel } from '@/src/shared/utils/currency'
 
 export function statusLabel(status: DebtRecord['status']) {
   return status
@@ -8,7 +9,7 @@ export function statusLabel(status: DebtRecord['status']) {
 }
 
 export function moneyLabel(amount: string, sign = '') {
-  return `${sign}${amount} THB`
+  return formatMoneyLabel(amount, sign)
 }
 
 export function recordType(record: DebtRecord, currentUserID: string | null) {

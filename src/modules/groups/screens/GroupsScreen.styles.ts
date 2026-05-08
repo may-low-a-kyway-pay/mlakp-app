@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.screenTitle,
     fontWeight: typography.weight.bold,
   },
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
   },
   stateText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodySmall,
     fontWeight: typography.weight.medium,
   },
@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodySmall,
     fontWeight: typography.weight.semibold,
     textAlign: 'center',
@@ -66,7 +66,7 @@ export const styles = StyleSheet.create({
   },
   retryText: {
     color: colors.white,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.bold,
   },
@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.bold,
   },
@@ -111,7 +111,7 @@ export const styles = StyleSheet.create({
   },
   groupName: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
   },
@@ -160,7 +160,7 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
   },
@@ -175,7 +175,7 @@ export const styles = StyleSheet.create({
   },
   label: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.body,
     fontWeight: typography.weight.semibold,
   },
@@ -203,7 +203,7 @@ export const styles = StyleSheet.create({
   },
   createText: {
     color: colors.white,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.body,
     fontWeight: typography.weight.bold,
   },
@@ -236,7 +236,7 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
     borderRadius: 6,
     color: colors.primary,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.caption,
     fontWeight: typography.weight.semibold,
     overflow: 'hidden',
@@ -275,7 +275,7 @@ export const styles = StyleSheet.create({
   },
   pendingTitle: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },

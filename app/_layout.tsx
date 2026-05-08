@@ -1,3 +1,5 @@
+import { PTSans_400Regular, PTSans_700Bold } from '@expo-google-fonts/pt-sans'
+import { useFonts } from '@expo-google-fonts/pt-sans/useFonts'
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -10,6 +12,11 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    PTSans_400Regular,
+    PTSans_700Bold,
+  })
+
   const navigationTheme = {
     ...DefaultTheme,
     colors: {
@@ -19,6 +26,10 @@ export default function RootLayout() {
       primary: colors.primary,
       text: colors.text,
     },
+  }
+
+  if (!fontsLoaded) {
+    return null
   }
 
   return (

@@ -71,32 +71,44 @@ export function SettingsScreen() {
       <View style={styles.inner}>
         <Text style={styles.title}>Settings</Text>
         <Card style={styles.settingsCard}>
-          {settingsItems.map((item, index) => (
-            <View key={item.label}>
-              <Pressable onPress={item.action === 'profile' ? openProfile : undefined} style={styles.settingRow}>
-                <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>
-                  <Ionicons color={item.color} name={item.icon} size={28} />
-                </View>
-                <View style={styles.settingText}>
-                  <Text style={styles.settingLabel}>{item.label}</Text>
-                  <Text style={styles.settingSublabel}>{item.sublabel}</Text>
-                </View>
-                <Ionicons color={colors.textSoft} name="chevron-forward" size={28} />
-              </Pressable>
-              {index < settingsItems.length - 1 ? <View style={styles.divider} /> : null}
-            </View>
-          ))}
+          {settingsItems.map((item, index) => {
+            const isEnabled = item.action === 'profile'
+
+            return (
+              <View key={item.label}>
+                <Pressable
+                  disabled={!isEnabled}
+                  onPress={isEnabled ? openProfile : undefined}
+                  style={[styles.settingRow, !isEnabled && styles.settingRowDisabled]}
+                >
+                  <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>
+                    <Ionicons color={item.color} name={item.icon} size={24} />
+                  </View>
+                  <View style={styles.settingText}>
+                    <Text style={styles.settingLabel}>{item.label}</Text>
+                    <Text style={styles.settingSublabel}>{item.sublabel}</Text>
+                  </View>
+                  {isEnabled ? (
+                    <Ionicons color={colors.textSoft} name="chevron-forward" size={24} />
+                  ) : (
+                    <View style={styles.trailingSpace} />
+                  )}
+                </Pressable>
+                {index < settingsItems.length - 1 ? <View style={styles.divider} /> : null}
+              </View>
+            )
+          })}
 
           <View style={styles.divider} />
-          <View style={styles.settingRow}>
+          <View style={[styles.settingRow, styles.settingRowDisabled]}>
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceVariant }]}>
-              <Ionicons color={colors.text} name="moon-outline" size={28} />
+              <Ionicons color={colors.text} name="moon-outline" size={24} />
             </View>
             <View style={styles.settingText}>
               <Text style={styles.settingLabel}>Dark Theme</Text>
               <Text style={styles.settingSublabel}>Match system default</Text>
             </View>
-            <View style={styles.toggle}>
+            <View style={[styles.toggle, styles.toggleDisabled]}>
               <View style={styles.toggleKnob} />
             </View>
           </View>
@@ -106,7 +118,7 @@ export function SettingsScreen() {
           {isSigningOut ? (
             <ActivityIndicator color={colors.danger} />
           ) : (
-            <Ionicons color={colors.danger} name="log-out-outline" size={28} />
+            <Ionicons color={colors.danger} name="log-out-outline" size={24} />
           )}
           <Text style={styles.signOutText}>{isSigningOut ? 'Signing Out' : 'Sign Out'}</Text>
         </Pressable>
