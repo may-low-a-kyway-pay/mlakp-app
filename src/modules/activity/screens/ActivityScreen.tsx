@@ -10,6 +10,7 @@ import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
 import { styles } from '@/src/modules/activity/screens/ActivityScreen.styles'
 import { colors } from '@/src/shared/theme/colors'
+import { formatMoneyLabel } from '@/src/shared/utils/currency'
 
 const filterOptions: { label: string; value: ActivityFilter }[] = [
   { label: 'To review', value: 'review' },
@@ -145,13 +146,13 @@ export function ActivityScreen() {
                   <Text
                     style={[styles.amount, { color: payment.status === 'rejected' ? colors.danger : colors.success }]}
                   >
-                    {payment.amount} THB
+                    {formatMoneyLabel(payment.amount)}
                   </Text>
                 </View>
 
                 <View style={styles.metaRow}>
                   <Text style={styles.metaText}>From {payment.paid_by_name}</Text>
-                  <Text style={styles.metaText}>Remaining {payment.debt_remaining_amount} THB</Text>
+                  <Text style={styles.metaText}>Remaining {formatMoneyLabel(payment.debt_remaining_amount)}</Text>
                 </View>
 
                 {payment.note ? <Text style={styles.noteText}>{payment.note}</Text> : null}

@@ -13,8 +13,7 @@ import {
 } from '@/src/modules/groups/api/groupsApi'
 import { Group, GroupMember } from '@/src/modules/groups/types/groupTypes'
 import { displayNameForMember } from '@/src/modules/groups/utils/memberFormatters'
-
-const defaultCurrency = 'THB'
+import { appCurrency } from '@/src/shared/utils/currency'
 
 type SplitParticipant = {
   id: string
@@ -209,7 +208,7 @@ export function useAddExpense() {
         group_id: selectedGroupID,
         title: title.trim(),
         total_amount: Number(amount).toFixed(2),
-        currency: defaultCurrency,
+        currency: appCurrency.code,
         paid_by: currentUser.id,
         split_type: splitType,
         participants,

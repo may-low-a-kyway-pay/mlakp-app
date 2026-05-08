@@ -18,6 +18,7 @@ import { displayNameForMember, secondaryTextForMember } from '@/src/modules/grou
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
+import { appCurrency, formatMoneyLabel } from '@/src/shared/utils/currency'
 
 export function AddExpenseScreen() {
   const {
@@ -58,9 +59,9 @@ export function AddExpenseScreen() {
       >
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons color={colors.text} name="arrow-back" size={30} />
+            <Ionicons color={colors.text} name="arrow-back" size={24} />
           </Pressable>
-          <Text style={styles.headerTitle}>Add New Debt</Text>
+          <Text style={styles.headerTitle}>Add Expense</Text>
           <Pressable onPress={() => refresh()} style={styles.backButton}>
             <Ionicons color={colors.textMuted} name="refresh" size={24} />
           </Pressable>
@@ -74,7 +75,7 @@ export function AddExpenseScreen() {
           <View style={styles.amountSection}>
             <Text style={styles.amountLabel}>Total Amount</Text>
             <View style={styles.amountRow}>
-              <Text style={styles.currency}>฿</Text>
+              <Text style={styles.currency}>{appCurrency.symbol}</Text>
               <TextInput
                 keyboardType="decimal-pad"
                 onChangeText={setAmount}
@@ -90,7 +91,7 @@ export function AddExpenseScreen() {
             <View style={styles.floatingField}>
               <Text style={styles.floatingLabel}>Expense Title</Text>
               <View style={styles.outlinedInput}>
-                <Ionicons color={colors.textSoft} name="receipt-outline" size={28} />
+                <Ionicons color={colors.textSoft} name="receipt-outline" size={24} />
                 <TextInput
                   onChangeText={setTitle}
                   placeholder="e.g. Weekend Groceries"
@@ -141,7 +142,7 @@ export function AddExpenseScreen() {
             <View style={styles.splitHeader}>
               <Text style={styles.splitTitle}>Split Details</Text>
               <Pressable onPress={() => setIsPickerOpen(true)} style={styles.headerIconButton}>
-                <Ionicons color={colors.primary} name="person-add-outline" size={28} />
+                <Ionicons color={colors.primary} name="person-add-outline" size={24} />
               </Pressable>
             </View>
 
@@ -217,8 +218,8 @@ export function AddExpenseScreen() {
 
             {splitType === 'manual' ? (
               <View style={styles.splitSummary}>
-                <Text style={styles.summaryText}>Entered {exactSplitTotalAmount}</Text>
-                <Text style={styles.summaryText}>Remaining {exactRemainingAmount ?? '0.00'}</Text>
+                <Text style={styles.summaryText}>Entered {formatMoneyLabel(exactSplitTotalAmount)}</Text>
+                <Text style={styles.summaryText}>Remaining {formatMoneyLabel(exactRemainingAmount ?? '0.00')}</Text>
               </View>
             ) : null}
           </Card>
@@ -240,7 +241,7 @@ export function AddExpenseScreen() {
               <ActivityIndicator color={colors.white} />
             ) : (
               <>
-                <Ionicons color={colors.white} name="checkmark-circle-outline" size={24} />
+                <Ionicons color={colors.white} name="checkmark-circle-outline" size={22} />
                 <Text style={styles.createText}>Create Expense</Text>
               </>
             )}
@@ -286,7 +287,7 @@ export function AddExpenseScreen() {
                         </View>
                       </View>
                       <View style={[styles.checkbox, isSelected ? null : styles.checkboxInactive]}>
-                        {isSelected ? <Ionicons color={colors.white} name="checkmark" size={23} /> : null}
+                        {isSelected ? <Ionicons color={colors.white} name="checkmark" size={20} /> : null}
                       </View>
                     </Pressable>
                   )

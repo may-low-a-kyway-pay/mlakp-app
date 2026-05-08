@@ -1,12 +1,7 @@
-import { Platform } from 'react-native'
-
 export const typography = {
-  family: Platform.select({
-    web: 'Inter, system-ui, sans-serif',
-    android: 'sans-serif',
-    ios: 'System',
-    default: undefined,
-  }),
+  family: 'PTSans_400Regular',
+  familyRegular: 'PTSans_400Regular',
+  familyBold: 'PTSans_700Bold',
   size: {
     caption: 12,
     label: 14,
@@ -28,8 +23,8 @@ export const typography = {
   },
   weight: {
     regular: '400' as const,
-    medium: '600' as const,
-    semibold: '700' as const,
-    bold: '800' as const,
+    medium: '400' as const,
+    semibold: '400' as const,
+    bold: '400' as const,
   },
 }

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
 
 import { colors } from '@/src/shared/theme/colors'
 import { typography } from '@/src/shared/theme/typography'
@@ -13,16 +14,13 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSoft,
         tabBarItemStyle: {
-          borderRadius: 22,
           height: 58,
           marginHorizontal: 4,
-          marginTop: 8,
-          overflow: 'hidden',
-          paddingBottom: 4,
-          paddingTop: 6,
+          paddingBottom: 6,
+          paddingTop: 4,
         },
         tabBarLabelStyle: {
-          fontFamily: typography.family,
+          fontFamily: typography.familyBold,
           fontSize: typography.size.caption,
           fontWeight: typography.weight.medium,
         },
@@ -34,7 +32,6 @@ export default function TabLayout() {
           paddingBottom: 8,
           paddingTop: 4,
         },
-        tabBarActiveBackgroundColor: colors.primarySoft,
       }}
     >
       <Tabs.Screen
@@ -42,7 +39,9 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons color={color} name={focused ? 'grid' : 'grid-outline'} size={24} />
+            <TabIcon focused={focused}>
+              <Ionicons color={color} name={focused ? 'grid' : 'grid-outline'} size={24} />
+            </TabIcon>
           ),
         }}
       />
@@ -51,7 +50,9 @@ export default function TabLayout() {
         options={{
           title: 'Groups',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons color={color} name={focused ? 'people' : 'people-outline'} size={24} />
+            <TabIcon focused={focused}>
+              <Ionicons color={color} name={focused ? 'people' : 'people-outline'} size={24} />
+            </TabIcon>
           ),
         }}
       />
@@ -60,7 +61,9 @@ export default function TabLayout() {
         options={{
           title: 'Activity',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons color={color} name={focused ? 'receipt' : 'receipt-outline'} size={24} />
+            <TabIcon focused={focused}>
+              <Ionicons color={color} name={focused ? 'receipt' : 'receipt-outline'} size={24} />
+            </TabIcon>
           ),
         }}
       />
@@ -69,10 +72,33 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons color={color} name={focused ? 'settings' : 'settings-outline'} size={24} />
+            <TabIcon focused={focused}>
+              <Ionicons color={color} name={focused ? 'settings' : 'settings-outline'} size={24} />
+            </TabIcon>
           ),
         }}
       />
     </Tabs>
   )
 }
+
+type TabIconProps = React.PropsWithChildren<{
+  focused: boolean
+}>
+
+function TabIcon({ children, focused }: TabIconProps) {
+  return <View style={[styles.iconPill, focused && styles.iconPillActive]}>{children}</View>
+}
+
+const styles = StyleSheet.create({
+  iconPill: {
+    alignItems: 'center',
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
+    width: 48,
+  },
+  iconPillActive: {
+    backgroundColor: colors.primarySoft,
+  },
+})

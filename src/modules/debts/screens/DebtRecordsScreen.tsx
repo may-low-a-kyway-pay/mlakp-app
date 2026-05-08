@@ -19,6 +19,7 @@ import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
+import { appCurrency } from '@/src/shared/utils/currency'
 
 const statusOptions: { label: string; value: 'all' | DebtStatus }[] = [
   { label: 'All', value: 'all' },
@@ -244,7 +245,7 @@ export function DebtRecordsScreen() {
             <View style={styles.paymentAmountBlock}>
               <Text style={styles.paymentLabel}>Amount</Text>
               <View style={styles.paymentAmountRow}>
-                <Text style={styles.currency}>฿</Text>
+                <Text style={styles.currency}>{appCurrency.symbol}</Text>
                 <TextInput
                   keyboardType="decimal-pad"
                   onChangeText={setPaymentAmount}

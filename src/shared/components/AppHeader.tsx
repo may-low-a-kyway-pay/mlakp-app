@@ -20,8 +20,10 @@ export function AppHeader({ showProfile = true }: AppHeaderProps) {
           />
         ) : null}
       </View>
-      <Text style={styles.title}>Debt Tracker</Text>
-      <Pressable style={styles.iconButton}>
+      <Text adjustsFontSizeToFit minimumFontScale={0.86} numberOfLines={1} style={styles.title}>
+        May Low A Kyway Pay
+      </Text>
+      <Pressable accessibilityLabel="Notifications" style={styles.iconButton}>
         <Ionicons color={colors.primaryBright} name="notifications-outline" size={24} />
       </Pressable>
     </View>
@@ -51,9 +53,12 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.primaryBright,
-    fontFamily: typography.family,
-    fontSize: typography.size.title,
+    flex: 1,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
+    paddingHorizontal: 10,
+    textAlign: 'center',
   },
   iconButton: {
     alignItems: 'center',

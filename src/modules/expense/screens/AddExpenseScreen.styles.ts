@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.section,
     fontWeight: typography.weight.bold,
   },
@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
   },
   amountLabel: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.medium,
   },
@@ -52,14 +52,14 @@ export const styles = StyleSheet.create({
   },
   currency: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.amount,
     fontWeight: typography.weight.bold,
     opacity: 0.48,
   },
   amountInput: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.amount,
     fontWeight: typography.weight.bold,
     minWidth: 190,
@@ -76,8 +76,8 @@ export const styles = StyleSheet.create({
   floatingLabel: {
     backgroundColor: colors.surface,
     color: colors.textMuted,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodyLarge,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.label,
     fontWeight: typography.weight.medium,
     left: 18,
     paddingHorizontal: 6,
@@ -106,7 +106,7 @@ export const styles = StyleSheet.create({
   },
   inputLabel: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.body,
     fontWeight: typography.weight.semibold,
   },
@@ -128,7 +128,7 @@ export const styles = StyleSheet.create({
   },
   groupPillText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -160,15 +160,15 @@ export const styles = StyleSheet.create({
   },
   meText: {
     color: colors.white,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.body,
     fontWeight: typography.weight.bold,
   },
   payerName: {
     color: colors.text,
     flexShrink: 1,
-    fontFamily: typography.family,
-    fontSize: typography.size.title,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
   },
   splitCard: {
@@ -191,8 +191,8 @@ export const styles = StyleSheet.create({
   },
   splitTitle: {
     color: colors.text,
-    fontFamily: typography.family,
-    fontSize: typography.size.screenTitle,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
   },
   segmented: {
@@ -218,14 +218,14 @@ export const styles = StyleSheet.create({
   },
   segmentActiveText: {
     color: colors.success,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodyLarge,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.body,
     fontWeight: typography.weight.bold,
   },
   segmentInactiveText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodyLarge,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.body,
     fontWeight: typography.weight.semibold,
   },
   participants: {
@@ -254,19 +254,19 @@ export const styles = StyleSheet.create({
     width: 50,
   },
   participantInitials: {
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodyLarge,
     fontWeight: typography.weight.bold,
   },
   participantName: {
     color: colors.text,
-    fontFamily: typography.family,
-    fontSize: typography.size.title,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.titleSmall,
     fontWeight: typography.weight.semibold,
   },
   participantNote: {
     color: colors.textSoft,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodySmall,
     fontWeight: typography.weight.medium,
   },
@@ -288,7 +288,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.bodyLarge,
     fontWeight: typography.weight.semibold,
     height: 46,
@@ -306,7 +306,7 @@ export const styles = StyleSheet.create({
   },
   summaryText: {
     color: colors.textMuted,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
   },
@@ -330,7 +330,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.danger,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.label,
     fontWeight: typography.weight.semibold,
     lineHeight: typography.lineHeight.bodySmall,
@@ -345,10 +345,10 @@ export const styles = StyleSheet.create({
   createButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 32,
+    borderRadius: 28,
     flexDirection: 'row',
-    gap: 12,
-    height: 64,
+    gap: 10,
+    height: 56,
     justifyContent: 'center',
     ...shadows.floating,
   },
@@ -359,8 +359,8 @@ export const styles = StyleSheet.create({
   },
   createText: {
     color: colors.white,
-    fontFamily: typography.family,
-    fontSize: typography.size.titleSmall,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.body,
     fontWeight: typography.weight.semibold,
   },
   modalOverlay: {
@@ -383,7 +383,7 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     color: colors.text,
-    fontFamily: typography.family,
+    fontFamily: typography.familyBold,
     fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
   },
@@ -415,8 +415,8 @@ export const styles = StyleSheet.create({
   },
   doneText: {
     color: colors.white,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodyLarge,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.body,
     fontWeight: typography.weight.bold,
   },
 })
