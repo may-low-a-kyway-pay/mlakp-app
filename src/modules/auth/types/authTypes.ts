@@ -13,9 +13,16 @@ export type AuthTokenData = {
   user: AuthUser
 }
 
+export type AuthRefreshData = Omit<AuthTokenData, 'user'>
+
 export type AuthResponse = {
   success: true
   data: AuthTokenData
+}
+
+export type AuthRefreshResponse = {
+  success: true
+  data: AuthRefreshData
 }
 
 export type ApiErrorResponse = {
