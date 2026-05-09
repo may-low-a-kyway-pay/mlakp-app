@@ -1,4 +1,6 @@
-import { AuthTokenData } from '@/src/modules/auth/types/authTypes'
+import { AuthRefreshData, AuthTokenData } from '@/src/modules/auth/types/authTypes'
+import * as SecureStore from 'expo-secure-store'
+import { Platform } from 'react-native'
 
 type StoredAuth = {
   accessToken: string
@@ -13,8 +15,43 @@ const authStorageKey = 'mlakp.auth'
 let memoryAuth: StoredAuth | null = null
 
 function canUseLocalStorage() {
-  // React Native native runtimes do not expose window.localStorage; keep in-memory auth as the safe fallback.
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+  return Platform.OS === 'web' && typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+}
+
+async function readStoredAuth() {
+  if (canUseLocalStorage()) {
+    return window.localStorage.getItem(authStorageKey)
+  }
+
+  if (await SecureStore.isAvailableAsync()) {
+    return SecureStore.getItemAsync(authStorageKey)
+  }
+
+  return null
+}
+
+async function writeStoredAuth(session: StoredAuth) {
+  const serializedSession = JSON.stringify(session)
+
+  if (canUseLocalStorage()) {
+    window.localStorage.setItem(authStorageKey, serializedSession)
+    return
+  }
+
+  if (await SecureStore.isAvailableAsync()) {
+    await SecureStore.setItemAsync(authStorageKey, serializedSession)
+  }
+}
+
+async function removeStoredAuth() {
+  if (canUseLocalStorage()) {
+    window.localStorage.removeItem(authStorageKey)
+    return
+  }
+
+  if (await SecureStore.isAvailableAsync()) {
+    await SecureStore.deleteItemAsync(authStorageKey)
+  }
 }
 
 export async function saveAuthSession(data: AuthTokenData) {
@@ -26,9 +63,26 @@ export async function saveAuthSession(data: AuthTokenData) {
     user: data.user,
   }
 
-  if (canUseLocalStorage()) {
-    window.localStorage.setItem(authStorageKey, JSON.stringify(memoryAuth))
+  await writeStoredAuth(memoryAuth)
+}
+
+export async function updateAuthTokens(data: AuthRefreshData) {
+  const session = await getAuthSession()
+  if (!session) {
+    return null
   }
+
+  memoryAuth = {
+    ...session,
+    accessToken: data.access_token,
+    expiresAt: data.expires_at,
+    refreshToken: data.refresh_token,
+    tokenType: data.token_type,
+  }
+
+  await writeStoredAuth(memoryAuth)
+
+  return memoryAuth
 }
 
 export async function updateStoredUser(user: StoredAuth['user']) {
@@ -42,9 +96,7 @@ export async function updateStoredUser(user: StoredAuth['user']) {
     user,
   }
 
-  if (canUseLocalStorage()) {
-    window.localStorage.setItem(authStorageKey, JSON.stringify(memoryAuth))
-  }
+  await writeStoredAuth(memoryAuth)
 }
 
 export async function getAuthSession() {
@@ -52,11 +104,7 @@ export async function getAuthSession() {
     return memoryAuth
   }
 
-  if (!canUseLocalStorage()) {
-    return null
-  }
-
-  const rawSession = window.localStorage.getItem(authStorageKey)
+  const rawSession = await readStoredAuth()
   if (!rawSession) {
     return null
   }
@@ -66,7 +114,7 @@ export async function getAuthSession() {
     return memoryAuth
   } catch {
     // Drop corrupted persisted auth instead of repeatedly failing every API request.
-    window.localStorage.removeItem(authStorageKey)
+    await removeStoredAuth()
     return null
   }
 }
@@ -76,10 +124,13 @@ export async function getAccessToken() {
   return session?.accessToken ?? null
 }
 
+export async function getRefreshToken() {
+  const session = await getAuthSession()
+  return session?.refreshToken ?? null
+}
+
 export async function clearAuthSession() {
   memoryAuth = null
 
-  if (canUseLocalStorage()) {
-    window.localStorage.removeItem(authStorageKey)
-  }
+  await removeStoredAuth()
 }
