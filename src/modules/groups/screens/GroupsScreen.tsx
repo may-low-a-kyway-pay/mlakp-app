@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
+import { useState } from 'react'
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { avatarTones, formatUpdatedAt, groupInitials } from '@/src/modules/groups/utils/groupFormatters'
 import { displayNameForMember, secondaryTextForMember } from '@/src/modules/groups/utils/memberFormatters'
@@ -7,10 +8,12 @@ import { useGroups } from '@/src/modules/groups/hooks/useGroups'
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
+import { PersonInfoModal } from '@/src/shared/components/PersonInfoModal'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 
 export function GroupsScreen() {
+  const [selectedPerson, setSelectedPerson] = useState<{ name: string; username?: string | null } | null>(null)
   const {
     canAddMembers,
     closeGroupDetails,
@@ -165,7 +168,16 @@ export function GroupsScreen() {
                 <ScrollView contentContainerStyle={styles.memberList} keyboardShouldPersistTaps="handled">
                   {selectedGroup?.members.map((member, index) => (
                     <View key={member.id} style={styles.memberRow}>
-                      <View style={styles.left}>
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() =>
+                          setSelectedPerson({
+                            name: displayNameForMember(member),
+                            username: member.user?.username,
+                          })
+                        }
+                        style={({ pressed }) => [styles.left, pressed && styles.actionPressed]}
+                      >
                         <Avatar
                           initials={groupInitials(displayNameForMember(member))}
                           tone={avatarTones[index % avatarTones.length]}
@@ -177,7 +189,7 @@ export function GroupsScreen() {
                           </View>
                           <Text style={styles.groupMembers}>{secondaryTextForMember(member)}</Text>
                         </View>
-                      </View>
+                      </Pressable>
                     </View>
                   ))}
                 </ScrollView>
@@ -207,21 +219,25 @@ export function GroupsScreen() {
                       <View style={styles.searchResults}>
                         {memberSearchResults.map((user, index) => {
                           return (
-                            <Pressable
-                              key={user.id}
-                              onPress={() => selectMemberUser(user)}
-                              style={styles.searchResultRow}
-                            >
-                              <Avatar
-                                initials={groupInitials(user.name)}
-                                tone={avatarTones[index % avatarTones.length]}
-                              />
-                              <View style={styles.groupText}>
-                                <Text style={styles.groupName}>{user.name}</Text>
-                                <Text style={styles.groupMembers}>@{user.username}</Text>
-                              </View>
-                              <Ionicons color={colors.primary} name="add" size={22} />
-                            </Pressable>
+                            <View key={user.id} style={styles.searchResultRow}>
+                              <Pressable
+                                accessibilityRole="button"
+                                onPress={() => setSelectedPerson(user)}
+                                style={({ pressed }) => [styles.left, pressed && styles.actionPressed]}
+                              >
+                                <Avatar
+                                  initials={groupInitials(user.name)}
+                                  tone={avatarTones[index % avatarTones.length]}
+                                />
+                                <View style={styles.groupText}>
+                                  <Text style={styles.groupName}>{user.name}</Text>
+                                  <Text style={styles.groupMembers}>@{user.username}</Text>
+                                </View>
+                              </Pressable>
+                              <Pressable onPress={() => selectMemberUser(user)} style={styles.addMemberIconButton}>
+                                <Ionicons color={colors.primary} name="add" size={22} />
+                              </Pressable>
+                            </View>
                           )
                         })}
                       </View>
@@ -234,14 +250,20 @@ export function GroupsScreen() {
                         </Text>
                         {pendingMemberUsers.map((user, index) => (
                           <View key={user.id} style={styles.pendingRow}>
-                            <Avatar
-                              initials={groupInitials(user.name)}
-                              tone={avatarTones[index % avatarTones.length]}
-                            />
-                            <View style={styles.groupText}>
-                              <Text style={styles.groupName}>{user.name}</Text>
-                              <Text style={styles.groupMembers}>@{user.username}</Text>
-                            </View>
+                            <Pressable
+                              accessibilityRole="button"
+                              onPress={() => setSelectedPerson(user)}
+                              style={({ pressed }) => [styles.left, pressed && styles.actionPressed]}
+                            >
+                              <Avatar
+                                initials={groupInitials(user.name)}
+                                tone={avatarTones[index % avatarTones.length]}
+                              />
+                              <View style={styles.groupText}>
+                                <Text style={styles.groupName}>{user.name}</Text>
+                                <Text style={styles.groupMembers}>@{user.username}</Text>
+                              </View>
+                            </Pressable>
                             <Pressable onPress={() => removePendingMember(user.id)} style={styles.removePendingButton}>
                               <Ionicons color={colors.textMuted} name="close" size={20} />
                             </Pressable>
@@ -278,6 +300,13 @@ export function GroupsScreen() {
           </Card>
         </View>
       </Modal>
+
+      <PersonInfoModal
+        name={selectedPerson?.name ?? ''}
+        onClose={() => setSelectedPerson(null)}
+        username={selectedPerson?.username}
+        visible={Boolean(selectedPerson)}
+      />
     </Screen>
   )
 }

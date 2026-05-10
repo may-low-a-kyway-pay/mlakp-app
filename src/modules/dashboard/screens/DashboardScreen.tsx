@@ -19,11 +19,13 @@ import { DashboardBalanceType } from '@/src/modules/dashboard/types/dashboardTyp
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
+import { PersonInfoModal } from '@/src/shared/components/PersonInfoModal'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
 
 type PersonFilter = 'all' | DashboardBalanceType
+type SelectedPerson = { name: string; username?: string | null }
 
 const personFilterOptions: { label: string; value: PersonFilter }[] = [
   { label: 'All', value: 'all' },
@@ -54,6 +56,7 @@ export function DashboardScreen() {
     updatingDebtID,
   } = useDashboard()
   const [personFilter, setPersonFilter] = useState<PersonFilter>('all')
+  const [selectedPerson, setSelectedPerson] = useState<SelectedPerson | null>(null)
   const filteredPersonBalances = useMemo(
     () => (personFilter === 'all' ? personBalances : personBalances.filter((balance) => balance.type === personFilter)),
     [personBalances, personFilter],
@@ -127,7 +130,11 @@ export function DashboardScreen() {
             return (
               <View key={`${person.type}-${person.other_user.id}`} style={styles.personItem}>
                 <View style={styles.itemContent}>
-                  <View style={styles.itemLeft}>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setSelectedPerson(person.other_user)}
+                    style={({ pressed }) => [styles.itemLeft, pressed && styles.actionPressed]}
+                  >
                     <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
                     <View style={styles.itemText}>
                       <Text style={styles.itemName}>{person.other_user.name}</Text>
@@ -135,7 +142,7 @@ export function DashboardScreen() {
                         {person.debt_count} {person.debt_count === 1 ? 'debt' : 'debts'}
                       </Text>
                     </View>
-                  </View>
+                  </Pressable>
                   <View style={styles.itemRight}>
                     <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
                       {moneyLabel(person.remaining_amount, isDebt ? '-' : '+')}
@@ -197,7 +204,11 @@ export function DashboardScreen() {
                 <View style={[styles.statusBar, { backgroundColor: isDebt ? colors.danger : colors.success }]} />
                 <View style={styles.itemShell}>
                   <View style={styles.itemContent}>
-                    <View style={styles.itemLeft}>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setSelectedPerson(item.other_user)}
+                      style={({ pressed }) => [styles.itemLeft, pressed && styles.actionPressed]}
+                    >
                       <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
                       <View style={styles.itemText}>
                         <Text style={styles.itemName}>{item.other_user.name}</Text>
@@ -208,7 +219,7 @@ export function DashboardScreen() {
                           <Text style={styles.tag}>{statusLabel(item.status)}</Text>
                         </View>
                       </View>
-                    </View>
+                    </Pressable>
                     <View style={styles.itemRight}>
                       <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
                         {moneyLabel(item.remaining_amount, isDebt ? '-' : '+')}
@@ -325,6 +336,13 @@ export function DashboardScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+
+      <PersonInfoModal
+        name={selectedPerson?.name ?? ''}
+        onClose={() => setSelectedPerson(null)}
+        username={selectedPerson?.username}
+        visible={Boolean(selectedPerson)}
+      />
     </Screen>
   )
 }

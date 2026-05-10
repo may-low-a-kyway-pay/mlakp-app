@@ -19,3 +19,7 @@ export function recordType(record: DebtRecord, currentUserID: string | null) {
 export function counterpartyName(record: DebtRecord, currentUserID: string | null) {
   return record.debtor_id === currentUserID ? (record.creditor_name ?? 'Creditor') : (record.debtor_name ?? 'Debtor')
 }
+
+export function counterpartyUsername(record: DebtRecord, currentUserID: string | null) {
+  return record.debtor_id === currentUserID ? record.creditor_username : record.debtor_username
+}

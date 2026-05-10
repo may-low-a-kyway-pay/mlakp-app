@@ -125,6 +125,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  actionPressed: {
+    opacity: 0.65,
+  },
   modalOverlay: {
     alignItems: 'center',
     backgroundColor: colors.overlay,
@@ -266,6 +269,12 @@ export const styles = StyleSheet.create({
     gap: 12,
     minHeight: 68,
     padding: 12,
+  },
+  addMemberIconButton: {
+    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
   },
   pendingList: {
     backgroundColor: colors.surfaceMuted,

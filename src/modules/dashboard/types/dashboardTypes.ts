@@ -38,6 +38,7 @@ export type DashboardBalanceType = 'owed' | 'receivable'
 export type DashboardUser = {
   id: string
   name: string
+  username: string
 }
 
 export type DashboardUnsettledBalance = {

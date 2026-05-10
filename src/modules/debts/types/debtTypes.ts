@@ -8,8 +8,10 @@ export type DebtRecord = {
   expense_title?: string
   debtor_id: string
   debtor_name?: string
+  debtor_username?: string
   creditor_id: string
   creditor_name?: string
+  creditor_username?: string
   original_amount: string
   original_amount_minor: number
   remaining_amount: string
