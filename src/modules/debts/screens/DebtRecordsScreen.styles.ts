@@ -190,6 +190,14 @@ export const styles = StyleSheet.create({
     fontSize: typography.size.bodyLarge,
     fontWeight: typography.weight.bold,
   },
+  emptyText: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.bodySmall,
+    lineHeight: 20,
+    maxWidth: 260,
+    textAlign: 'center',
+  },
   reviewActions: {
     borderTopColor: colors.surfaceVariant,
     borderTopWidth: StyleSheet.hairlineWidth,

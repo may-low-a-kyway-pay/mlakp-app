@@ -21,13 +21,14 @@ import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
 
-const statusOptions: { label: string; value: 'all' | DebtStatus }[] = [
-  { label: 'All', value: 'all' },
+const statusOptions: { label: string; value: 'active' | 'all' | DebtStatus }[] = [
+  { label: 'Active', value: 'active' },
   { label: 'Pending', value: 'pending' },
   { label: 'Accepted', value: 'accepted' },
   { label: 'Partial', value: 'partially_settled' },
   { label: 'Settled', value: 'settled' },
   { label: 'Rejected', value: 'rejected' },
+  { label: 'All', value: 'all' },
 ]
 
 const typeOptions: { label: string; value: 'all' | DebtRecordType }[] = [
@@ -130,12 +131,23 @@ export function DebtRecordsScreen() {
             <Card style={styles.emptyCard}>
               <Ionicons color={colors.textSoft} name="receipt-outline" size={30} />
               <Text style={styles.emptyTitle}>No records found</Text>
+              <Text style={styles.emptyText}>
+                {statusFilter === 'active'
+                  ? 'Settled and rejected records stay available in their filters.'
+                  : 'Try another status or type filter.'}
+              </Text>
             </Card>
           ) : null
         }
         renderItem={({ item }) => {
           const type = recordType(item, currentUserID)
           const isDebt = type === 'owed'
+          const isClosed = item.status === 'settled' || item.status === 'rejected'
+          const displayAmount = isClosed ? item.original_amount : item.remaining_amount
+          const displaySign = isClosed ? '' : isDebt ? '-' : '+'
+          const displayColor =
+            item.status === 'rejected' ? colors.textMuted : isDebt && !isClosed ? colors.danger : colors.success
+          const amountLabel = isClosed ? statusLabel(item.status) : isDebt ? 'Owed' : 'Receivable'
           const canReview = isDebt && item.status === 'pending'
           const hasPendingPayment = pendingPaymentDebtIDs.has(item.id)
           const canPay =
@@ -158,10 +170,10 @@ export function DebtRecordsScreen() {
                     </View>
                   </View>
                   <View style={styles.itemRight}>
-                    <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
-                      {moneyLabel(item.remaining_amount, isDebt ? '-' : '+')}
+                    <Text style={[styles.itemAmount, { color: displayColor }]}>
+                      {moneyLabel(displayAmount, displaySign)}
                     </Text>
-                    <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
+                    <Text style={styles.itemLabel}>{amountLabel}</Text>
                   </View>
                 </View>
 

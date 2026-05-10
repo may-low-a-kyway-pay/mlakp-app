@@ -13,6 +13,7 @@ const emptyAmount = { amount: '0.00', amount_minor: 0, debt_count: 0 }
 function normalizeDashboard(dashboard: Partial<DashboardTotals> | undefined): DashboardTotals {
   // Mobile clients can briefly run against different backend versions, so normalize optional fields before rendering.
   return {
+    person_balances: dashboard?.person_balances ?? [],
     unsettled_balances: dashboard?.unsettled_balances ?? [],
     you_get: dashboard?.you_get ?? emptyAmount,
     you_owe: dashboard?.you_owe ?? emptyAmount,

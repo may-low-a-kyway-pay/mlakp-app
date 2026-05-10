@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
+import Constants from 'expo-constants'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { ActivityIndicator, Modal, Pressable, Text, TextInput, View } from 'react-native'
@@ -11,6 +12,8 @@ import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
+
+const appVersion = Constants.expoConfig?.version ?? '1.0.0'
 
 export function SettingsScreen() {
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -122,7 +125,7 @@ export function SettingsScreen() {
           )}
           <Text style={styles.signOutText}>{isSigningOut ? 'Signing Out' : 'Sign Out'}</Text>
         </Pressable>
-        <Text style={styles.version}>App Version 2.4.1 (Build 890)</Text>
+        <Text style={styles.version}>App Version {appVersion}</Text>
       </View>
 
       <Modal animationType="fade" onRequestClose={() => setIsProfileOpen(false)} transparent visible={isProfileOpen}>

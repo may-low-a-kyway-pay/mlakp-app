@@ -1,4 +1,5 @@
 export const typography = {
+  familyBrand: 'Caveat_700Bold',
   family: 'PTSans_400Regular',
   familyRegular: 'PTSans_400Regular',
   familyBold: 'PTSans_700Bold',

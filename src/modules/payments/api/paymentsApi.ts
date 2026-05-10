@@ -1,5 +1,7 @@
 import { ApiErrorResponse } from '@/src/modules/auth/types/authTypes'
 import {
+  BulkMarkPaymentRequest,
+  BulkPaymentResponse,
   MarkPaymentRequest,
   PaymentListItem,
   PaymentResponse,
@@ -29,6 +31,11 @@ export async function listPayments(filters: ListPaymentsFilters): Promise<Paymen
 export async function markDebtPayment(debtID: string, payload: MarkPaymentRequest) {
   const response = await apiClient.post<PaymentResponse>(`/v1/debts/${debtID}/payments`, payload)
   return response.data.data.payment
+}
+
+export async function bulkMarkPayment(payload: BulkMarkPaymentRequest) {
+  const response = await apiClient.post<BulkPaymentResponse>('/v1/payments/bulk', payload)
+  return response.data.data.payments
 }
 
 export async function reviewPayment(paymentID: string, type: ReviewPaymentType) {
