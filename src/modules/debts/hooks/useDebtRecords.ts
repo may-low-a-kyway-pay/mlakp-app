@@ -15,8 +15,10 @@ import {
   markDebtPayment,
 } from '@/src/modules/payments/api/paymentsApi'
 
-type StatusFilter = 'all' | DebtStatus
+type StatusFilter = 'active' | 'all' | DebtStatus
 type TypeFilter = 'all' | DebtRecordType
+
+const activeStatuses: DebtStatus[] = ['pending', 'accepted', 'partially_settled']
 
 function parseAmountMinor(value: string) {
   const trimmed = value.trim()
@@ -30,7 +32,7 @@ function parseAmountMinor(value: string) {
 
 export function useDebtRecords() {
   const [records, setRecords] = useState<DebtRecord[]>([])
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('active')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [currentUserID, setCurrentUserID] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -45,7 +47,7 @@ export function useDebtRecords() {
 
   const filters = useMemo<DebtRecordFilters>(
     () => ({
-      status: statusFilter === 'all' ? undefined : statusFilter,
+      status: statusFilter === 'all' || statusFilter === 'active' ? undefined : statusFilter,
       type: typeFilter === 'all' ? undefined : typeFilter,
     }),
     [statusFilter, typeFilter],
@@ -68,7 +70,11 @@ export function useDebtRecords() {
         listDebtRecords(filters),
         listPayments({ status: 'pending_confirmation', type: 'sent' }),
       ])
-      setRecords(loadedRecords)
+      setRecords(
+        statusFilter === 'active'
+          ? loadedRecords.filter((record) => activeStatuses.includes(record.status))
+          : loadedRecords,
+      )
       setPendingPaymentDebtIDs(new Set(pendingPayments.map((payment) => payment.debt_id)))
     } catch (caughtError) {
       if (isUnauthorizedDebtRecordsError(caughtError) || isUnauthorizedPaymentError(caughtError)) {
@@ -81,7 +87,7 @@ export function useDebtRecords() {
     } finally {
       setIsLoading(false)
     }
-  }, [filters])
+  }, [filters, statusFilter])
 
   useEffect(() => {
     void loadRecords()

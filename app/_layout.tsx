@@ -1,3 +1,4 @@
+import { Caveat_700Bold } from '@expo-google-fonts/caveat'
 import { PTSans_400Regular, PTSans_700Bold } from '@expo-google-fonts/pt-sans'
 import { useFonts } from '@expo-google-fonts/pt-sans/useFonts'
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
@@ -13,6 +14,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
+    Caveat_700Bold,
     PTSans_400Regular,
     PTSans_700Bold,
   })

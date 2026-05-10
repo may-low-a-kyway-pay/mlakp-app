@@ -32,6 +32,10 @@ export type MarkPaymentRequest = {
   note?: string | null
 }
 
+export type BulkMarkPaymentRequest = MarkPaymentRequest & {
+  received_by: string
+}
+
 export type ReviewPaymentType = 'confirm' | 'reject'
 
 export type PaymentResponse = {
@@ -45,5 +49,12 @@ export type PaymentsResponse = {
   success: true
   data: {
     payments: PaymentListItem[]
+  }
+}
+
+export type BulkPaymentResponse = {
+  success: true
+  data: {
+    payments: Payment[]
   }
 }

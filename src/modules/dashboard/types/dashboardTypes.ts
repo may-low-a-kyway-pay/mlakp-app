@@ -5,6 +5,7 @@ export type DashboardAmount = {
 }
 
 export type DashboardTotals = {
+  person_balances: DashboardPersonBalance[]
   unsettled_balances: DashboardUnsettledBalance[]
   you_get: DashboardAmount
   you_owe: DashboardAmount
@@ -49,4 +50,13 @@ export type DashboardUnsettledBalance = {
   remaining_amount_minor: number
   status: DashboardBalanceStatus
   updated_at: string
+}
+
+export type DashboardPersonBalance = {
+  type: DashboardBalanceType
+  other_user: DashboardUser
+  remaining_amount: string
+  remaining_amount_minor: number
+  debt_count: number
+  has_pending_payment: boolean
 }
