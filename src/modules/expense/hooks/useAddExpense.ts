@@ -18,6 +18,7 @@ import { appCurrency } from '@/src/shared/utils/currency'
 type SplitParticipant = {
   id: string
   name: string
+  username?: string
 }
 
 function parseAmountMinor(value: string) {
@@ -136,6 +137,7 @@ export function useAddExpense() {
       .map((member) => ({
         id: member.user_id,
         name: displayNameForMember(member),
+        username: member.user?.username,
       }))
   }, [members, selectedUserIDs])
 

@@ -243,6 +243,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 10,
   },
+  actionPressed: {
+    opacity: 0.65,
+  },
   participantText: {
     flex: 1,
   },
