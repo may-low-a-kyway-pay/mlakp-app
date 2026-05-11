@@ -52,7 +52,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   <TextInput
                     autoCapitalize="words"
                     onChangeText={setName}
-                    placeholder="Thomas"
+                    placeholder="Full name"
                     placeholderTextColor={colors.outline}
                     style={styles.input}
                     value={name}
@@ -69,7 +69,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   <TextInput
                     autoCapitalize="none"
                     onChangeText={setUsername}
-                    placeholder="thomas"
+                    placeholder="Username"
                     placeholderTextColor={colors.outline}
                     style={styles.input}
                     value={username}
@@ -86,7 +86,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   onChangeText={setEmail}
-                  placeholder="name@example.com"
+                  placeholder="Email address"
                   placeholderTextColor={colors.outline}
                   style={styles.input}
                   value={email}
@@ -107,7 +107,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                 <Ionicons color={colors.outline} name="lock-closed-outline" size={24} />
                 <TextInput
                   onChangeText={setPassword}
-                  placeholder="........"
+                  placeholder="Password"
                   placeholderTextColor={colors.outline}
                   secureTextEntry={!showPassword}
                   style={styles.input}

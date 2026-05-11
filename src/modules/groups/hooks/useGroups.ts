@@ -27,6 +27,8 @@ export function useGroups() {
   const [memberUsername, setMemberUsername] = useState('')
   const [memberSearchResults, setMemberSearchResults] = useState<AuthUser[]>([])
   const [pendingMemberUsers, setPendingMemberUsers] = useState<AuthUser[]>([])
+  const [peopleQuery, setPeopleQuery] = useState('')
+  const [peopleSearchResults, setPeopleSearchResults] = useState<AuthUser[]>([])
   const [currentUserID, setCurrentUserID] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -35,6 +37,7 @@ export function useGroups() {
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
   const [isAddingMember, setIsAddingMember] = useState(false)
   const [isSearchingMembers, setIsSearchingMembers] = useState(false)
+  const [isSearchingPeople, setIsSearchingPeople] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<SelectedGroup | null>(null)
 
   const canAddMembers = Boolean(
@@ -117,6 +120,43 @@ export function useGroups() {
       clearTimeout(timer)
     }
   }, [isDetailsOpen, memberUsername, pendingMemberUsers, selectedGroup?.members])
+
+  useEffect(() => {
+    const query = peopleQuery.trim().toLowerCase()
+
+    if (query.length < 2) {
+      setPeopleSearchResults([])
+      setIsSearchingPeople(false)
+      return
+    }
+
+    let isActive = true
+    setIsSearchingPeople(true)
+
+    const timer = setTimeout(() => {
+      searchUsersByUsername(query)
+        .then((users) => {
+          if (isActive) {
+            setPeopleSearchResults(users)
+          }
+        })
+        .catch(() => {
+          if (isActive) {
+            setPeopleSearchResults([])
+          }
+        })
+        .finally(() => {
+          if (isActive) {
+            setIsSearchingPeople(false)
+          }
+        })
+    }, 250)
+
+    return () => {
+      isActive = false
+      clearTimeout(timer)
+    }
+  }, [peopleQuery])
 
   async function submitGroup() {
     const trimmedName = groupName.trim()
@@ -271,11 +311,14 @@ export function useGroups() {
     isLoading,
     isLoadingDetails,
     isSearchingMembers,
+    isSearchingPeople,
     loadGroups,
     memberError,
     memberSearchResults,
     memberUsername,
     openGroupDetails,
+    peopleQuery,
+    peopleSearchResults,
     pendingMemberUsers,
     removePendingMember,
     selectMemberUser,
@@ -283,6 +326,7 @@ export function useGroups() {
     setGroupName,
     setIsCreateOpen,
     setMemberUsername: updateMemberUsername,
+    setPeopleQuery,
     submitMember,
     submitGroup,
   }

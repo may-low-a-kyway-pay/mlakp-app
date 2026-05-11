@@ -143,7 +143,7 @@ export function SettingsScreen() {
               <TextInput
                 autoCapitalize="none"
                 onChangeText={setUsername}
-                placeholder="username"
+                placeholder="Username"
                 placeholderTextColor={colors.outline}
                 style={styles.input}
                 value={username}

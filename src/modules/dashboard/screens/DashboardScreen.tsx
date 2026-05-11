@@ -19,18 +19,22 @@ import { DashboardBalanceType } from '@/src/modules/dashboard/types/dashboardTyp
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
-import { PersonInfoModal } from '@/src/shared/components/PersonInfoModal'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
 
 type PersonFilter = 'all' | DashboardBalanceType
-type SelectedPerson = { name: string; username?: string | null }
+type DashboardTab = 'balances' | 'person'
 
 const personFilterOptions: { label: string; value: PersonFilter }[] = [
-  { label: 'All', value: 'all' },
   { label: 'You Owe', value: 'owed' },
   { label: 'You Get', value: 'receivable' },
+  { label: 'All', value: 'all' },
+]
+
+const dashboardTabOptions: { label: string; value: DashboardTab }[] = [
+  { label: 'Balances', value: 'balances' },
+  { label: 'By Person', value: 'person' },
 ]
 
 export function DashboardScreen() {
@@ -55,8 +59,8 @@ export function DashboardScreen() {
     unsettled,
     updatingDebtID,
   } = useDashboard()
-  const [personFilter, setPersonFilter] = useState<PersonFilter>('all')
-  const [selectedPerson, setSelectedPerson] = useState<SelectedPerson | null>(null)
+  const [dashboardTab, setDashboardTab] = useState<DashboardTab>('balances')
+  const [personFilter, setPersonFilter] = useState<PersonFilter>('owed')
   const filteredPersonBalances = useMemo(
     () => (personFilter === 'all' ? personBalances : personBalances.filter((balance) => balance.type === personFilter)),
     [personBalances, personFilter],
@@ -96,173 +100,187 @@ export function DashboardScreen() {
           </View>
         ) : null}
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>By Person</Text>
-        </View>
-
-        <View style={styles.filterRow}>
-          {personFilterOptions.map((option) => (
+        <View style={styles.tabRow}>
+          {dashboardTabOptions.map((option) => (
             <Pressable
               key={option.value}
-              onPress={() => setPersonFilter(option.value)}
-              style={[styles.filterChip, personFilter === option.value && styles.filterChipActive]}
+              onPress={() => setDashboardTab(option.value)}
+              style={[styles.tabButton, dashboardTab === option.value && styles.tabButtonActive]}
             >
-              <Text style={[styles.filterText, personFilter === option.value && styles.filterTextActive]}>
+              <Text style={[styles.tabText, dashboardTab === option.value && styles.tabTextActive]}>
                 {option.label}
               </Text>
             </Pressable>
           ))}
         </View>
 
-        <View style={styles.list}>
-          {!isLoading && !error && filteredPersonBalances.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Ionicons color={colors.textSoft} name="people-outline" size={30} />
-              <Text style={styles.emptyTitle}>No person balances</Text>
-              <Text style={styles.emptyText}>Accepted debts grouped by person will appear here.</Text>
-            </Card>
-          ) : null}
+        {dashboardTab === 'balances' ? (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Unsettled Balances</Text>
+              <Link asChild href="/debts">
+                <Pressable style={styles.viewAll}>
+                  <Text style={styles.viewAllText}>View all</Text>
+                  <Ionicons color={colors.primary} name="chevron-forward" size={18} />
+                </Pressable>
+              </Link>
+            </View>
 
-          {filteredPersonBalances.map((person) => {
-            const isDebt = person.type === 'owed'
-            // Debt totals remain visible while submitted payments wait for creditor review.
-            const hasPendingPayment = person.has_pending_payment
-            return (
-              <View key={`${person.type}-${person.other_user.id}`} style={styles.personItem}>
-                <View style={styles.itemContent}>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => setSelectedPerson(person.other_user)}
-                    style={({ pressed }) => [styles.itemLeft, pressed && styles.actionPressed]}
-                  >
-                    <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
-                    <View style={styles.itemText}>
-                      <Text style={styles.itemName}>{person.other_user.name}</Text>
-                      <Text style={styles.itemTitle}>
-                        {person.debt_count} {person.debt_count === 1 ? 'debt' : 'debts'}
-                      </Text>
-                    </View>
-                  </Pressable>
-                  <View style={styles.itemRight}>
-                    <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
-                      {moneyLabel(person.remaining_amount, isDebt ? '-' : '+')}
-                    </Text>
-                    <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
-                  </View>
-                </View>
+            <View style={styles.list}>
+              {!isLoading && !error && unsettled.length === 0 ? (
+                <Card style={styles.emptyCard}>
+                  <Ionicons color={colors.textSoft} name="checkmark-done-circle-outline" size={30} />
+                  <Text style={styles.emptyTitle}>No unsettled balances</Text>
+                  <Text style={styles.emptyText}>
+                    Pending and accepted debts with remaining balance will appear here.
+                  </Text>
+                </Card>
+              ) : null}
 
-                {isDebt ? (
-                  <View style={styles.reviewActions}>
-                    <Pressable
-                      disabled={hasPendingPayment}
-                      onPress={() => openBulkPayment(person)}
-                      style={({ pressed }) => [
-                        styles.payButton,
-                        hasPendingPayment && styles.payButtonDisabled,
-                        (pressed || hasPendingPayment) && styles.actionPressed,
-                      ]}
-                    >
-                      <Ionicons
-                        color={colors.white}
-                        name={hasPendingPayment ? 'time-outline' : 'card-outline'}
-                        size={17}
-                      />
-                      <Text style={styles.payButtonText}>{hasPendingPayment ? 'Pending Review' : 'Pay Total'}</Text>
-                    </Pressable>
-                  </View>
-                ) : null}
-              </View>
-            )
-          })}
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Unsettled Balances</Text>
-          <Link asChild href="/debts">
-            <Pressable style={styles.viewAll}>
-              <Text style={styles.viewAllText}>View all</Text>
-              <Ionicons color={colors.primary} name="chevron-forward" size={18} />
-            </Pressable>
-          </Link>
-        </View>
-
-        <View style={styles.list}>
-          {!isLoading && !error && unsettled.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Ionicons color={colors.textSoft} name="checkmark-done-circle-outline" size={30} />
-              <Text style={styles.emptyTitle}>No unsettled balances</Text>
-              <Text style={styles.emptyText}>Pending and accepted debts with remaining balance will appear here.</Text>
-            </Card>
-          ) : null}
-
-          {unsettled.map((item) => {
-            const isDebt = item.type === 'owed'
-            const canReview = isDebt && item.status === 'pending'
-            const isUpdating = updatingDebtID === item.id
-            return (
-              <View key={item.id} style={styles.balanceItem}>
-                <View style={[styles.statusBar, { backgroundColor: isDebt ? colors.danger : colors.success }]} />
-                <View style={styles.itemShell}>
-                  <View style={styles.itemContent}>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => setSelectedPerson(item.other_user)}
-                      style={({ pressed }) => [styles.itemLeft, pressed && styles.actionPressed]}
-                    >
-                      <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
-                      <View style={styles.itemText}>
-                        <Text style={styles.itemName}>{item.other_user.name}</Text>
-                        <View style={styles.titleRow}>
-                          <Text style={styles.itemTitle}>
-                            {item.expense_title || `Expense ${shortID(item.expense_id)}`}
+              {unsettled.map((item) => {
+                const isDebt = item.type === 'owed'
+                const canReview = isDebt && item.status === 'pending'
+                const isUpdating = updatingDebtID === item.id
+                return (
+                  <View key={item.id} style={styles.balanceItem}>
+                    <View style={[styles.statusBar, { backgroundColor: isDebt ? colors.danger : colors.success }]} />
+                    <View style={styles.itemShell}>
+                      <View style={styles.itemContent}>
+                        <View style={styles.itemLeft}>
+                          <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
+                          <View style={styles.itemText}>
+                            <Text style={styles.itemName}>{item.other_user.name}</Text>
+                            <View style={styles.titleRow}>
+                              <Text style={styles.itemTitle}>
+                                {item.expense_title || `Expense ${shortID(item.expense_id)}`}
+                              </Text>
+                              <Text style={styles.tag}>{statusLabel(item.status)}</Text>
+                            </View>
+                          </View>
+                        </View>
+                        <View style={styles.itemRight}>
+                          <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
+                            {moneyLabel(item.remaining_amount, isDebt ? '-' : '+')}
                           </Text>
-                          <Text style={styles.tag}>{statusLabel(item.status)}</Text>
+                          <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
                         </View>
                       </View>
-                    </Pressable>
-                    <View style={styles.itemRight}>
-                      <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
-                        {moneyLabel(item.remaining_amount, isDebt ? '-' : '+')}
-                      </Text>
-                      <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
+
+                      {canReview ? (
+                        <View style={styles.reviewActions}>
+                          <Pressable
+                            disabled={isUpdating}
+                            onPress={() => transitionDebt(item.id, 'reject')}
+                            style={({ pressed }) => [
+                              styles.reviewButton,
+                              styles.rejectButton,
+                              (pressed || isUpdating) && styles.actionPressed,
+                            ]}
+                          >
+                            <Ionicons color={colors.danger} name="close" size={16} />
+                            <Text style={[styles.reviewButtonText, styles.rejectButtonText]}>Reject</Text>
+                          </Pressable>
+                          <Pressable
+                            disabled={isUpdating}
+                            onPress={() => transitionDebt(item.id, 'accept')}
+                            style={({ pressed }) => [
+                              styles.reviewButton,
+                              styles.acceptButton,
+                              (pressed || isUpdating) && styles.actionPressed,
+                            ]}
+                          >
+                            <Ionicons color={colors.white} name="checkmark" size={16} />
+                            <Text style={[styles.reviewButtonText, styles.acceptButtonText]}>
+                              {isUpdating ? 'Updating' : 'Accept'}
+                            </Text>
+                          </Pressable>
+                        </View>
+                      ) : null}
                     </View>
                   </View>
+                )
+              })}
+            </View>
+          </>
+        ) : (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>By Person</Text>
+            </View>
 
-                  {canReview ? (
-                    <View style={styles.reviewActions}>
-                      <Pressable
-                        disabled={isUpdating}
-                        onPress={() => transitionDebt(item.id, 'reject')}
-                        style={({ pressed }) => [
-                          styles.reviewButton,
-                          styles.rejectButton,
-                          (pressed || isUpdating) && styles.actionPressed,
-                        ]}
-                      >
-                        <Ionicons color={colors.danger} name="close" size={16} />
-                        <Text style={[styles.reviewButtonText, styles.rejectButtonText]}>Reject</Text>
-                      </Pressable>
-                      <Pressable
-                        disabled={isUpdating}
-                        onPress={() => transitionDebt(item.id, 'accept')}
-                        style={({ pressed }) => [
-                          styles.reviewButton,
-                          styles.acceptButton,
-                          (pressed || isUpdating) && styles.actionPressed,
-                        ]}
-                      >
-                        <Ionicons color={colors.white} name="checkmark" size={16} />
-                        <Text style={[styles.reviewButtonText, styles.acceptButtonText]}>
-                          {isUpdating ? 'Updating' : 'Accept'}
+            <View style={styles.filterRow}>
+              {personFilterOptions.map((option) => (
+                <Pressable
+                  key={option.value}
+                  onPress={() => setPersonFilter(option.value)}
+                  style={[styles.filterChip, personFilter === option.value && styles.filterChipActive]}
+                >
+                  <Text style={[styles.filterText, personFilter === option.value && styles.filterTextActive]}>
+                    {option.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View style={styles.list}>
+              {!isLoading && !error && filteredPersonBalances.length === 0 ? (
+                <Card style={styles.emptyCard}>
+                  <Ionicons color={colors.textSoft} name="people-outline" size={30} />
+                  <Text style={styles.emptyTitle}>No person balances</Text>
+                  <Text style={styles.emptyText}>Accepted debts grouped by person will appear here.</Text>
+                </Card>
+              ) : null}
+
+              {filteredPersonBalances.map((person) => {
+                const isDebt = person.type === 'owed'
+                // Debt totals remain visible while submitted payments wait for creditor review.
+                const hasPendingPayment = person.has_pending_payment
+                return (
+                  <View key={`${person.type}-${person.other_user.id}`} style={styles.personItem}>
+                    <View style={styles.itemContent}>
+                      <View style={styles.itemLeft}>
+                        <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
+                        <View style={styles.itemText}>
+                          <Text style={styles.itemName}>{person.other_user.name}</Text>
+                          <Text style={styles.itemTitle}>
+                            {person.debt_count} {person.debt_count === 1 ? 'debt' : 'debts'}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.itemRight}>
+                        <Text style={[styles.itemAmount, { color: isDebt ? colors.danger : colors.success }]}>
+                          {moneyLabel(person.remaining_amount, isDebt ? '-' : '+')}
                         </Text>
-                      </Pressable>
+                        <Text style={styles.itemLabel}>{isDebt ? 'Owed' : 'Receivable'}</Text>
+                      </View>
                     </View>
-                  ) : null}
-                </View>
-              </View>
-            )
-          })}
-        </View>
+
+                    {isDebt ? (
+                      <View style={styles.reviewActions}>
+                        <Pressable
+                          disabled={hasPendingPayment}
+                          onPress={() => openBulkPayment(person)}
+                          style={({ pressed }) => [
+                            styles.payButton,
+                            hasPendingPayment && styles.payButtonDisabled,
+                            (pressed || hasPendingPayment) && styles.actionPressed,
+                          ]}
+                        >
+                          <Ionicons
+                            color={colors.white}
+                            name={hasPendingPayment ? 'time-outline' : 'card-outline'}
+                            size={17}
+                          />
+                          <Text style={styles.payButtonText}>{hasPendingPayment ? 'Pending Review' : 'Pay Total'}</Text>
+                        </Pressable>
+                      </View>
+                    ) : null}
+                  </View>
+                )
+              })}
+            </View>
+          </>
+        )}
       </ScrollView>
 
       <Link asChild href="/add-expense">
@@ -312,7 +330,7 @@ export function DashboardScreen() {
               <TextInput
                 multiline
                 onChangeText={setBulkPaymentNote}
-                placeholder="Optional transfer note"
+                placeholder="Transfer note (optional)"
                 placeholderTextColor={colors.outline}
                 style={styles.noteInput}
                 value={bulkPaymentNote}
@@ -336,13 +354,6 @@ export function DashboardScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-
-      <PersonInfoModal
-        name={selectedPerson?.name ?? ''}
-        onClose={() => setSelectedPerson(null)}
-        username={selectedPerson?.username}
-        visible={Boolean(selectedPerson)}
-      />
     </Screen>
   )
 }

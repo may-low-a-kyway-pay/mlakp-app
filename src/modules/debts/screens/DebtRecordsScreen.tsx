@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { useState } from 'react'
 import {
   ActivityIndicator,
   FlatList,
@@ -15,16 +14,9 @@ import {
 import { useDebtRecords } from '@/src/modules/debts/hooks/useDebtRecords'
 import { styles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
 import { DebtRecordType, DebtStatus } from '@/src/modules/debts/types/debtTypes'
-import {
-  counterpartyName,
-  counterpartyUsername,
-  moneyLabel,
-  recordType,
-  statusLabel,
-} from '@/src/modules/debts/utils/debtFormatters'
+import { counterpartyName, moneyLabel, recordType, statusLabel } from '@/src/modules/debts/utils/debtFormatters'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
-import { PersonInfoModal } from '@/src/shared/components/PersonInfoModal'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
@@ -46,7 +38,6 @@ const typeOptions: { label: string; value: 'all' | DebtRecordType }[] = [
 ]
 
 export function DebtRecordsScreen() {
-  const [selectedPerson, setSelectedPerson] = useState<{ name: string; username?: string | null } | null>(null)
   const {
     canSubmitPayment,
     closePayment,
@@ -168,16 +159,7 @@ export function DebtRecordsScreen() {
               <View style={[styles.statusBar, { backgroundColor: isDebt ? colors.danger : colors.success }]} />
               <View style={styles.itemShell}>
                 <View style={styles.itemContent}>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() =>
-                      setSelectedPerson({
-                        name: counterpartyName(item, currentUserID),
-                        username: counterpartyUsername(item, currentUserID),
-                      })
-                    }
-                    style={({ pressed }) => [styles.itemLeft, pressed && styles.actionPressed]}
-                  >
+                  <View style={styles.itemLeft}>
                     <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
                     <View style={styles.itemText}>
                       <Text style={styles.itemName}>{counterpartyName(item, currentUserID)}</Text>
@@ -186,7 +168,7 @@ export function DebtRecordsScreen() {
                         <Text style={styles.tag}>{statusLabel(item.status)}</Text>
                       </View>
                     </View>
-                  </Pressable>
+                  </View>
                   <View style={styles.itemRight}>
                     <Text style={[styles.itemAmount, { color: displayColor }]}>
                       {moneyLabel(displayAmount, displaySign)}
@@ -292,7 +274,7 @@ export function DebtRecordsScreen() {
               <TextInput
                 multiline
                 onChangeText={setPaymentNote}
-                placeholder="Optional transfer note"
+                placeholder="Transfer note (optional)"
                 placeholderTextColor={colors.outline}
                 style={styles.noteInput}
                 value={paymentNote}
@@ -316,13 +298,6 @@ export function DebtRecordsScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-
-      <PersonInfoModal
-        name={selectedPerson?.name ?? ''}
-        onClose={() => setSelectedPerson(null)}
-        username={selectedPerson?.username}
-        visible={Boolean(selectedPerson)}
-      />
     </Screen>
   )
 }
