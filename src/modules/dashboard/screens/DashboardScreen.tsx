@@ -48,6 +48,7 @@ export function DashboardScreen() {
     error,
     isBulkPaymentOpen,
     isLoading,
+    isPartialBulkPayment,
     isSubmittingBulkPayment,
     loadDashboard,
     openBulkPayment,
@@ -58,6 +59,7 @@ export function DashboardScreen() {
     transitionDebt,
     unsettled,
     updatingDebtID,
+    useFullBulkPaymentAmount,
   } = useDashboard()
   const [dashboardTab, setDashboardTab] = useState<DashboardTab>('balances')
   const [personFilter, setPersonFilter] = useState<PersonFilter>('owed')
@@ -271,7 +273,7 @@ export function DashboardScreen() {
                             name={hasPendingPayment ? 'time-outline' : 'card-outline'}
                             size={17}
                           />
-                          <Text style={styles.payButtonText}>{hasPendingPayment ? 'Pending Review' : 'Pay Total'}</Text>
+                          <Text style={styles.payButtonText}>{hasPendingPayment ? 'Pending Review' : 'Pay'}</Text>
                         </Pressable>
                       </View>
                     ) : null}
@@ -291,18 +293,18 @@ export function DashboardScreen() {
 
       <Modal animationType="fade" onRequestClose={closeBulkPayment} transparent visible={isBulkPaymentOpen}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
           style={styles.modalOverlay}
         >
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>Bulk Payment</Text>
+              <View style={styles.modalTitleBlock}>
+                <Text style={styles.modalTitle}>
+                  {bulkPaymentPerson ? `Pay ${bulkPaymentPerson.other_user.name}` : 'Pay Person'}
+                </Text>
                 <Text style={styles.modalSubtitle}>
-                  {bulkPaymentPerson
-                    ? `${bulkPaymentPerson.other_user.name} · ${moneyLabel(bulkPaymentPerson.remaining_amount)} owed`
-                    : 'Selected person'}
+                  {bulkPaymentPerson ? `You owe ${moneyLabel(bulkPaymentPerson.remaining_amount)}` : 'Selected person'}
                 </Text>
               </View>
               <Pressable onPress={closeBulkPayment} style={styles.closeButton}>
@@ -323,6 +325,20 @@ export function DashboardScreen() {
                   value={bulkPaymentAmount}
                 />
               </View>
+              {bulkPaymentPerson ? (
+                <Text style={styles.paymentHelper}>
+                  Enter any amount up to {moneyLabel(bulkPaymentPerson.remaining_amount)}.
+                </Text>
+              ) : null}
+              <View style={styles.quickActionRow}>
+                <Pressable onPress={useFullBulkPaymentAmount} style={styles.quickActionButton}>
+                  <Ionicons color={colors.primary} name="refresh" size={16} />
+                  <Text style={styles.quickActionText}>Full Amount</Text>
+                </Pressable>
+              </View>
+              {isPartialBulkPayment ? (
+                <Text style={styles.partialPaymentNote}>Partial payments are applied to oldest debts first.</Text>
+              ) : null}
             </View>
 
             <View style={styles.paymentField}>
@@ -347,7 +363,7 @@ export function DashboardScreen() {
               ) : (
                 <>
                   <Ionicons color={colors.white} name="checkmark-circle-outline" size={22} />
-                  <Text style={styles.submitPaymentText}>Submit for Review</Text>
+                  <Text style={styles.submitPaymentText}>Submit Payment</Text>
                 </>
               )}
             </Pressable>

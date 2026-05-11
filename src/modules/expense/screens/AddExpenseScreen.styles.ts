@@ -397,6 +397,22 @@ export const styles = StyleSheet.create({
     gap: 12,
     paddingBottom: 16,
   },
+  selectAllRow: {
+    alignItems: 'center',
+    borderColor: colors.surfaceVariant,
+    borderRadius: 14,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 14,
+    marginBottom: 12,
+    padding: 12,
+  },
+  selectAllText: {
+    color: colors.text,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.semibold,
+  },
   memberPickerRow: {
     alignItems: 'center',
     borderColor: colors.surfaceVariant,

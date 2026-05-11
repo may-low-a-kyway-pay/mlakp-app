@@ -123,6 +123,16 @@ export function useAddExpense() {
     )
   }
 
+  const memberUserIDs = useMemo(() => members.map((member) => member.user_id), [members])
+
+  const allMembersSelected = useMemo(() => {
+    return memberUserIDs.length > 0 && memberUserIDs.every((userID) => selectedUserIDs.includes(userID))
+  }, [memberUserIDs, selectedUserIDs])
+
+  function toggleAllUsers() {
+    setSelectedUserIDs(allMembersSelected ? [] : memberUserIDs)
+  }
+
   function setShareAmount(userID: string, value: string) {
     setShareAmounts((previous) => ({
       ...previous,
@@ -250,6 +260,8 @@ export function useAddExpense() {
     splitType,
     submit,
     title,
+    allMembersSelected,
+    toggleAllUsers,
     toggleUser,
   }
 }

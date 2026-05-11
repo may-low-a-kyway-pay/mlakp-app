@@ -44,6 +44,7 @@ export function DebtRecordsScreen() {
     currentUserID,
     error,
     isPaymentOpen,
+    isPartialPayment,
     isLoading,
     isSubmittingPayment,
     loadRecords,
@@ -62,6 +63,7 @@ export function DebtRecordsScreen() {
     transitionDebt,
     typeFilter,
     updatingDebtID,
+    useFullPaymentAmount,
   } = useDebtRecords()
 
   return (
@@ -215,7 +217,7 @@ export function DebtRecordsScreen() {
                       style={({ pressed }) => [styles.payButton, pressed && styles.actionPressed]}
                     >
                       <Ionicons color={colors.white} name="card-outline" size={17} />
-                      <Text style={styles.payButtonText}>Mark Payment</Text>
+                      <Text style={styles.payButtonText}>Pay</Text>
                     </Pressable>
                   </View>
                 ) : null}
@@ -237,16 +239,16 @@ export function DebtRecordsScreen() {
 
       <Modal animationType="fade" onRequestClose={closePayment} transparent visible={isPaymentOpen}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
           style={styles.modalOverlay}
         >
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>Mark Payment</Text>
+              <View style={styles.modalTitleBlock}>
+                <Text style={styles.modalTitle}>Pay Debt</Text>
                 <Text style={styles.modalSubtitle}>
-                  {paymentDebt ? `Remaining ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
+                  {paymentDebt ? `You owe ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
                 </Text>
               </View>
               <Pressable onPress={closePayment} style={styles.closeButton}>
@@ -267,6 +269,20 @@ export function DebtRecordsScreen() {
                   value={paymentAmount}
                 />
               </View>
+              {paymentDebt ? (
+                <Text style={styles.paymentHelper}>
+                  Enter any amount up to {moneyLabel(paymentDebt.remaining_amount)}.
+                </Text>
+              ) : null}
+              <View style={styles.quickActionRow}>
+                <Pressable onPress={useFullPaymentAmount} style={styles.quickActionButton}>
+                  <Ionicons color={colors.primary} name="refresh" size={16} />
+                  <Text style={styles.quickActionText}>Full Amount</Text>
+                </Pressable>
+              </View>
+              {isPartialPayment ? (
+                <Text style={styles.partialPaymentNote}>Partial payments reduce this debt.</Text>
+              ) : null}
             </View>
 
             <View style={styles.paymentField}>
@@ -291,7 +307,7 @@ export function DebtRecordsScreen() {
               ) : (
                 <>
                   <Ionicons color={colors.white} name="checkmark-circle-outline" size={22} />
-                  <Text style={styles.submitPaymentText}>Submit for Review</Text>
+                  <Text style={styles.submitPaymentText}>Submit Payment</Text>
                 </>
               )}
             </Pressable>

@@ -23,6 +23,7 @@ import { appCurrency, formatMoneyLabel } from '@/src/shared/utils/currency'
 export function AddExpenseScreen() {
   const {
     amount,
+    allMembersSelected,
     canSubmit,
     currentUser,
     error,
@@ -47,13 +48,14 @@ export function AddExpenseScreen() {
     splitType,
     submit,
     title,
+    toggleAllUsers,
     toggleUser,
   } = useAddExpense()
 
   return (
     <Screen contentStyle={styles.content} scroll={false}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
         style={styles.keyboardRoot}
       >
@@ -257,6 +259,15 @@ export function AddExpenseScreen() {
                   <Ionicons color={colors.textMuted} name="close" size={24} />
                 </Pressable>
               </View>
+
+              {members.length > 0 ? (
+                <Pressable onPress={toggleAllUsers} style={styles.selectAllRow}>
+                  <View style={[styles.checkbox, allMembersSelected ? null : styles.checkboxInactive]}>
+                    {allMembersSelected ? <Ionicons color={colors.white} name="checkmark" size={20} /> : null}
+                  </View>
+                  <Text style={styles.selectAllText}>{allMembersSelected ? 'Clear All' : 'Select All'}</Text>
+                </Pressable>
+              ) : null}
 
               <ScrollView contentContainerStyle={styles.memberList} keyboardShouldPersistTaps="handled">
                 {members.length === 0 ? (
