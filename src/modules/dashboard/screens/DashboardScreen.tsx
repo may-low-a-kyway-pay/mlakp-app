@@ -1,17 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import { useMemo, useState } from 'react'
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { moneyLabel, shortID, statusLabel } from '@/src/modules/dashboard/utils/dashboardFormatters'
 import { styles } from '@/src/modules/dashboard/screens/DashboardScreen.styles'
 import { useDashboard } from '@/src/modules/dashboard/hooks/useDashboard'
@@ -19,6 +9,7 @@ import { DashboardBalanceType } from '@/src/modules/dashboard/types/dashboardTyp
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
@@ -292,11 +283,7 @@ export function DashboardScreen() {
       </Link>
 
       <Modal animationType="fade" onRequestClose={closeBulkPayment} transparent visible={isBulkPaymentOpen}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-          style={styles.modalOverlay}
-        >
+        <KeyboardAvoidingContainer style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <View style={styles.modalTitleBlock}>
@@ -368,7 +355,7 @@ export function DashboardScreen() {
               )}
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingContainer>
       </Modal>
     </Screen>
   )

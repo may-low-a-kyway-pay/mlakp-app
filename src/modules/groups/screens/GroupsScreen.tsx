@@ -9,6 +9,7 @@ import { useGroups } from '@/src/modules/groups/hooks/useGroups'
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 
@@ -212,7 +213,7 @@ export function GroupsScreen() {
       </View>
 
       <Modal animationType="fade" onRequestClose={() => setIsCreateOpen(false)} transparent visible={isCreateOpen}>
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingContainer style={styles.modalOverlay}>
           <Card style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>New Group</Text>
@@ -246,11 +247,11 @@ export function GroupsScreen() {
               {!isCreating ? <Text style={styles.createText}>Create Group</Text> : null}
             </Pressable>
           </Card>
-        </View>
+        </KeyboardAvoidingContainer>
       </Modal>
 
       <Modal animationType="fade" onRequestClose={closeGroupDetails} transparent visible={isDetailsOpen}>
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingContainer style={styles.modalOverlay}>
           <Card style={styles.detailsCard}>
             <View style={styles.modalHeader}>
               <View style={styles.detailsHeaderText}>
@@ -393,7 +394,7 @@ export function GroupsScreen() {
               </>
             ) : null}
           </Card>
-        </View>
+        </KeyboardAvoidingContainer>
       </Modal>
     </Screen>
   )

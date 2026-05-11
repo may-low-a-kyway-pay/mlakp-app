@@ -1,22 +1,13 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import {
-  ActivityIndicator,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { useDebtRecords } from '@/src/modules/debts/hooks/useDebtRecords'
 import { styles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
 import { DebtRecordType, DebtStatus } from '@/src/modules/debts/types/debtTypes'
 import { counterpartyName, moneyLabel, recordType, statusLabel } from '@/src/modules/debts/utils/debtFormatters'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
@@ -238,11 +229,7 @@ export function DebtRecordsScreen() {
       />
 
       <Modal animationType="fade" onRequestClose={closePayment} transparent visible={isPaymentOpen}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-          style={styles.modalOverlay}
-        >
+        <KeyboardAvoidingContainer style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <View style={styles.modalTitleBlock}>
@@ -312,7 +299,7 @@ export function DebtRecordsScreen() {
               )}
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingContainer>
       </Modal>
     </Screen>
   )

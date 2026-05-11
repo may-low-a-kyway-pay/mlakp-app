@@ -1,21 +1,12 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useAddExpense } from '@/src/modules/expense/hooks/useAddExpense'
 import { styles } from '@/src/modules/expense/screens/AddExpenseScreen.styles'
 import { avatarToneForIndex, initialsForName } from '@/src/modules/expense/utils/expenseFormatters'
 import { displayNameForMember, secondaryTextForMember } from '@/src/modules/groups/utils/memberFormatters'
 import { Card } from '@/src/shared/components/Card'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency, formatMoneyLabel } from '@/src/shared/utils/currency'
@@ -54,11 +45,7 @@ export function AddExpenseScreen() {
 
   return (
     <Screen contentStyle={styles.content} scroll={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-        style={styles.keyboardRoot}
-      >
+      <KeyboardAvoidingContainer style={styles.keyboardRoot}>
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <Ionicons color={colors.text} name="arrow-back" size={24} />
@@ -310,7 +297,7 @@ export function AddExpenseScreen() {
             </Card>
           </View>
         </Modal>
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingContainer>
     </Screen>
   )
 }
