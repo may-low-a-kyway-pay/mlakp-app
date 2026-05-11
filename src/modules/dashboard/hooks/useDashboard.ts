@@ -19,7 +19,7 @@ import {
   getPaymentErrorMessage,
   isUnauthorizedPaymentError,
 } from '@/src/modules/payments/api/paymentsApi'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 const emptyDashboard: DashboardTotals = {
   person_balances: [],
@@ -39,6 +39,7 @@ function parseAmountMinor(value: string) {
 }
 
 export function useDashboard() {
+  const { colors } = useAppTheme()
   const [dashboard, setDashboard] = useState<DashboardTotals>(emptyDashboard)
   const [error, setError] = useState<string | null>(null)
   const [updatingDebtID, setUpdatingDebtID] = useState<string | null>(null)
@@ -198,7 +199,7 @@ export function useDashboard() {
         soft: colors.successSoft,
       },
     ],
-    [dashboard],
+    [colors, dashboard],
   )
 
   return {

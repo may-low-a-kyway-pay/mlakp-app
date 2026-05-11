@@ -3,10 +3,13 @@ import { Tabs } from 'expo-router'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { colors } from '@/src/shared/theme/colors'
+import { AppColors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { typography } from '@/src/shared/theme/typography'
 
 export default function TabLayout() {
+  const { colors } = useAppTheme()
+
   return (
     <Tabs
       screenOptions={{
@@ -87,18 +90,23 @@ type TabIconProps = React.PropsWithChildren<{
 }>
 
 function TabIcon({ children, focused }: TabIconProps) {
+  const { colors } = useAppTheme()
+  const styles = createStyles(colors)
+
   return <View style={[styles.iconPill, focused && styles.iconPillActive]}>{children}</View>
 }
 
-const styles = StyleSheet.create({
-  iconPill: {
-    alignItems: 'center',
-    borderRadius: 16,
-    height: 32,
-    justifyContent: 'center',
-    width: 48,
-  },
-  iconPillActive: {
-    backgroundColor: colors.primarySoft,
-  },
-})
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
+    iconPill: {
+      alignItems: 'center',
+      borderRadius: 16,
+      height: 32,
+      justifyContent: 'center',
+      width: 48,
+    },
+    iconPillActive: {
+      backgroundColor: colors.primarySoft,
+    },
+  })
+}

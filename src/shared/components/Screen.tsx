@@ -1,7 +1,8 @@
 import { PropsWithChildren } from 'react'
 import { ScrollView, StyleSheet, ViewStyle } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { colors } from '@/src/shared/theme/colors'
+import { AppColors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 type ScreenProps = PropsWithChildren<{
   scroll?: boolean
@@ -9,6 +10,9 @@ type ScreenProps = PropsWithChildren<{
 }>
 
 export function Screen({ children, contentStyle, scroll = true }: ScreenProps) {
+  const { colors } = useAppTheme()
+  const styles = createStyles(colors)
+
   if (!scroll) {
     return <SafeAreaView style={[styles.root, contentStyle]}>{children}</SafeAreaView>
   }
@@ -26,14 +30,16 @@ export function Screen({ children, contentStyle, scroll = true }: ScreenProps) {
   )
 }
 
-const styles = StyleSheet.create({
-  root: {
-    backgroundColor: colors.background,
-    flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-    padding: 18,
-    paddingBottom: 120,
-  },
-})
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
+    root: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    content: {
+      flexGrow: 1,
+      padding: 18,
+      paddingBottom: 120,
+    },
+  })
+}

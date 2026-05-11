@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { avatarTones, formatUpdatedAt, groupInitials } from '@/src/modules/groups/utils/groupFormatters'
 import { displayNameForMember, secondaryTextForMember } from '@/src/modules/groups/utils/memberFormatters'
-import { styles } from '@/src/modules/groups/screens/GroupsScreen.styles'
+import { createStyles } from '@/src/modules/groups/screens/GroupsScreen.styles'
 import { useGroups } from '@/src/modules/groups/hooks/useGroups'
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 type GroupsTab = 'groups' | 'people'
 
@@ -21,6 +21,9 @@ const groupsTabOptions: { label: string; value: GroupsTab }[] = [
 ]
 
 export function GroupsScreen() {
+  const theme = useAppTheme()
+  const { colors } = theme
+  const styles = createStyles(theme)
   const [activeTab, setActiveTab] = useState<GroupsTab>('groups')
   const [copiedUsername, setCopiedUsername] = useState<string | null>(null)
   const {

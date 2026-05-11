@@ -2,16 +2,19 @@ import { useAuthForm } from '@/src/modules/auth/hooks/useAuthForm'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
-import { styles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
+import { createStyles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
 
 type AuthFormScreenProps = {
   mode: 'login' | 'register'
 }
 
 export function AuthFormScreen({ mode }: AuthFormScreenProps) {
+  const theme = useAppTheme()
+  const { colors } = theme
+  const styles = createStyles(theme)
   const {
     email,
     error,
