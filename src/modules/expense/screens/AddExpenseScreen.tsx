@@ -2,16 +2,19 @@ import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useAddExpense } from '@/src/modules/expense/hooks/useAddExpense'
-import { styles } from '@/src/modules/expense/screens/AddExpenseScreen.styles'
+import { createStyles } from '@/src/modules/expense/screens/AddExpenseScreen.styles'
 import { avatarToneForIndex, initialsForName } from '@/src/modules/expense/utils/expenseFormatters'
 import { displayNameForMember, secondaryTextForMember } from '@/src/modules/groups/utils/memberFormatters'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { appCurrency, formatMoneyLabel } from '@/src/shared/utils/currency'
 
 export function AddExpenseScreen() {
+  const theme = useAppTheme()
+  const { colors } = theme
+  const styles = createStyles(theme)
   const {
     amount,
     allMembersSelected,
@@ -167,7 +170,7 @@ export function AddExpenseScreen() {
 
             <View style={styles.participants}>
               {selectedParticipants.map((participant, index) => {
-                const avatarTone = avatarToneForIndex(index)
+                const avatarTone = avatarToneForIndex(index, colors)
 
                 return (
                   <View key={participant.id} style={styles.participantRow}>
@@ -263,7 +266,7 @@ export function AddExpenseScreen() {
                 {members.map((member, index) => {
                   const memberName = displayNameForMember(member)
                   const isSelected = selectedUserIDs.includes(member.user_id)
-                  const avatarTone = avatarToneForIndex(index)
+                  const avatarTone = avatarToneForIndex(index, colors)
 
                   return (
                     <View key={member.id} style={styles.memberPickerRow}>

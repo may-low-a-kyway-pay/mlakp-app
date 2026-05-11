@@ -2,21 +2,25 @@ import { Ionicons } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { ActivityIndicator, Modal, Pressable, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Modal, Pressable, Switch, Text, TextInput, View } from 'react-native'
 import { logout } from '@/src/modules/auth/api/authApi'
 import { clearAuthSession, getAuthSession, updateStoredUser } from '@/src/modules/auth/services/authSession'
-import { settingsItems } from '@/src/modules/settings/data/settingsData'
-import { styles } from '@/src/modules/settings/screens/SettingsScreen.styles'
+import { getSettingsItems } from '@/src/modules/settings/data/settingsData'
+import { createStyles } from '@/src/modules/settings/screens/SettingsScreen.styles'
 import { getUserErrorMessage, updateUsername } from '@/src/modules/users/api/usersApi'
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 const appVersion = Constants.expoConfig?.version ?? '1.0.0'
 
 export function SettingsScreen() {
+  const theme = useAppTheme()
+  const { colors, dark, preference, toggleDarkMode } = theme
+  const styles = createStyles(theme)
+  const settingsItems = getSettingsItems(colors)
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isSavingUsername, setIsSavingUsername] = useState(false)
@@ -104,17 +108,23 @@ export function SettingsScreen() {
           })}
 
           <View style={styles.divider} />
-          <View style={[styles.settingRow, styles.settingRowDisabled]}>
+          <View style={styles.settingRow}>
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceVariant }]}>
               <Ionicons color={colors.text} name="moon-outline" size={24} />
             </View>
             <View style={styles.settingText}>
               <Text style={styles.settingLabel}>Dark Theme</Text>
-              <Text style={styles.settingSublabel}>Match system default</Text>
+              <Text style={styles.settingSublabel}>
+                {preference === 'system' ? 'Using system default' : dark ? 'Enabled' : 'Disabled'}
+              </Text>
             </View>
-            <View style={[styles.toggle, styles.toggleDisabled]}>
-              <View style={styles.toggleKnob} />
-            </View>
+            <Switch
+              ios_backgroundColor={colors.surfaceVariant}
+              onValueChange={toggleDarkMode}
+              thumbColor={dark ? colors.white : colors.textSoft}
+              trackColor={{ false: colors.surfaceVariant, true: colors.primary }}
+              value={dark}
+            />
           </View>
         </Card>
 

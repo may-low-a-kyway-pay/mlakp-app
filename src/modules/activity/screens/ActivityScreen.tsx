@@ -8,8 +8,8 @@ import {
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
-import { styles } from '@/src/modules/activity/screens/ActivityScreen.styles'
-import { colors } from '@/src/shared/theme/colors'
+import { createStyles } from '@/src/modules/activity/screens/ActivityScreen.styles'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { formatMoneyLabel } from '@/src/shared/utils/currency'
 
 const filterOptions: { label: string; value: ActivityFilter }[] = [
@@ -36,6 +36,9 @@ function paymentTitle(paidByName: string, currentUserID: string | null, paidByID
 }
 
 export function ActivityScreen() {
+  const theme = useAppTheme()
+  const { colors } = theme
+  const styles = createStyles(theme)
   const {
     currentUserID,
     error,

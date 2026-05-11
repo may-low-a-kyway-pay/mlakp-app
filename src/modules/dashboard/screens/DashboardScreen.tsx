@@ -3,7 +3,7 @@ import { Link } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { moneyLabel, shortID, statusLabel } from '@/src/modules/dashboard/utils/dashboardFormatters'
-import { styles } from '@/src/modules/dashboard/screens/DashboardScreen.styles'
+import { createStyles } from '@/src/modules/dashboard/screens/DashboardScreen.styles'
 import { useDashboard } from '@/src/modules/dashboard/hooks/useDashboard'
 import { DashboardBalanceType } from '@/src/modules/dashboard/types/dashboardTypes'
 import { AppHeader } from '@/src/shared/components/AppHeader'
@@ -11,7 +11,7 @@ import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { appCurrency } from '@/src/shared/utils/currency'
 
 type PersonFilter = 'all' | DashboardBalanceType
@@ -29,6 +29,9 @@ const dashboardTabOptions: { label: string; value: DashboardTab }[] = [
 ]
 
 export function DashboardScreen() {
+  const theme = useAppTheme()
+  const { colors } = theme
+  const styles = createStyles(theme)
   const {
     balances,
     bulkPaymentAmount,

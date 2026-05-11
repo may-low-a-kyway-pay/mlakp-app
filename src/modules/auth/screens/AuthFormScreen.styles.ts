@@ -1,150 +1,152 @@
 import { StyleSheet } from 'react-native'
-import { colors, shadows } from '@/src/shared/theme/colors'
+import { AppTheme } from '@/src/shared/theme/colors'
 import { typography } from '@/src/shared/theme/typography'
 
-export const styles = StyleSheet.create({
-  screen: {
-    justifyContent: 'center',
-    padding: 18,
-    paddingBottom: 32,
-  },
-  keyboard: {
-    width: '100%',
-  },
-  card: {
-    gap: 16,
-    overflow: 'hidden',
-    padding: 24,
-  },
-  iconMark: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: colors.primaryBright,
-    borderRadius: 16,
-    height: 64,
-    justifyContent: 'center',
-    width: 64,
-    ...shadows.card,
-  },
-  heading: {
-    color: colors.text,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.screenTitle,
-    fontWeight: typography.weight.bold,
-    textAlign: 'center',
-  },
-  subheading: {
-    color: colors.textMuted,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodyLarge,
-    lineHeight: typography.lineHeight.bodyLarge,
-    textAlign: 'center',
-  },
-  form: {
-    gap: 18,
-    marginTop: 10,
-  },
-  fieldGroup: {
-    gap: 8,
-  },
-  passwordLabelRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  label: {
-    color: colors.text,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.medium,
-  },
-  linkText: {
-    color: colors.primary,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.medium,
-  },
-  inputShell: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderColor: colors.outline,
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: 14,
-    height: 54,
-    paddingHorizontal: 18,
-  },
-  input: {
-    color: colors.text,
-    flex: 1,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.bodyLarge,
-  },
-  errorText: {
-    color: colors.danger,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodySmall,
-    fontWeight: typography.weight.medium,
-    lineHeight: typography.lineHeight.bodySmall,
-  },
-  primaryButton: {
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 28,
-    flexDirection: 'row',
-    gap: 10,
-    height: 56,
-    justifyContent: 'center',
-    marginTop: 2,
-    ...shadows.floating,
-  },
-  disabledButton: {
-    opacity: 0.72,
-  },
-  primaryText: {
-    color: colors.white,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.body,
-    fontWeight: typography.weight.semibold,
-  },
-  dividerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 18,
-    marginTop: 14,
-  },
-  divider: {
-    backgroundColor: colors.surfaceVariant,
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    color: colors.textSoft,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.label,
-    fontWeight: typography.weight.semibold,
-  },
-  registerText: {
-    color: colors.textMuted,
-    fontFamily: typography.familyBold,
-    fontSize: typography.size.body,
-    textAlign: 'center',
-  },
-  registerLink: {
-    color: colors.primary,
-    fontWeight: typography.weight.semibold,
-  },
-  terms: {
-    color: colors.textSoft,
-    fontFamily: typography.family,
-    fontSize: typography.size.bodySmall,
-    lineHeight: typography.lineHeight.body,
-    marginTop: 26,
-    paddingHorizontal: 18,
-    textAlign: 'center',
-  },
-  underline: {
-    textDecorationLine: 'underline',
-  },
-})
+export function createStyles({ colors, shadows }: AppTheme) {
+  return StyleSheet.create({
+    screen: {
+      justifyContent: 'center',
+      padding: 18,
+      paddingBottom: 32,
+    },
+    keyboard: {
+      width: '100%',
+    },
+    card: {
+      gap: 16,
+      overflow: 'hidden',
+      padding: 24,
+    },
+    iconMark: {
+      alignItems: 'center',
+      alignSelf: 'center',
+      backgroundColor: colors.primaryBright,
+      borderRadius: 16,
+      height: 64,
+      justifyContent: 'center',
+      width: 64,
+      ...shadows.card,
+    },
+    heading: {
+      color: colors.text,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.screenTitle,
+      fontWeight: typography.weight.bold,
+      textAlign: 'center',
+    },
+    subheading: {
+      color: colors.textMuted,
+      fontFamily: typography.family,
+      fontSize: typography.size.bodyLarge,
+      lineHeight: typography.lineHeight.bodyLarge,
+      textAlign: 'center',
+    },
+    form: {
+      gap: 18,
+      marginTop: 10,
+    },
+    fieldGroup: {
+      gap: 8,
+    },
+    passwordLabelRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    label: {
+      color: colors.text,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.body,
+      fontWeight: typography.weight.medium,
+    },
+    linkText: {
+      color: colors.primary,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.body,
+      fontWeight: typography.weight.medium,
+    },
+    inputShell: {
+      alignItems: 'center',
+      backgroundColor: colors.background,
+      borderColor: colors.outline,
+      borderRadius: 12,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 14,
+      height: 54,
+      paddingHorizontal: 18,
+    },
+    input: {
+      color: colors.text,
+      flex: 1,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.bodyLarge,
+    },
+    errorText: {
+      color: colors.danger,
+      fontFamily: typography.family,
+      fontSize: typography.size.bodySmall,
+      fontWeight: typography.weight.medium,
+      lineHeight: typography.lineHeight.bodySmall,
+    },
+    primaryButton: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderRadius: 28,
+      flexDirection: 'row',
+      gap: 10,
+      height: 56,
+      justifyContent: 'center',
+      marginTop: 2,
+      ...shadows.floating,
+    },
+    disabledButton: {
+      opacity: 0.72,
+    },
+    primaryText: {
+      color: colors.white,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.body,
+      fontWeight: typography.weight.semibold,
+    },
+    dividerRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 18,
+      marginTop: 14,
+    },
+    divider: {
+      backgroundColor: colors.surfaceVariant,
+      flex: 1,
+      height: 1,
+    },
+    dividerText: {
+      color: colors.textSoft,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.label,
+      fontWeight: typography.weight.semibold,
+    },
+    registerText: {
+      color: colors.textMuted,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.body,
+      textAlign: 'center',
+    },
+    registerLink: {
+      color: colors.primary,
+      fontWeight: typography.weight.semibold,
+    },
+    terms: {
+      color: colors.textSoft,
+      fontFamily: typography.family,
+      fontSize: typography.size.bodySmall,
+      lineHeight: typography.lineHeight.body,
+      marginTop: 26,
+      paddingHorizontal: 18,
+      textAlign: 'center',
+    },
+    underline: {
+      textDecorationLine: 'underline',
+    },
+  })
+}

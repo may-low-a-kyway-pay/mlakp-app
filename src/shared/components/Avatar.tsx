@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import { colors } from '@/src/shared/theme/colors'
+import { AppColors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { typography } from '@/src/shared/theme/typography'
 
 type AvatarProps = {
@@ -8,14 +9,10 @@ type AvatarProps = {
   uri?: string
 }
 
-const toneStyles = {
-  blue: { backgroundColor: colors.primarySoft, color: colors.primary },
-  green: { backgroundColor: colors.successSoft, color: colors.success },
-  orange: { backgroundColor: colors.tertiarySoft, color: colors.tertiary },
-  neutral: { backgroundColor: colors.surfaceVariant, color: colors.textMuted },
-}
-
 export function Avatar({ initials, tone = 'neutral', uri }: AvatarProps) {
+  const { colors } = useAppTheme()
+  const toneStyles = createToneStyles(colors)
+
   if (uri) {
     return <Image source={{ uri }} style={styles.image} />
   }
@@ -27,6 +24,15 @@ export function Avatar({ initials, tone = 'neutral', uri }: AvatarProps) {
       <Text style={[styles.initialsText, { color: toneStyle.color }]}>{initials}</Text>
     </View>
   )
+}
+
+function createToneStyles(colors: AppColors) {
+  return {
+    blue: { backgroundColor: colors.primarySoft, color: colors.primary },
+    green: { backgroundColor: colors.successSoft, color: colors.success },
+    orange: { backgroundColor: colors.tertiarySoft, color: colors.tertiary },
+    neutral: { backgroundColor: colors.surfaceVariant, color: colors.textMuted },
+  }
 }
 
 const styles = StyleSheet.create({

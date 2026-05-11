@@ -2,14 +2,14 @@ import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { useDebtRecords } from '@/src/modules/debts/hooks/useDebtRecords'
-import { styles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
+import { createStyles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
 import { DebtRecordType, DebtStatus } from '@/src/modules/debts/types/debtTypes'
 import { counterpartyName, moneyLabel, recordType, statusLabel } from '@/src/modules/debts/utils/debtFormatters'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
-import { colors } from '@/src/shared/theme/colors'
+import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { appCurrency } from '@/src/shared/utils/currency'
 
 const statusOptions: { label: string; value: 'active' | 'all' | DebtStatus }[] = [
@@ -29,6 +29,9 @@ const typeOptions: { label: string; value: 'all' | DebtRecordType }[] = [
 ]
 
 export function DebtRecordsScreen() {
+  const theme = useAppTheme()
+  const { colors } = theme
+  const styles = createStyles(theme)
   const {
     canSubmitPayment,
     closePayment,
