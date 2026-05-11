@@ -1,9 +1,10 @@
 import { useAuthForm } from '@/src/modules/auth/hooks/useAuthForm'
 import { Card } from '@/src/shared/components/Card'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { Ionicons } from '@expo/vector-icons'
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
 import { styles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
 
 type AuthFormScreenProps = {
@@ -31,7 +32,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
 
   return (
     <Screen contentStyle={styles.screen}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
+      <KeyboardAvoidingContainer mode="ios-only" style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
             <Ionicons color={colors.primarySoft} name="wallet-outline" size={32} />
@@ -52,7 +53,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   <TextInput
                     autoCapitalize="words"
                     onChangeText={setName}
-                    placeholder="Thomas"
+                    placeholder="Full name"
                     placeholderTextColor={colors.outline}
                     style={styles.input}
                     value={name}
@@ -69,7 +70,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   <TextInput
                     autoCapitalize="none"
                     onChangeText={setUsername}
-                    placeholder="thomas"
+                    placeholder="Username"
                     placeholderTextColor={colors.outline}
                     style={styles.input}
                     value={username}
@@ -86,7 +87,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   onChangeText={setEmail}
-                  placeholder="name@example.com"
+                  placeholder="Email address"
                   placeholderTextColor={colors.outline}
                   style={styles.input}
                   value={email}
@@ -107,7 +108,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                 <Ionicons color={colors.outline} name="lock-closed-outline" size={24} />
                 <TextInput
                   onChangeText={setPassword}
-                  placeholder="........"
+                  placeholder="Password"
                   placeholderTextColor={colors.outline}
                   secureTextEntry={!showPassword}
                   style={styles.input}
@@ -154,7 +155,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
           <Text style={styles.underline}>Terms of Service</Text> and{' '}
           <Text style={styles.underline}>Privacy Policy</Text>.
         </Text>
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingContainer>
     </Screen>
   )
 }

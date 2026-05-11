@@ -292,6 +292,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  modalTitleBlock: {
+    flex: 1,
+    paddingRight: 12,
+  },
   modalTitle: {
     color: colors.text,
     fontFamily: typography.familyBold,
@@ -312,7 +316,7 @@ export const styles = StyleSheet.create({
     width: 42,
   },
   paymentAmountBlock: {
-    alignItems: 'center',
+    alignItems: 'stretch',
     gap: 10,
   },
   paymentLabel: {
@@ -345,6 +349,43 @@ export const styles = StyleSheet.create({
     fontSize: typography.size.title,
     fontWeight: typography.weight.bold,
     paddingVertical: 0,
+  },
+  paymentHelper: {
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    lineHeight: typography.lineHeight.bodySmall,
+  },
+  quickActionRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+  },
+  quickActionButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primarySoft,
+    borderColor: colors.primary,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 6,
+    minHeight: 36,
+    paddingHorizontal: 12,
+  },
+  quickActionText: {
+    color: colors.primary,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
+  },
+  partialPaymentNote: {
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: 8,
+    color: colors.textMuted,
+    fontFamily: typography.family,
+    fontSize: typography.size.label,
+    lineHeight: typography.lineHeight.bodySmall,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   paymentField: {
     gap: 8,

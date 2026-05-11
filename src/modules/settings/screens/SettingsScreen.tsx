@@ -10,6 +10,7 @@ import { styles } from '@/src/modules/settings/screens/SettingsScreen.styles'
 import { getUserErrorMessage, updateUsername } from '@/src/modules/users/api/usersApi'
 import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Card } from '@/src/shared/components/Card'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 
@@ -129,7 +130,7 @@ export function SettingsScreen() {
       </View>
 
       <Modal animationType="fade" onRequestClose={() => setIsProfileOpen(false)} transparent visible={isProfileOpen}>
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingContainer style={styles.modalOverlay}>
           <Card style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Profile Information</Text>
@@ -143,7 +144,7 @@ export function SettingsScreen() {
               <TextInput
                 autoCapitalize="none"
                 onChangeText={setUsername}
-                placeholder="username"
+                placeholder="Username"
                 placeholderTextColor={colors.outline}
                 style={styles.input}
                 value={username}
@@ -165,7 +166,7 @@ export function SettingsScreen() {
               {!isSavingUsername ? <Text style={styles.saveText}>Save Username</Text> : null}
             </Pressable>
           </Card>
-        </View>
+        </KeyboardAvoidingContainer>
       </Modal>
     </Screen>
   )

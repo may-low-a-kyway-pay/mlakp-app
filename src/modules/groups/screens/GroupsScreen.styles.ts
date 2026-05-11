@@ -31,6 +31,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 40,
   },
+  addButtonSpacer: {
+    height: 40,
+    width: 40,
+  },
   stateBlock: {
     alignItems: 'center',
     gap: 10,
@@ -91,6 +95,40 @@ export const styles = StyleSheet.create({
   list: {
     gap: 12,
   },
+  tabRow: {
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.surfaceVariant,
+    borderRadius: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 4,
+    marginBottom: 18,
+    padding: 4,
+  },
+  tabButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 40,
+    paddingHorizontal: 12,
+  },
+  tabButtonActive: {
+    backgroundColor: colors.surface,
+  },
+  tabText: {
+    color: colors.textMuted,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.label,
+    fontWeight: typography.weight.semibold,
+    textAlign: 'center',
+  },
+  tabTextActive: {
+    color: colors.primary,
+  },
+  peopleBlock: {
+    gap: 14,
+  },
   groupCard: {
     alignItems: 'center',
     borderRadius: 12,
@@ -124,9 +162,6 @@ export const styles = StyleSheet.create({
   right: {
     alignItems: 'center',
     flexDirection: 'row',
-  },
-  actionPressed: {
-    opacity: 0.65,
   },
   modalOverlay: {
     alignItems: 'center',
@@ -272,6 +307,15 @@ export const styles = StyleSheet.create({
   },
   addMemberIconButton: {
     alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  copyIconButton: {
+    alignItems: 'center',
+    borderColor: colors.primarySoft,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
     height: 40,
     justifyContent: 'center',
     width: 40,

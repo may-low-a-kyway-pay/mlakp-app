@@ -281,7 +281,8 @@ src/modules/users/api/usersApi.ts     /v1/users/search
 
 ### Groups
 
-- The Groups tab lists the current user's groups.
+- The Groups tab defaults to the current user's groups.
+- The People segment provides username search and inline username copy.
 - Group details can show members and pending add-member UI.
 - User search is backed by `/v1/users/search`.
 

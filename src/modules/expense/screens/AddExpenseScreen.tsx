@@ -1,31 +1,20 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { useState } from 'react'
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useAddExpense } from '@/src/modules/expense/hooks/useAddExpense'
 import { styles } from '@/src/modules/expense/screens/AddExpenseScreen.styles'
 import { avatarToneForIndex, initialsForName } from '@/src/modules/expense/utils/expenseFormatters'
 import { displayNameForMember, secondaryTextForMember } from '@/src/modules/groups/utils/memberFormatters'
 import { Card } from '@/src/shared/components/Card'
-import { PersonInfoModal } from '@/src/shared/components/PersonInfoModal'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency, formatMoneyLabel } from '@/src/shared/utils/currency'
 
 export function AddExpenseScreen() {
-  const [selectedPerson, setSelectedPerson] = useState<{ name: string; username?: string | null } | null>(null)
   const {
     amount,
+    allMembersSelected,
     canSubmit,
     currentUser,
     error,
@@ -50,16 +39,13 @@ export function AddExpenseScreen() {
     splitType,
     submit,
     title,
+    toggleAllUsers,
     toggleUser,
   } = useAddExpense()
 
   return (
     <Screen contentStyle={styles.content} scroll={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-        style={styles.keyboardRoot}
-      >
+      <KeyboardAvoidingContainer style={styles.keyboardRoot}>
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <Ionicons color={colors.text} name="arrow-back" size={24} />
@@ -97,7 +83,7 @@ export function AddExpenseScreen() {
                 <Ionicons color={colors.textSoft} name="receipt-outline" size={24} />
                 <TextInput
                   onChangeText={setTitle}
-                  placeholder="e.g. Weekend Groceries"
+                  placeholder="Expense title"
                   placeholderTextColor={colors.outline}
                   style={styles.titleInput}
                   value={title}
@@ -185,11 +171,7 @@ export function AddExpenseScreen() {
 
                 return (
                   <View key={participant.id} style={styles.participantRow}>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => setSelectedPerson(participant)}
-                      style={({ pressed }) => [styles.participantLeft, pressed && styles.actionPressed]}
-                    >
+                    <View style={styles.participantLeft}>
                       <View style={[styles.participantAvatar, { backgroundColor: avatarTone.bg }]}>
                         <Text style={[styles.participantInitials, { color: avatarTone.tone }]}>
                           {initialsForName(participant.name)}
@@ -203,7 +185,7 @@ export function AddExpenseScreen() {
                           {splitType === 'equal' ? 'Included equally' : 'Exact share'}
                         </Text>
                       </View>
-                    </Pressable>
+                    </View>
                     {splitType === 'manual' ? (
                       <TextInput
                         keyboardType="decimal-pad"
@@ -265,6 +247,15 @@ export function AddExpenseScreen() {
                 </Pressable>
               </View>
 
+              {members.length > 0 ? (
+                <Pressable onPress={toggleAllUsers} style={styles.selectAllRow}>
+                  <View style={[styles.checkbox, allMembersSelected ? null : styles.checkboxInactive]}>
+                    {allMembersSelected ? <Ionicons color={colors.white} name="checkmark" size={20} /> : null}
+                  </View>
+                  <Text style={styles.selectAllText}>{allMembersSelected ? 'Clear All' : 'Select All'}</Text>
+                </Pressable>
+              ) : null}
+
               <ScrollView contentContainerStyle={styles.memberList} keyboardShouldPersistTaps="handled">
                 {members.length === 0 ? (
                   <Text style={styles.helperText}>This group has no other members yet.</Text>
@@ -276,16 +267,7 @@ export function AddExpenseScreen() {
 
                   return (
                     <View key={member.id} style={styles.memberPickerRow}>
-                      <Pressable
-                        accessibilityRole="button"
-                        onPress={() =>
-                          setSelectedPerson({
-                            name: memberName,
-                            username: member.user?.username,
-                          })
-                        }
-                        style={({ pressed }) => [styles.participantLeft, pressed && styles.actionPressed]}
-                      >
+                      <View style={styles.participantLeft}>
                         <View style={[styles.participantAvatar, { backgroundColor: avatarTone.bg }]}>
                           <Text style={[styles.participantInitials, { color: avatarTone.tone }]}>
                             {initialsForName(memberName)}
@@ -297,7 +279,7 @@ export function AddExpenseScreen() {
                           </Text>
                           <Text style={styles.participantNote}>{secondaryTextForMember(member)}</Text>
                         </View>
-                      </Pressable>
+                      </View>
                       <Pressable
                         onPress={() => toggleUser(member.user_id)}
                         style={[styles.checkbox, isSelected ? null : styles.checkboxInactive]}
@@ -315,13 +297,7 @@ export function AddExpenseScreen() {
             </Card>
           </View>
         </Modal>
-        <PersonInfoModal
-          name={selectedPerson?.name ?? ''}
-          onClose={() => setSelectedPerson(null)}
-          username={selectedPerson?.username}
-          visible={Boolean(selectedPerson)}
-        />
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingContainer>
     </Screen>
   )
 }

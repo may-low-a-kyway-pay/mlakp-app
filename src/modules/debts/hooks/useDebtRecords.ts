@@ -124,6 +124,14 @@ export function useDebtRecords() {
     setIsPaymentOpen(true)
   }, [])
 
+  const useFullPaymentAmount = useCallback(() => {
+    if (!paymentDebt) {
+      return
+    }
+
+    setPaymentAmount(paymentDebt.remaining_amount)
+  }, [paymentDebt])
+
   const closePayment = useCallback(() => {
     if (isSubmittingPayment) {
       return
@@ -190,6 +198,11 @@ export function useDebtRecords() {
     currentUserID,
     error,
     isPaymentOpen,
+    isPartialPayment:
+      Boolean(paymentDebt) &&
+      paymentAmountMinor !== null &&
+      paymentAmountMinor > 0 &&
+      paymentAmountMinor < (paymentDebt?.remaining_amount_minor ?? 0),
     isLoading,
     isSubmittingPayment,
     loadRecords,
@@ -208,5 +221,6 @@ export function useDebtRecords() {
     transitionDebt,
     typeFilter,
     updatingDebtID,
+    useFullPaymentAmount,
   }
 }

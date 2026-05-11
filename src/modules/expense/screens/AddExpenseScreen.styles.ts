@@ -243,9 +243,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 10,
   },
-  actionPressed: {
-    opacity: 0.65,
-  },
   participantText: {
     flex: 1,
   },
@@ -399,6 +396,22 @@ export const styles = StyleSheet.create({
   memberList: {
     gap: 12,
     paddingBottom: 16,
+  },
+  selectAllRow: {
+    alignItems: 'center',
+    borderColor: colors.surfaceVariant,
+    borderRadius: 14,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 14,
+    marginBottom: 12,
+    padding: 12,
+  },
+  selectAllText: {
+    color: colors.text,
+    fontFamily: typography.familyBold,
+    fontSize: typography.size.body,
+    fontWeight: typography.weight.semibold,
   },
   memberPickerRow: {
     alignItems: 'center',

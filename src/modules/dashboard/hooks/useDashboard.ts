@@ -124,6 +124,14 @@ export function useDashboard() {
     setIsBulkPaymentOpen(true)
   }, [])
 
+  const useFullBulkPaymentAmount = useCallback(() => {
+    if (!bulkPaymentPerson) {
+      return
+    }
+
+    setBulkPaymentAmount(bulkPaymentPerson.remaining_amount)
+  }, [bulkPaymentPerson])
+
   const closeBulkPayment = useCallback(() => {
     if (isSubmittingBulkPayment) {
       return
@@ -206,6 +214,11 @@ export function useDashboard() {
     isSubmittingBulkPayment,
     loadDashboard,
     openBulkPayment,
+    isPartialBulkPayment:
+      Boolean(bulkPaymentPerson) &&
+      bulkPaymentAmountMinor !== null &&
+      bulkPaymentAmountMinor > 0 &&
+      bulkPaymentAmountMinor < (bulkPaymentPerson?.remaining_amount_minor ?? 0),
     personBalances: dashboard.person_balances ?? [],
     setBulkPaymentAmount,
     setBulkPaymentNote,
@@ -213,5 +226,6 @@ export function useDashboard() {
     transitionDebt,
     unsettled: dashboard.unsettled_balances ?? [],
     updatingDebtID,
+    useFullBulkPaymentAmount,
   }
 }

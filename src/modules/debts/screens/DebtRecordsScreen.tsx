@@ -1,30 +1,13 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { useState } from 'react'
-import {
-  ActivityIndicator,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { useDebtRecords } from '@/src/modules/debts/hooks/useDebtRecords'
 import { styles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
 import { DebtRecordType, DebtStatus } from '@/src/modules/debts/types/debtTypes'
-import {
-  counterpartyName,
-  counterpartyUsername,
-  moneyLabel,
-  recordType,
-  statusLabel,
-} from '@/src/modules/debts/utils/debtFormatters'
+import { counterpartyName, moneyLabel, recordType, statusLabel } from '@/src/modules/debts/utils/debtFormatters'
 import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
-import { PersonInfoModal } from '@/src/shared/components/PersonInfoModal'
+import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { colors } from '@/src/shared/theme/colors'
 import { appCurrency } from '@/src/shared/utils/currency'
@@ -46,13 +29,13 @@ const typeOptions: { label: string; value: 'all' | DebtRecordType }[] = [
 ]
 
 export function DebtRecordsScreen() {
-  const [selectedPerson, setSelectedPerson] = useState<{ name: string; username?: string | null } | null>(null)
   const {
     canSubmitPayment,
     closePayment,
     currentUserID,
     error,
     isPaymentOpen,
+    isPartialPayment,
     isLoading,
     isSubmittingPayment,
     loadRecords,
@@ -71,6 +54,7 @@ export function DebtRecordsScreen() {
     transitionDebt,
     typeFilter,
     updatingDebtID,
+    useFullPaymentAmount,
   } = useDebtRecords()
 
   return (
@@ -168,16 +152,7 @@ export function DebtRecordsScreen() {
               <View style={[styles.statusBar, { backgroundColor: isDebt ? colors.danger : colors.success }]} />
               <View style={styles.itemShell}>
                 <View style={styles.itemContent}>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() =>
-                      setSelectedPerson({
-                        name: counterpartyName(item, currentUserID),
-                        username: counterpartyUsername(item, currentUserID),
-                      })
-                    }
-                    style={({ pressed }) => [styles.itemLeft, pressed && styles.actionPressed]}
-                  >
+                  <View style={styles.itemLeft}>
                     <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
                     <View style={styles.itemText}>
                       <Text style={styles.itemName}>{counterpartyName(item, currentUserID)}</Text>
@@ -186,7 +161,7 @@ export function DebtRecordsScreen() {
                         <Text style={styles.tag}>{statusLabel(item.status)}</Text>
                       </View>
                     </View>
-                  </Pressable>
+                  </View>
                   <View style={styles.itemRight}>
                     <Text style={[styles.itemAmount, { color: displayColor }]}>
                       {moneyLabel(displayAmount, displaySign)}
@@ -233,7 +208,7 @@ export function DebtRecordsScreen() {
                       style={({ pressed }) => [styles.payButton, pressed && styles.actionPressed]}
                     >
                       <Ionicons color={colors.white} name="card-outline" size={17} />
-                      <Text style={styles.payButtonText}>Mark Payment</Text>
+                      <Text style={styles.payButtonText}>Pay</Text>
                     </Pressable>
                   </View>
                 ) : null}
@@ -254,17 +229,13 @@ export function DebtRecordsScreen() {
       />
 
       <Modal animationType="fade" onRequestClose={closePayment} transparent visible={isPaymentOpen}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-          style={styles.modalOverlay}
-        >
+        <KeyboardAvoidingContainer style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>Mark Payment</Text>
+              <View style={styles.modalTitleBlock}>
+                <Text style={styles.modalTitle}>Pay Debt</Text>
                 <Text style={styles.modalSubtitle}>
-                  {paymentDebt ? `Remaining ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
+                  {paymentDebt ? `You owe ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
                 </Text>
               </View>
               <Pressable onPress={closePayment} style={styles.closeButton}>
@@ -285,6 +256,20 @@ export function DebtRecordsScreen() {
                   value={paymentAmount}
                 />
               </View>
+              {paymentDebt ? (
+                <Text style={styles.paymentHelper}>
+                  Enter any amount up to {moneyLabel(paymentDebt.remaining_amount)}.
+                </Text>
+              ) : null}
+              <View style={styles.quickActionRow}>
+                <Pressable onPress={useFullPaymentAmount} style={styles.quickActionButton}>
+                  <Ionicons color={colors.primary} name="refresh" size={16} />
+                  <Text style={styles.quickActionText}>Full Amount</Text>
+                </Pressable>
+              </View>
+              {isPartialPayment ? (
+                <Text style={styles.partialPaymentNote}>Partial payments reduce this debt.</Text>
+              ) : null}
             </View>
 
             <View style={styles.paymentField}>
@@ -292,7 +277,7 @@ export function DebtRecordsScreen() {
               <TextInput
                 multiline
                 onChangeText={setPaymentNote}
-                placeholder="Optional transfer note"
+                placeholder="Transfer note (optional)"
                 placeholderTextColor={colors.outline}
                 style={styles.noteInput}
                 value={paymentNote}
@@ -309,20 +294,13 @@ export function DebtRecordsScreen() {
               ) : (
                 <>
                   <Ionicons color={colors.white} name="checkmark-circle-outline" size={22} />
-                  <Text style={styles.submitPaymentText}>Submit for Review</Text>
+                  <Text style={styles.submitPaymentText}>Submit Payment</Text>
                 </>
               )}
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingContainer>
       </Modal>
-
-      <PersonInfoModal
-        name={selectedPerson?.name ?? ''}
-        onClose={() => setSelectedPerson(null)}
-        username={selectedPerson?.username}
-        visible={Boolean(selectedPerson)}
-      />
     </Screen>
   )
 }
