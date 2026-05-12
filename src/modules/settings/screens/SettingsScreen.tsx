@@ -85,6 +85,7 @@ export function SettingsScreen() {
             return (
               <View key={item.label}>
                 <Pressable
+                  accessibilityRole="button"
                   disabled={!isEnabled}
                   onPress={isEnabled ? openProfile : undefined}
                   style={[styles.settingRow, !isEnabled && styles.settingRowDisabled]}
@@ -144,7 +145,12 @@ export function SettingsScreen() {
           <Card style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Profile Information</Text>
-              <Pressable onPress={() => setIsProfileOpen(false)} style={styles.closeButton}>
+              <Pressable
+                accessibilityLabel="Close profile form"
+                accessibilityRole="button"
+                onPress={() => setIsProfileOpen(false)}
+                style={styles.closeButton}
+              >
                 <Ionicons color={colors.textMuted} name="close" size={24} />
               </Pressable>
             </View>

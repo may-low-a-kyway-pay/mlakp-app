@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native'
 import { router } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { clearAuthSession, getAuthSession } from '@/src/modules/auth/services/authSession'
 import {
   getDashboardErrorMessage,
@@ -19,6 +19,7 @@ import {
   getPaymentErrorMessage,
   isUnauthorizedPaymentError,
 } from '@/src/modules/payments/api/paymentsApi'
+import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 const emptyDashboard: DashboardTotals = {
@@ -40,6 +41,8 @@ function parseAmountMinor(value: string) {
 
 export function useDashboard() {
   const { colors } = useAppTheme()
+  const { latestRealtimeEvent } = useNotifications()
+  const handledRealtimeEvent = useRef<unknown>(null)
   const [dashboard, setDashboard] = useState<DashboardTotals>(emptyDashboard)
   const [error, setError] = useState<string | null>(null)
   const [updatingDebtID, setUpdatingDebtID] = useState<string | null>(null)
@@ -81,6 +84,20 @@ export function useDashboard() {
       void loadDashboard()
     }, [loadDashboard]),
   )
+
+  useEffect(() => {
+    if (!latestRealtimeEvent || handledRealtimeEvent.current === latestRealtimeEvent) {
+      return
+    }
+    handledRealtimeEvent.current = latestRealtimeEvent
+
+    if (
+      latestRealtimeEvent?.kind === 'notification.created' &&
+      ['expense', 'debt', 'payment'].includes(latestRealtimeEvent.notification?.entity_type ?? '')
+    ) {
+      void loadDashboard()
+    }
+  }, [latestRealtimeEvent, loadDashboard])
 
   const transitionDebt = useCallback(
     async (debtID: string, type: DebtTransitionType) => {

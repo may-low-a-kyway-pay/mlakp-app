@@ -1,7 +1,8 @@
 import { useFocusEffect } from '@react-navigation/native'
 import { router } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { clearAuthSession, getAuthSession } from '@/src/modules/auth/services/authSession'
+import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
 import {
   getPaymentErrorMessage,
   isUnauthorizedPaymentError,
@@ -14,6 +15,8 @@ export type ActivityFilter = 'review' | 'sent' | 'history'
 export type ActivityHistoryStatusFilter = 'all' | 'confirmed' | 'rejected'
 
 export function usePaymentActivity() {
+  const { latestRealtimeEvent } = useNotifications()
+  const handledRealtimeEvent = useRef<unknown>(null)
   const [currentUserID, setCurrentUserID] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<ActivityFilter>('review')
@@ -72,6 +75,20 @@ export function usePaymentActivity() {
       void loadPayments()
     }, [loadPayments]),
   )
+
+  useEffect(() => {
+    if (!latestRealtimeEvent || handledRealtimeEvent.current === latestRealtimeEvent) {
+      return
+    }
+    handledRealtimeEvent.current = latestRealtimeEvent
+
+    if (
+      latestRealtimeEvent?.kind === 'notification.created' &&
+      latestRealtimeEvent.notification?.entity_type === 'payment'
+    ) {
+      void loadPayments()
+    }
+  }, [latestRealtimeEvent, loadPayments])
 
   const review = useCallback(
     async (paymentID: string, type: ReviewPaymentType) => {

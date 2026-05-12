@@ -50,11 +50,21 @@ export function AddExpenseScreen() {
     <Screen contentStyle={styles.content} scroll={false}>
       <KeyboardAvoidingContainer style={styles.keyboardRoot}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
             <Ionicons color={colors.text} name="arrow-back" size={24} />
           </Pressable>
           <Text style={styles.headerTitle}>Add Expense</Text>
-          <Pressable onPress={() => refresh()} style={styles.backButton}>
+          <Pressable
+            accessibilityLabel="Refresh expense form"
+            accessibilityRole="button"
+            onPress={() => refresh()}
+            style={styles.backButton}
+          >
             <Ionicons color={colors.textMuted} name="refresh" size={24} />
           </Pressable>
         </View>
@@ -104,6 +114,8 @@ export function AddExpenseScreen() {
                   const isSelected = group.id === selectedGroupID
                   return (
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: isSelected }}
                       key={group.id}
                       onPress={() => selectGroup(group.id)}
                       style={[styles.groupPill, isSelected ? styles.groupPillActive : null]}
@@ -133,7 +145,12 @@ export function AddExpenseScreen() {
           <Card style={styles.splitCard}>
             <View style={styles.splitHeader}>
               <Text style={styles.splitTitle}>Split Details</Text>
-              <Pressable onPress={() => setIsPickerOpen(true)} style={styles.headerIconButton}>
+              <Pressable
+                accessibilityLabel="Choose members"
+                accessibilityRole="button"
+                onPress={() => setIsPickerOpen(true)}
+                style={styles.headerIconButton}
+              >
                 <Ionicons color={colors.primary} name="person-add-outline" size={24} />
               </Pressable>
             </View>
@@ -141,6 +158,8 @@ export function AddExpenseScreen() {
             <View style={styles.segmented}>
               <Pressable
                 onPress={() => setSplitType('equal')}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: splitType === 'equal' }}
                 style={splitType === 'equal' ? styles.segmentActive : styles.segmentInactive}
               >
                 <Text style={splitType === 'equal' ? styles.segmentActiveText : styles.segmentInactiveText}>
@@ -149,6 +168,8 @@ export function AddExpenseScreen() {
               </Pressable>
               <Pressable
                 onPress={() => setSplitType('manual')}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: splitType === 'manual' }}
                 style={splitType === 'manual' ? styles.segmentActive : styles.segmentInactive}
               >
                 <Text style={splitType === 'manual' ? styles.segmentActiveText : styles.segmentInactiveText}>
@@ -245,13 +266,23 @@ export function AddExpenseScreen() {
             <Card style={styles.modalCard}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>Choose Members</Text>
-                <Pressable onPress={() => setIsPickerOpen(false)} style={styles.closeButton}>
+                <Pressable
+                  accessibilityLabel="Close member picker"
+                  accessibilityRole="button"
+                  onPress={() => setIsPickerOpen(false)}
+                  style={styles.closeButton}
+                >
                   <Ionicons color={colors.textMuted} name="close" size={24} />
                 </Pressable>
               </View>
 
               {members.length > 0 ? (
-                <Pressable onPress={toggleAllUsers} style={styles.selectAllRow}>
+                <Pressable
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: allMembersSelected }}
+                  onPress={toggleAllUsers}
+                  style={styles.selectAllRow}
+                >
                   <View style={[styles.checkbox, allMembersSelected ? null : styles.checkboxInactive]}>
                     {allMembersSelected ? <Ionicons color={colors.white} name="checkmark" size={20} /> : null}
                   </View>
@@ -284,6 +315,10 @@ export function AddExpenseScreen() {
                         </View>
                       </View>
                       <Pressable
+                        accessibilityLabel={`${isSelected ? 'Remove' : 'Add'} ${memberName}`}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: isSelected }}
+                        hitSlop={10}
                         onPress={() => toggleUser(member.user_id)}
                         style={[styles.checkbox, isSelected ? null : styles.checkboxInactive]}
                       >

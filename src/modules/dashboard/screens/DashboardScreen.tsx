@@ -89,7 +89,7 @@ export function DashboardScreen() {
         {error ? (
           <View style={styles.errorBlock}>
             <Text style={styles.errorText}>{error}</Text>
-            <Pressable onPress={loadDashboard} style={styles.retryButton}>
+            <Pressable accessibilityRole="button" onPress={loadDashboard} style={styles.retryButton}>
               <Ionicons color={colors.white} name="refresh" size={18} />
               <Text style={styles.retryText}>Retry</Text>
             </Pressable>
@@ -99,6 +99,8 @@ export function DashboardScreen() {
         <View style={styles.tabRow}>
           {dashboardTabOptions.map((option) => (
             <Pressable
+              accessibilityRole="tab"
+              accessibilityState={{ selected: dashboardTab === option.value }}
               key={option.value}
               onPress={() => setDashboardTab(option.value)}
               style={[styles.tabButton, dashboardTab === option.value && styles.tabButtonActive]}
@@ -115,7 +117,7 @@ export function DashboardScreen() {
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Unsettled Balances</Text>
               <Link asChild href="/debts">
-                <Pressable style={styles.viewAll}>
+                <Pressable accessibilityRole="link" style={styles.viewAll}>
                   <Text style={styles.viewAllText}>View all</Text>
                   <Ionicons color={colors.primary} name="chevron-forward" size={18} />
                 </Pressable>
@@ -208,6 +210,8 @@ export function DashboardScreen() {
               {personFilterOptions.map((option) => (
                 <Pressable
                   key={option.value}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: personFilter === option.value }}
                   onPress={() => setPersonFilter(option.value)}
                   style={[styles.filterChip, personFilter === option.value && styles.filterChipActive]}
                 >
@@ -280,7 +284,7 @@ export function DashboardScreen() {
       </ScrollView>
 
       <Link asChild href="/add-expense">
-        <Pressable style={styles.fab}>
+        <Pressable accessibilityLabel="Add expense" accessibilityRole="button" style={styles.fab}>
           <Ionicons color={colors.white} name="add" size={40} />
         </Pressable>
       </Link>
@@ -297,7 +301,12 @@ export function DashboardScreen() {
                   {bulkPaymentPerson ? `You owe ${moneyLabel(bulkPaymentPerson.remaining_amount)}` : 'Selected person'}
                 </Text>
               </View>
-              <Pressable onPress={closeBulkPayment} style={styles.closeButton}>
+              <Pressable
+                accessibilityLabel="Close payment form"
+                accessibilityRole="button"
+                onPress={closeBulkPayment}
+                style={styles.closeButton}
+              >
                 <Ionicons color={colors.textMuted} name="close" size={24} />
               </Pressable>
             </View>
@@ -321,7 +330,11 @@ export function DashboardScreen() {
                 </Text>
               ) : null}
               <View style={styles.quickActionRow}>
-                <Pressable onPress={useFullBulkPaymentAmount} style={styles.quickActionButton}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={useFullBulkPaymentAmount}
+                  style={styles.quickActionButton}
+                >
                   <Ionicons color={colors.primary} name="refresh" size={16} />
                   <Text style={styles.quickActionText}>Full Amount</Text>
                 </Pressable>

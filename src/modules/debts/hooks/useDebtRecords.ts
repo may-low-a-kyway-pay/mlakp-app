@@ -1,5 +1,5 @@
 import { router } from 'expo-router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { clearAuthSession, getAuthSession } from '@/src/modules/auth/services/authSession'
 import {
   getDebtRecordsErrorMessage,
@@ -14,6 +14,7 @@ import {
   listPayments,
   markDebtPayment,
 } from '@/src/modules/payments/api/paymentsApi'
+import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
 
 type StatusFilter = 'active' | 'all' | DebtStatus
 type TypeFilter = 'all' | DebtRecordType
@@ -31,6 +32,8 @@ function parseAmountMinor(value: string) {
 }
 
 export function useDebtRecords() {
+  const { latestRealtimeEvent } = useNotifications()
+  const handledRealtimeEvent = useRef<unknown>(null)
   const [records, setRecords] = useState<DebtRecord[]>([])
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('active')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -92,6 +95,20 @@ export function useDebtRecords() {
   useEffect(() => {
     void loadRecords()
   }, [loadRecords])
+
+  useEffect(() => {
+    if (!latestRealtimeEvent || handledRealtimeEvent.current === latestRealtimeEvent) {
+      return
+    }
+    handledRealtimeEvent.current = latestRealtimeEvent
+
+    if (
+      latestRealtimeEvent?.kind === 'notification.created' &&
+      ['expense', 'debt', 'payment'].includes(latestRealtimeEvent.notification?.entity_type ?? '')
+    ) {
+      void loadRecords()
+    }
+  }, [latestRealtimeEvent, loadRecords])
 
   const transitionDebt = useCallback(
     async (debtID: string, type: 'accept' | 'reject') => {

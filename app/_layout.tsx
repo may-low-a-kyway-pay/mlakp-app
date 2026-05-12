@@ -6,6 +6,7 @@ import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 
+import { NotificationsProvider } from '@/src/modules/notifications/context/NotificationsProvider'
 import { AppThemeProvider, useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 export const unstable_settings = {
@@ -48,14 +49,17 @@ function RootNavigator() {
 
   return (
     <ThemeProvider value={navigationTheme}>
-      <Stack>
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="register" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="add-expense" options={{ headerShown: false, presentation: 'modal' }} />
-        <Stack.Screen name="debts" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style={dark ? 'light' : 'dark'} />
+      <NotificationsProvider>
+        <Stack>
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="register" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="add-expense" options={{ headerShown: false, presentation: 'modal' }} />
+          <Stack.Screen name="debts" options={{ headerShown: false }} />
+          <Stack.Screen name="notifications" options={{ animation: 'slide_from_right', headerShown: false }} />
+        </Stack>
+        <StatusBar style={dark ? 'light' : 'dark'} />
+      </NotificationsProvider>
     </ThemeProvider>
   )
 }

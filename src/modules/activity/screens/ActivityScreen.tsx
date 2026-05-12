@@ -62,7 +62,13 @@ export function ActivityScreen() {
             <Text style={styles.title}>Activity</Text>
             <Text style={styles.subtitle}>{payments.length} payment records</Text>
           </View>
-          <Pressable disabled={isLoading} onPress={loadPayments} style={styles.refreshButton}>
+          <Pressable
+            accessibilityLabel="Refresh activity"
+            accessibilityRole="button"
+            disabled={isLoading}
+            onPress={loadPayments}
+            style={styles.refreshButton}
+          >
             <Ionicons color={colors.primary} name="refresh" size={22} />
           </Pressable>
         </View>
@@ -70,6 +76,8 @@ export function ActivityScreen() {
         <View style={styles.filterRow}>
           {filterOptions.map((option) => (
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: filter === option.value }}
               key={option.value}
               onPress={() => setFilter(option.value)}
               style={[styles.filterChip, filter === option.value && styles.filterChipActive]}
@@ -85,6 +93,8 @@ export function ActivityScreen() {
           <View style={styles.filterRow}>
             {historyStatusOptions.map((option) => (
               <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected: historyStatusFilter === option.value }}
                 key={option.value}
                 onPress={() => setHistoryStatusFilter(option.value)}
                 style={[styles.filterChipSmall, historyStatusFilter === option.value && styles.filterChipActive]}

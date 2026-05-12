@@ -20,9 +20,9 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderColor: colors.surfaceVariant,
       borderRadius: 8,
       borderWidth: StyleSheet.hairlineWidth,
-      height: 42,
+      height: 48,
       justifyContent: 'center',
-      width: 42,
+      width: 48,
     },
     headerText: {
       flex: 1,
@@ -56,7 +56,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderColor: colors.surfaceVariant,
       borderRadius: 8,
       borderWidth: StyleSheet.hairlineWidth,
-      minHeight: 36,
+      minHeight: 48,
       paddingHorizontal: 12,
       justifyContent: 'center',
     },
@@ -214,7 +214,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       flexDirection: 'row',
       gap: 6,
       justifyContent: 'center',
-      minHeight: 36,
+      minHeight: 48,
       minWidth: 92,
       paddingHorizontal: 12,
     },
@@ -247,7 +247,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       flexDirection: 'row',
       gap: 8,
       justifyContent: 'center',
-      minHeight: 40,
+      minHeight: 48,
       paddingHorizontal: 14,
     },
     payButtonText: {
@@ -264,7 +264,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: 8,
-      minHeight: 40,
+      minHeight: 48,
       paddingHorizontal: 14,
     },
     pendingPaymentText: {
@@ -312,9 +312,9 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     closeButton: {
       alignItems: 'center',
-      height: 42,
+      height: 48,
       justifyContent: 'center',
-      width: 42,
+      width: 48,
     },
     paymentAmountBlock: {
       alignItems: 'stretch',
@@ -369,7 +369,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: 6,
-      minHeight: 36,
+      minHeight: 48,
       paddingHorizontal: 12,
     },
     quickActionText: {
