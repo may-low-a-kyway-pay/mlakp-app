@@ -12,7 +12,10 @@ import {
 import { AppNotification } from '@/src/modules/notifications/types/notificationTypes'
 import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
 import { isUnauthorizedDashboardError, updateDebtStatus } from '@/src/modules/dashboard/api/dashboardApi'
-import { isUnauthorizedPaymentError, reviewPayment } from '@/src/modules/payments/api/paymentsApi'
+import { listDebtRecords } from '@/src/modules/debts/api/debtsApi'
+import { DebtRecord } from '@/src/modules/debts/types/debtTypes'
+import { isUnauthorizedPaymentError, listPayments, reviewPayment } from '@/src/modules/payments/api/paymentsApi'
+import { PaymentListItem } from '@/src/modules/payments/types/paymentTypes'
 import { clearAuthSession } from '@/src/modules/auth/services/authSession'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
@@ -22,15 +25,25 @@ import { typography } from '@/src/shared/theme/typography'
 
 type NotificationAction = 'accept-debt' | 'reject-debt' | 'confirm-payment' | 'reject-payment'
 
-function actionSetFor(notification: AppNotification) {
+type NotificationContext = {
+  debt?: DebtRecord
+  payment?: PaymentListItem
+}
+
+function actionSetFor(notification: AppNotification, context: NotificationContext) {
   if (
     notification.entity_type === 'debt' &&
+    context.debt?.status === 'pending' &&
     (notification.type === 'expense.created' || notification.type === 'debt.resent')
   ) {
     return ['reject-debt', 'accept-debt'] satisfies NotificationAction[]
   }
 
-  if (notification.entity_type === 'payment' && notification.type === 'payment.marked') {
+  if (
+    notification.entity_type === 'payment' &&
+    context.payment?.status === 'pending_confirmation' &&
+    notification.type === 'payment.marked'
+  ) {
     return ['reject-payment', 'confirm-payment'] satisfies NotificationAction[]
   }
 
@@ -61,6 +74,134 @@ function actionIcon(action: NotificationAction) {
   }
 }
 
+function indexByID<T extends { id: string }>(records: T[]) {
+  return records.reduce<Record<string, T>>((index, record) => {
+    index[record.id] = record
+    return index
+  }, {})
+}
+
+function contextFor(
+  notification: AppNotification,
+  debtByID: Record<string, DebtRecord>,
+  paymentByID: Record<string, PaymentListItem>,
+): NotificationContext {
+  if (notification.entity_type === 'debt') {
+    return { debt: debtByID[notification.entity_id] }
+  }
+
+  if (notification.entity_type === 'payment') {
+    return { payment: paymentByID[notification.entity_id] }
+  }
+
+  return {}
+}
+
+function notificationIcon(notification: AppNotification, hasActions: boolean) {
+  if (hasActions) {
+    return 'alert-circle-outline'
+  }
+
+  switch (notification.entity_type) {
+    case 'debt':
+      return 'receipt-outline'
+    case 'payment':
+      return 'card-outline'
+    case 'expense':
+      return 'wallet-outline'
+  }
+}
+
+function formatNotificationTime(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  const diffMs = Date.now() - date.getTime()
+  const diffMinutes = Math.floor(diffMs / 60000)
+  if (diffMinutes < 1) {
+    return 'Just now'
+  }
+  if (diffMinutes < 60) {
+    return `${diffMinutes}m ago`
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60)
+  if (diffHours < 24) {
+    return `${diffHours}h ago`
+  }
+
+  return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(date)
+}
+
+function debtNotificationTitle(notification: AppNotification, expenseTitle: string) {
+  switch (notification.type) {
+    case 'expense.created':
+      return `Review ${expenseTitle}`
+    case 'debt.resent':
+      return `Review updated ${expenseTitle}`
+    case 'debt.accepted':
+      return `${expenseTitle} accepted`
+    case 'debt.rejected':
+      return `${expenseTitle} rejected`
+    default:
+      return expenseTitle
+  }
+}
+
+function paymentNotificationTitle(notification: AppNotification, expenseTitle: string) {
+  switch (notification.type) {
+    case 'payment.marked':
+      return `Confirm payment for ${expenseTitle}`
+    case 'payment.confirmed':
+      return `Payment confirmed for ${expenseTitle}`
+    case 'payment.rejected':
+      return `Payment rejected for ${expenseTitle}`
+    default:
+      return expenseTitle
+  }
+}
+
+function notificationDetails(notification: AppNotification, context: NotificationContext) {
+  if (context.debt) {
+    const isDebtorAction = notification.type === 'expense.created' || notification.type === 'debt.resent'
+    const actorName = isDebtorAction ? context.debt.creditor_name : context.debt.debtor_name
+    const actorPrefix = isDebtorAction ? 'From' : 'By'
+    const expenseTitle = context.debt.expense_title ?? notification.title
+    const status = context.debt.status.replaceAll('_', ' ')
+    return {
+      actor: actorName ? `${actorPrefix} ${actorName}` : 'Shared expense',
+      amount: context.debt.remaining_amount,
+      description: notification.body,
+      status,
+      title: debtNotificationTitle(notification, expenseTitle),
+    }
+  }
+
+  if (context.payment) {
+    const isReceiverAction = notification.type === 'payment.marked'
+    const actorName = isReceiverAction ? context.payment.paid_by_name : context.payment.received_by_name
+    const actorPrefix = isReceiverAction ? 'From' : 'By'
+    const status = context.payment.status.replaceAll('_', ' ')
+    return {
+      actor: actorName ? `${actorPrefix} ${actorName}` : 'Payment update',
+      amount: context.payment.amount,
+      description: notification.body,
+      status,
+      title: paymentNotificationTitle(notification, context.payment.expense_title),
+    }
+  }
+
+  return {
+    actor: notification.entity_type,
+    amount: null,
+    description: notification.body,
+    status: notification.type.replace('.', ' / '),
+    title: notification.title,
+  }
+}
+
 export function NotificationsScreen() {
   const theme = useAppTheme()
   const { colors } = theme
@@ -70,7 +211,9 @@ export function NotificationsScreen() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false)
+  const [debtByID, setDebtByID] = useState<Record<string, DebtRecord>>({})
   const [notifications, setNotifications] = useState<AppNotification[]>([])
+  const [paymentByID, setPaymentByID] = useState<Record<string, PaymentListItem>>({})
   const [updatingNotificationID, setUpdatingNotificationID] = useState<string | null>(null)
 
   const unreadCount = notifications.filter((notification) => notification.read_at === null).length
@@ -80,11 +223,17 @@ export function NotificationsScreen() {
     setIsLoading(true)
 
     try {
-      const data = await listNotifications(100)
+      const [data, debts, payments] = await Promise.all([listNotifications(100), listDebtRecords({}), listPayments({})])
       setNotifications(data.notifications)
+      setDebtByID(indexByID(debts))
+      setPaymentByID(indexByID(payments))
       await refreshNotifications()
     } catch (caughtError) {
-      if (isUnauthorizedNotificationError(caughtError)) {
+      if (
+        isUnauthorizedNotificationError(caughtError) ||
+        isUnauthorizedDashboardError(caughtError) ||
+        isUnauthorizedPaymentError(caughtError)
+      ) {
         await clearAuthSession()
         router.replace('/login')
         return
@@ -179,7 +328,11 @@ export function NotificationsScreen() {
         await markNotificationRead(notification.id)
         await loadNotifications()
       } catch (caughtError) {
-        if (isUnauthorizedNotificationError(caughtError)) {
+        if (
+          isUnauthorizedNotificationError(caughtError) ||
+          isUnauthorizedDashboardError(caughtError) ||
+          isUnauthorizedPaymentError(caughtError)
+        ) {
           await clearAuthSession()
           router.replace('/login')
           return
@@ -215,14 +368,14 @@ export function NotificationsScreen() {
           style={styles.markAllButton}
         >
           <Ionicons color={unreadCount === 0 ? colors.textSoft : colors.primary} name="checkmark-done" size={18} />
-          <Text style={[styles.markAllText, unreadCount === 0 && styles.markAllTextDisabled]}>Mark all read</Text>
+          <Text style={[styles.markAllText, unreadCount === 0 && styles.markAllTextDisabled]}>Mark all</Text>
         </Pressable>
       </View>
 
       {error ? (
         <View style={styles.errorBlock}>
           <Text style={styles.errorText}>{error}</Text>
-          <Pressable onPress={loadNotifications} style={styles.retryButton}>
+          <Pressable accessibilityRole="button" onPress={loadNotifications} style={styles.retryButton}>
             <Ionicons color={colors.white} name="refresh" size={18} />
             <Text style={styles.retryText}>Retry</Text>
           </Pressable>
@@ -250,24 +403,42 @@ export function NotificationsScreen() {
           ) : null
         }
         renderItem={({ item }) => {
-          const actions = actionSetFor(item)
+          const context = contextFor(item, debtByID, paymentByID)
+          const actions = actionSetFor(item, context)
+          const details = notificationDetails(item, context)
           const isUnread = item.read_at === null
           const isUpdating = updatingNotificationID === item.id
+          const iconName = notificationIcon(item, actions.length > 0)
 
           return (
             <Card style={[styles.notificationCard, isUnread && styles.unreadCard]}>
               <View style={styles.notificationHeader}>
-                <View style={styles.notificationTitleBlock}>
-                  <Text style={styles.notificationTitle}>{item.title}</Text>
-                  <Text style={styles.notificationBody}>{item.body}</Text>
+                <View style={[styles.notificationIcon, actions.length > 0 && styles.notificationIconAction]}>
+                  <Ionicons color={actions.length > 0 ? colors.tertiary : colors.primary} name={iconName} size={22} />
                 </View>
-                {isUnread ? <View style={styles.unreadDot} /> : null}
+                <View style={styles.notificationTitleBlock}>
+                  <View style={styles.notificationTitleRow}>
+                    <Text style={styles.notificationTitle}>{details.title}</Text>
+                    {isUnread ? <View style={styles.unreadDot} /> : null}
+                  </View>
+                  <Text style={styles.notificationActor}>{details.actor}</Text>
+                  <Text style={styles.notificationBody}>{details.description}</Text>
+                </View>
               </View>
 
               <View style={styles.notificationFooter}>
-                <Text style={styles.notificationMeta}>{item.type.replace('.', ' / ')}</Text>
+                <View style={styles.metaRow}>
+                  <Text style={styles.notificationMeta}>{formatNotificationTime(item.created_at)}</Text>
+                  {details.amount ? <Text style={styles.notificationAmount}>{details.amount}</Text> : null}
+                  <Text style={styles.statusPill}>{actions.length > 0 ? 'Needs action' : details.status}</Text>
+                </View>
                 {isUnread && actions.length === 0 ? (
-                  <Pressable disabled={isUpdating} onPress={() => markRead(item.id)} style={styles.markReadButton}>
+                  <Pressable
+                    accessibilityRole="button"
+                    disabled={isUpdating}
+                    onPress={() => markRead(item.id)}
+                    style={styles.markReadButton}
+                  >
                     <Text style={styles.markReadText}>{isUpdating ? 'Updating' : 'Mark read'}</Text>
                   </Pressable>
                 ) : null}
@@ -425,11 +596,31 @@ function createStyles(colors: AppColors) {
       fontSize: 13,
       fontWeight: typography.weight.bold,
     },
+    metaRow: {
+      alignItems: 'center',
+      flex: 1,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
     negativeButton: {
       backgroundColor: colors.dangerSoft,
     },
     negativeText: {
       color: colors.danger,
+    },
+    notificationActor: {
+      color: colors.text,
+      fontFamily: typography.familyBold,
+      fontSize: 14,
+      fontWeight: typography.weight.semibold,
+      marginTop: 4,
+    },
+    notificationAmount: {
+      color: colors.text,
+      fontFamily: typography.familyBold,
+      fontSize: 12,
+      fontWeight: typography.weight.bold,
     },
     notificationBody: {
       color: colors.textMuted,
@@ -453,6 +644,17 @@ function createStyles(colors: AppColors) {
       flexDirection: 'row',
       gap: 12,
     },
+    notificationIcon: {
+      alignItems: 'center',
+      backgroundColor: colors.primarySoft,
+      borderRadius: 20,
+      height: 40,
+      justifyContent: 'center',
+      width: 40,
+    },
+    notificationIconAction: {
+      backgroundColor: colors.tertiarySoft,
+    },
     notificationMeta: {
       color: colors.textSoft,
       fontFamily: typography.family,
@@ -466,6 +668,11 @@ function createStyles(colors: AppColors) {
     },
     notificationTitleBlock: {
       flex: 1,
+    },
+    notificationTitleRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 8,
     },
     positiveButton: {
       backgroundColor: colors.primary,
@@ -503,6 +710,18 @@ function createStyles(colors: AppColors) {
       color: colors.textMuted,
       fontFamily: typography.family,
       fontSize: 14,
+    },
+    statusPill: {
+      backgroundColor: colors.surfaceVariant,
+      borderRadius: 999,
+      color: colors.textMuted,
+      fontFamily: typography.familyBold,
+      fontSize: 11,
+      fontWeight: typography.weight.semibold,
+      overflow: 'hidden',
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      textTransform: 'capitalize',
     },
     subtitle: {
       color: colors.textMuted,
