@@ -24,9 +24,10 @@ export function createStyles({ colors, shadows }: AppTheme) {
       paddingHorizontal: 18,
     },
     backButton: {
-      height: 44,
+      alignItems: 'center',
+      height: 48,
       justifyContent: 'center',
-      width: 44,
+      width: 48,
     },
     headerTitle: {
       color: colors.text,
@@ -117,11 +118,13 @@ export function createStyles({ colors, shadows }: AppTheme) {
       gap: 8,
     },
     groupPill: {
+      alignItems: 'center',
       borderColor: colors.outline,
       borderRadius: 999,
       borderWidth: 1,
+      justifyContent: 'center',
+      minHeight: 48,
       paddingHorizontal: 14,
-      paddingVertical: 8,
     },
     groupPillActive: {
       backgroundColor: colors.primarySoft,
@@ -154,10 +157,10 @@ export function createStyles({ colors, shadows }: AppTheme) {
     meAvatar: {
       alignItems: 'center',
       backgroundColor: colors.primary,
-      borderRadius: 22,
-      height: 44,
+      borderRadius: 24,
+      height: 48,
       justifyContent: 'center',
-      width: 44,
+      width: 48,
     },
     meText: {
       color: colors.white,
@@ -185,10 +188,10 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     headerIconButton: {
       alignItems: 'center',
-      borderRadius: 22,
-      height: 44,
+      borderRadius: 24,
+      height: 48,
       justifyContent: 'center',
-      width: 44,
+      width: 48,
     },
     splitTitle: {
       color: colors.text,
@@ -292,7 +295,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       fontFamily: typography.familyBold,
       fontSize: typography.size.bodyLarge,
       fontWeight: typography.weight.semibold,
-      height: 46,
+      height: 48,
       paddingHorizontal: 12,
       textAlign: 'right',
       width: 104,
@@ -390,9 +393,9 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     closeButton: {
       alignItems: 'center',
-      height: 40,
+      height: 48,
       justifyContent: 'center',
-      width: 40,
+      width: 48,
     },
     memberList: {
       gap: 12,
@@ -406,6 +409,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       flexDirection: 'row',
       gap: 14,
       marginBottom: 12,
+      minHeight: 60,
       padding: 12,
     },
     selectAllText: {
@@ -421,6 +425,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderWidth: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
+      minHeight: 60,
       padding: 12,
     },
     doneButton: {

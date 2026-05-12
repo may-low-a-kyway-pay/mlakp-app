@@ -27,14 +27,14 @@ export function createStyles({ colors, shadows }: AppTheme) {
     addButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
-      borderRadius: 20,
-      height: 40,
+      borderRadius: 24,
+      height: 48,
       justifyContent: 'center',
-      width: 40,
+      width: 48,
     },
     addButtonSpacer: {
-      height: 40,
-      width: 40,
+      height: 48,
+      width: 48,
     },
     stateBlock: {
       alignItems: 'center',
@@ -66,8 +66,8 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderRadius: 8,
       flexDirection: 'row',
       gap: 8,
+      minHeight: 48,
       paddingHorizontal: 14,
-      paddingVertical: 10,
     },
     retryText: {
       color: colors.white,
@@ -111,7 +111,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       borderRadius: 8,
       flex: 1,
       justifyContent: 'center',
-      minHeight: 40,
+      minHeight: 48,
       paddingHorizontal: 12,
     },
     tabButtonActive: {
@@ -205,9 +205,9 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     closeButton: {
       alignItems: 'center',
-      height: 38,
+      height: 48,
       justifyContent: 'center',
-      width: 38,
+      width: 48,
     },
     fieldGroup: {
       gap: 8,
@@ -308,18 +308,18 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     addMemberIconButton: {
       alignItems: 'center',
-      height: 40,
+      height: 48,
       justifyContent: 'center',
-      width: 40,
+      width: 48,
     },
     copyIconButton: {
       alignItems: 'center',
       borderColor: colors.primarySoft,
-      borderRadius: 20,
+      borderRadius: 24,
       borderWidth: StyleSheet.hairlineWidth,
-      height: 40,
+      height: 48,
       justifyContent: 'center',
-      width: 40,
+      width: 48,
     },
     pendingList: {
       backgroundColor: colors.surfaceMuted,
@@ -346,9 +346,9 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     removePendingButton: {
       alignItems: 'center',
-      height: 36,
+      height: 48,
       justifyContent: 'center',
-      width: 36,
+      width: 48,
     },
   })
 }

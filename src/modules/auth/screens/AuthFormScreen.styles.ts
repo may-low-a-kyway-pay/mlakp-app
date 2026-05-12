@@ -48,19 +48,8 @@ export function createStyles({ colors, shadows }: AppTheme) {
     fieldGroup: {
       gap: 8,
     },
-    passwordLabelRow: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
     label: {
       color: colors.text,
-      fontFamily: typography.familyBold,
-      fontSize: typography.size.body,
-      fontWeight: typography.weight.medium,
-    },
-    linkText: {
-      color: colors.primary,
       fontFamily: typography.familyBold,
       fontSize: typography.size.body,
       fontWeight: typography.weight.medium,
@@ -81,6 +70,12 @@ export function createStyles({ colors, shadows }: AppTheme) {
       flex: 1,
       fontFamily: typography.familyBold,
       fontSize: typography.size.bodyLarge,
+    },
+    passwordIconButton: {
+      alignItems: 'center',
+      height: 48,
+      justifyContent: 'center',
+      width: 48,
     },
     errorText: {
       color: colors.danger,
@@ -125,6 +120,11 @@ export function createStyles({ colors, shadows }: AppTheme) {
       fontFamily: typography.familyBold,
       fontSize: typography.size.label,
       fontWeight: typography.weight.semibold,
+    },
+    secondaryAction: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 48,
     },
     registerText: {
       color: colors.textMuted,

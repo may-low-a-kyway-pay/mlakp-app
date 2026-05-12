@@ -135,9 +135,9 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     closeButton: {
       alignItems: 'center',
-      height: 38,
+      height: 48,
       justifyContent: 'center',
-      width: 38,
+      width: 48,
     },
     fieldGroup: {
       gap: 8,

@@ -63,14 +63,25 @@ export function DebtRecordsScreen() {
   return (
     <Screen contentStyle={styles.root} scroll={false}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.iconButton}>
+        <Pressable
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+          onPress={() => router.back()}
+          style={styles.iconButton}
+        >
           <Ionicons color={colors.text} name="chevron-back" size={24} />
         </Pressable>
         <View style={styles.headerText}>
           <Text style={styles.title}>All Balances</Text>
           <Text style={styles.subtitle}>{records.length} records</Text>
         </View>
-        <Pressable disabled={isLoading} onPress={loadRecords} style={styles.iconButton}>
+        <Pressable
+          accessibilityLabel="Refresh balances"
+          accessibilityRole="button"
+          disabled={isLoading}
+          onPress={loadRecords}
+          style={styles.iconButton}
+        >
           <Ionicons color={colors.primary} name="refresh" size={22} />
         </Pressable>
       </View>
@@ -79,6 +90,8 @@ export function DebtRecordsScreen() {
         <View style={styles.filterRow}>
           {typeOptions.map((option) => (
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: typeFilter === option.value }}
               key={option.value}
               onPress={() => setTypeFilter(option.value)}
               style={[styles.filterChip, typeFilter === option.value && styles.filterChipActive]}
@@ -93,6 +106,8 @@ export function DebtRecordsScreen() {
         <View style={styles.filterRow}>
           {statusOptions.map((option) => (
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: statusFilter === option.value }}
               key={option.value}
               onPress={() => setStatusFilter(option.value)}
               style={[styles.filterChip, statusFilter === option.value && styles.filterChipActive]}

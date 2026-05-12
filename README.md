@@ -267,6 +267,7 @@ src/modules/debts/api/debtsApi.ts     /v1/debts
 src/modules/groups/api/groupsApi.ts   /v1/groups, /v1/groups/{groupID}
 src/modules/expense/api/expenseApi.ts /v1/expenses
 src/modules/payments/api/paymentsApi.ts /v1/payments, /v1/debts/{debtID}/payments
+src/modules/notifications/api/notificationsApi.ts /v1/notifications
 src/modules/users/api/usersApi.ts     /v1/users/search
 ```
 
@@ -314,6 +315,14 @@ src/modules/users/api/usersApi.ts     /v1/users/search
 - Creditors confirm or reject pending payments from Activity.
 - Confirming a payment updates the debt balance on the backend.
 - Rejecting a payment leaves the debt amount unchanged and allows the debtor to submit again.
+
+### Notifications And Realtime
+
+- `src/modules/notifications/context/NotificationsProvider.tsx` is mounted at the app root.
+- The provider loads persisted notifications from `/v1/notifications`.
+- The provider opens `/v1/realtime` as a WebSocket after a session is available.
+- Realtime events update unread count, show a foreground banner, and notify active screens.
+- Dashboard, debt records, and Activity subscribe through `src/modules/notifications/services/realtimeEvents.ts` and refresh from the backend instead of mutating local financial state directly.
 
 ## Path Aliases
 

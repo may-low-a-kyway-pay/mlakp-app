@@ -99,14 +99,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
             </View>
 
             <View style={styles.fieldGroup}>
-              <View style={styles.passwordLabelRow}>
-                <Text style={styles.label}>Password</Text>
-                {!isRegister ? (
-                  <Pressable>
-                    <Text style={styles.linkText}>Forgot password?</Text>
-                  </Pressable>
-                ) : null}
-              </View>
+              <Text style={styles.label}>Password</Text>
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="lock-closed-outline" size={24} />
                 <TextInput
@@ -117,7 +110,12 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                   style={styles.input}
                   value={password}
                 />
-                <Pressable onPress={() => setShowPassword((current) => !current)}>
+                <Pressable
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  accessibilityRole="button"
+                  onPress={() => setShowPassword((current) => !current)}
+                  style={styles.passwordIconButton}
+                >
                   <Ionicons color={colors.outline} name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={24} />
                 </Pressable>
               </View>
@@ -145,7 +143,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
             <View style={styles.divider} />
           </View>
 
-          <Pressable onPress={navigateToOtherMode}>
+          <Pressable accessibilityRole="button" onPress={navigateToOtherMode} style={styles.secondaryAction}>
             <Text style={styles.registerText}>
               {isRegister ? 'Already have an account? ' : "Don't have an account? "}
               <Text style={styles.registerLink}>{isRegister ? 'Login here' : 'Register here'}</Text>
