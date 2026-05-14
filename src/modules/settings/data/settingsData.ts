@@ -16,7 +16,7 @@ export function getSettingsItems(colors: AppColors) {
       icon: 'lock-closed-outline' as const,
       label: 'Security',
       sublabel: 'Change password and auth methods',
-      action: null,
+      action: 'security' as const,
     },
     {
       bg: colors.tertiary,

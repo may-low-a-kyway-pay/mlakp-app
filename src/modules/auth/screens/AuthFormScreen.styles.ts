@@ -126,6 +126,17 @@ export function createStyles({ colors, shadows }: AppTheme) {
       justifyContent: 'center',
       minHeight: 48,
     },
+    textAction: {
+      alignSelf: 'flex-end',
+      minHeight: 36,
+      justifyContent: 'center',
+    },
+    textActionLabel: {
+      color: colors.primary,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.bodySmall,
+      fontWeight: typography.weight.semibold,
+    },
     registerText: {
       color: colors.textMuted,
       fontFamily: typography.familyBold,
@@ -147,6 +158,13 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     underline: {
       textDecorationLine: 'underline',
+    },
+    successText: {
+      color: colors.success,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.bodySmall,
+      fontWeight: typography.weight.semibold,
+      lineHeight: typography.lineHeight.bodySmall,
     },
   })
 }

@@ -28,6 +28,14 @@ export async function updateUsername(username: string) {
   return response.data.data.user
 }
 
+export async function getCurrentUser(accessToken?: string) {
+  const response = await apiClient.get<UserResponse>('/v1/users/me', {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    skipAuth: Boolean(accessToken),
+  })
+  return response.data.data.user
+}
+
 export function getUserErrorMessage(error: unknown) {
   if (isAxiosError<ApiErrorResponse>(error)) {
     return error.response?.data?.error?.message ?? 'Unable to update user. Please try again.'

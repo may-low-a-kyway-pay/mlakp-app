@@ -4,6 +4,7 @@ import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoid
 import { Screen } from '@/src/shared/components/Screen'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
 import { createStyles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
 
@@ -120,6 +121,16 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                 </Pressable>
               </View>
             </View>
+
+            {!isRegister ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => router.push({ pathname: '/reset-password', params: { mode: 'forgot', email } } as never)}
+                style={styles.textAction}
+              >
+                <Text style={styles.textActionLabel}>Forgot password?</Text>
+              </Pressable>
+            ) : null}
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 

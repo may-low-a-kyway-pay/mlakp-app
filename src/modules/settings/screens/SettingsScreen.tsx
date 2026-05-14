@@ -80,14 +80,18 @@ export function SettingsScreen() {
         <Text style={styles.title}>Settings</Text>
         <Card style={styles.settingsCard}>
           {settingsItems.map((item, index) => {
-            const isEnabled = item.action === 'profile'
+            const isEnabled = item.action === 'profile' || item.action === 'security'
+            const handlePress =
+              item.action === 'profile'
+                ? openProfile
+                : () => router.push({ pathname: '/reset-password', params: { mode: 'account' } } as never)
 
             return (
               <View key={item.label}>
                 <Pressable
                   accessibilityRole="button"
                   disabled={!isEnabled}
-                  onPress={isEnabled ? openProfile : undefined}
+                  onPress={isEnabled ? handlePress : undefined}
                   style={[styles.settingRow, !isEnabled && styles.settingRowDisabled]}
                 >
                   <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>

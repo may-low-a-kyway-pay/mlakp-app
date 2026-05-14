@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { router } from 'expo-router'
-import { getAuthErrorMessage, login, register } from '@/src/modules/auth/api/authApi'
+import { getAuthErrorCode, getAuthErrorMessage, login, register } from '@/src/modules/auth/api/authApi'
 import { saveAuthSession } from '@/src/modules/auth/services/authSession'
 
 type AuthMode = 'login' | 'register'
@@ -40,13 +40,30 @@ export function useAuthForm(mode: AuthMode) {
 
     setIsSubmitting(true)
     try {
+      const trimmedEmail = email.trim()
       const authData = isRegister
-        ? await register({ email: email.trim(), name: name.trim(), password, username: username.trim() })
+        ? await register({ email: trimmedEmail, name: name.trim(), password, username: username.trim() })
         : await login({ email: email.trim(), password })
+
+      if (isRegister || authData.verification_status) {
+        router.replace({
+          pathname: '/verify-email',
+          params: { email: trimmedEmail, source: isRegister ? 'register' : 'login' },
+        } as never)
+        return
+      }
 
       await saveAuthSession(authData)
       router.replace('/dashboard')
     } catch (caughtError) {
+      if (!isRegister && getAuthErrorCode(caughtError) === 'email_verification_required') {
+        router.replace({
+          pathname: '/verify-email',
+          params: { email: email.trim(), source: 'login' },
+        } as never)
+        return
+      }
+
       setError(getAuthErrorMessage(caughtError))
     } finally {
       setIsSubmitting(false)
