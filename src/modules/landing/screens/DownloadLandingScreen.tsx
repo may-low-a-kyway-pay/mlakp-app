@@ -84,7 +84,11 @@ export function DownloadLandingScreen() {
         <View style={styles.phoneStage}>
           <View style={styles.phone}>
             <View style={styles.phoneHeader}>
-              <Image source={require('../../../../assets/images/icon.png')} style={styles.appIcon} />
+              <Image
+                contentFit="contain"
+                source={require('../../../../assets/images/logo.png')}
+                style={styles.appIcon}
+              />
               <View>
                 <Text style={styles.phoneAppName}>MLAKP</Text>
                 <Text style={styles.phoneMuted}>Today&apos;s balance</Text>
@@ -281,7 +285,6 @@ function createStyles(colors: ReturnType<typeof useAppTheme>['colors'], dark: bo
       marginBottom: 32,
     },
     appIcon: {
-      borderRadius: 14,
       height: 52,
       width: 52,
     },

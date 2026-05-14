@@ -5,6 +5,7 @@ import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoid
 import { Screen } from '@/src/shared/components/Screen'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
+import { Image } from 'expo-image'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
@@ -114,7 +115,11 @@ export function PasswordResetScreen() {
       <KeyboardAvoidingContainer mode="ios-only" style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
-            <Ionicons color={colors.primarySoft} name="lock-open-outline" size={32} />
+            <Image
+              contentFit="contain"
+              source={require('../../../../assets/images/logo.png')}
+              style={styles.logoImage}
+            />
           </View>
           <Text style={styles.heading}>{mode === 'account' ? 'Change Password' : 'Reset Password'}</Text>
           <Text style={styles.subheading}>

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
+import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
@@ -19,7 +20,7 @@ export function AppHeader() {
     <View style={styles.header}>
       <View style={styles.side}>
         <View style={styles.logoMark}>
-          <Text style={styles.logoText}>M</Text>
+          <Image contentFit="contain" source={require('../../../assets/images/logo.png')} style={styles.logoImage} />
         </View>
       </View>
       <Text adjustsFontSizeToFit minimumFontScale={0.86} numberOfLines={1} style={styles.title}>
@@ -40,7 +41,7 @@ export function AppHeader() {
           <Ionicons
             color={hasUnreadNotifications ? colors.primary : colors.textSoft}
             name={hasUnreadNotifications ? 'notifications' : 'notifications-outline'}
-            size={24}
+            size={21}
           />
           {hasUnreadNotifications ? (
             <View style={styles.notificationBadge}>
@@ -111,19 +112,15 @@ function createStyles(colors: AppColors) {
     },
     logoMark: {
       alignItems: 'center',
-      backgroundColor: colors.primarySoft,
-      borderColor: colors.primary,
       borderRadius: 24,
-      borderWidth: StyleSheet.hairlineWidth,
       height: 48,
       justifyContent: 'center',
+      overflow: 'hidden',
       width: 48,
     },
-    logoText: {
-      color: colors.primary,
-      fontFamily: typography.familyBrand,
-      fontSize: 30,
-      fontWeight: typography.weight.bold,
+    logoImage: {
+      height: 48,
+      width: 48,
     },
     title: {
       color: colors.primaryBright,
