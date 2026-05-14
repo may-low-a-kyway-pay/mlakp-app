@@ -20,12 +20,16 @@ export function createStyles({ colors, shadows }: AppTheme) {
     iconMark: {
       alignItems: 'center',
       alignSelf: 'center',
-      backgroundColor: colors.primaryBright,
       borderRadius: 16,
       height: 64,
       justifyContent: 'center',
+      overflow: 'hidden',
       width: 64,
       ...shadows.card,
+    },
+    logoImage: {
+      height: 64,
+      width: 64,
     },
     heading: {
       color: colors.text,

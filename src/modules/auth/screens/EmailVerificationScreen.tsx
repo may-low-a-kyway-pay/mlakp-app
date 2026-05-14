@@ -6,6 +6,7 @@ import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoid
 import { Screen } from '@/src/shared/components/Screen'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
+import { Image } from 'expo-image'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
@@ -84,7 +85,11 @@ export function EmailVerificationScreen() {
       <KeyboardAvoidingContainer mode="ios-only" style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
-            <Ionicons color={colors.primarySoft} name="mail-unread-outline" size={32} />
+            <Image
+              contentFit="contain"
+              source={require('../../../../assets/images/logo.png')}
+              style={styles.logoImage}
+            />
           </View>
           <Text style={styles.heading}>Verify Email</Text>
           <Text style={styles.subheading}>Enter the 6-digit code sent to {email || 'your email'}.</Text>

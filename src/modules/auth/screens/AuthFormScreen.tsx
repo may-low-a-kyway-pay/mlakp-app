@@ -4,6 +4,7 @@ import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoid
 import { Screen } from '@/src/shared/components/Screen'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
+import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
 import { createStyles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
@@ -39,7 +40,11 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
       <KeyboardAvoidingContainer mode="ios-only" style={styles.keyboard}>
         <Card style={styles.card}>
           <View style={styles.iconMark}>
-            <Ionicons color={colors.primarySoft} name="wallet-outline" size={32} />
+            <Image
+              contentFit="contain"
+              source={require('../../../../assets/images/logo.png')}
+              style={styles.logoImage}
+            />
           </View>
           <Text style={styles.heading}>{isRegister ? 'Create Account' : 'Welcome Back'}</Text>
           <Text style={styles.subheading}>
