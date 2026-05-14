@@ -6,7 +6,7 @@ import { Screen } from '@/src/shared/components/Screen'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from 'expo-router'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
 import { createStyles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
 
@@ -19,7 +19,6 @@ export function PasswordResetScreen() {
   const params = useLocalSearchParams<{ email?: string; mode?: ResetMode }>()
   const mode: ResetMode = params.mode === 'account' ? 'account' : 'forgot'
   const initialEmail = useMemo(() => String(params.email ?? '').trim(), [params.email])
-  const requestedAccountOTP = useRef(false)
   const [email, setEmail] = useState(initialEmail)
   const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -30,17 +29,15 @@ export function PasswordResetScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    if (mode !== 'account' || requestedAccountOTP.current) {
+    if (mode !== 'account') {
       return
     }
 
-    requestedAccountOTP.current = true
-    void loadAccountAndSendOTP()
+    void loadAccountEmail()
   }, [mode])
 
-  async function loadAccountAndSendOTP() {
+  async function loadAccountEmail() {
     setError(null)
-    setIsSending(true)
 
     try {
       const session = await getAuthSession()
@@ -50,12 +47,8 @@ export function PasswordResetScreen() {
       }
 
       setEmail(session.user.email)
-      await sendAccountPasswordOTP()
-      setMessage('Password reset code sent to your email.')
     } catch (caughtError) {
       setError(getAuthErrorMessage(caughtError))
-    } finally {
-      setIsSending(false)
     }
   }
 
