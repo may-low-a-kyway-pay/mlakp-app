@@ -25,10 +25,10 @@ export function createStyles({ colors, shadows }: AppTheme) {
       justifyContent: 'center',
       overflow: 'hidden',
       width: 64,
-      ...shadows.card,
     },
     logoImage: {
       height: 64,
+      tintColor: colors.primaryBright,
       width: 64,
     },
     heading: {
@@ -132,7 +132,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     textAction: {
       alignSelf: 'flex-end',
-      minHeight: 36,
+      minHeight: 48,
       justifyContent: 'center',
     },
     textActionLabel: {
