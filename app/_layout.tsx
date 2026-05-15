@@ -53,6 +53,7 @@ function RootNavigator() {
       <AppUpdateGate>
         <NotificationsProvider>
           <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="login" options={{ headerShown: false }} />
             <Stack.Screen name="register" options={{ headerShown: false }} />
             <Stack.Screen name="verify-email" options={{ headerShown: false }} />
@@ -62,7 +63,7 @@ function RootNavigator() {
             <Stack.Screen name="debts" options={{ headerShown: false }} />
             <Stack.Screen name="notifications" options={{ animation: 'slide_from_right', headerShown: false }} />
           </Stack>
-          <StatusBar style={dark ? 'light' : 'dark'} />
+          <StatusBar backgroundColor={colors.background} style={dark ? 'light' : 'dark'} />
         </NotificationsProvider>
       </AppUpdateGate>
     </ThemeProvider>
