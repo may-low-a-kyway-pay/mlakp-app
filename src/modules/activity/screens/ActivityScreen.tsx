@@ -9,6 +9,7 @@ import { AppHeader } from '@/src/shared/components/AppHeader'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
 import { createStyles } from '@/src/modules/activity/screens/ActivityScreen.styles'
+import { iconSize } from '@/src/shared/theme/metrics'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { formatMoneyLabel } from '@/src/shared/utils/currency'
 
@@ -173,6 +174,9 @@ export function ActivityScreen() {
                 {isPendingReview ? (
                   <View style={styles.reviewActions}>
                     <Pressable
+                      accessibilityLabel={`Reject payment from ${payment.paid_by_name}`}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: isReviewing }}
                       disabled={isReviewing}
                       onPress={() => review(payment.id, 'reject')}
                       style={({ pressed }) => [
@@ -181,10 +185,13 @@ export function ActivityScreen() {
                         (pressed || isReviewing) && styles.actionPressed,
                       ]}
                     >
-                      <Ionicons color={colors.danger} name="close" size={16} />
+                      <Ionicons color={colors.danger} name="close" size={iconSize.small} />
                       <Text style={[styles.reviewButtonText, styles.rejectButtonText]}>Reject</Text>
                     </Pressable>
                     <Pressable
+                      accessibilityLabel={`Confirm payment from ${payment.paid_by_name}`}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: isReviewing }}
                       disabled={isReviewing}
                       onPress={() => review(payment.id, 'confirm')}
                       style={({ pressed }) => [
@@ -197,7 +204,7 @@ export function ActivityScreen() {
                         <ActivityIndicator color={colors.white} />
                       ) : (
                         <>
-                          <Ionicons color={colors.white} name="checkmark" size={16} />
+                          <Ionicons color={colors.white} name="checkmark" size={iconSize.small} />
                           <Text style={[styles.reviewButtonText, styles.confirmButtonText]}>Confirm</Text>
                         </>
                       )}

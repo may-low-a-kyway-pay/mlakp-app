@@ -20,7 +20,10 @@ export function Screen({ children, contentStyle, scroll = true }: ScreenProps) {
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
         contentContainerStyle={[styles.content, contentStyle]}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

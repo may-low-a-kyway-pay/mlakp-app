@@ -2,13 +2,17 @@ import { Ionicons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { AppColors } from '@/src/shared/theme/colors'
+import { iconSize } from '@/src/shared/theme/metrics'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { typography } from '@/src/shared/theme/typography'
 
 export default function TabLayout() {
   const { colors } = useAppTheme()
+  const insets = useSafeAreaInsets()
+  const bottomInset = Math.max(insets.bottom, 8)
 
   return (
     <Tabs
@@ -30,9 +34,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.surfaceVariant,
-          height: 78,
+          height: 66 + bottomInset,
           paddingHorizontal: 10,
-          paddingBottom: 8,
+          paddingBottom: bottomInset,
           paddingTop: 4,
         },
       }}
@@ -43,7 +47,7 @@ export default function TabLayout() {
           title: 'Dashboard',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused}>
-              <Ionicons color={color} name={focused ? 'grid' : 'grid-outline'} size={24} />
+              <Ionicons color={color} name={focused ? 'grid' : 'grid-outline'} size={iconSize.standard} />
             </TabIcon>
           ),
         }}
@@ -54,7 +58,7 @@ export default function TabLayout() {
           title: 'Groups',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused}>
-              <Ionicons color={color} name={focused ? 'people' : 'people-outline'} size={24} />
+              <Ionicons color={color} name={focused ? 'people' : 'people-outline'} size={iconSize.standard} />
             </TabIcon>
           ),
         }}
@@ -65,7 +69,7 @@ export default function TabLayout() {
           title: 'Activity',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused}>
-              <Ionicons color={color} name={focused ? 'receipt' : 'receipt-outline'} size={24} />
+              <Ionicons color={color} name={focused ? 'receipt' : 'receipt-outline'} size={iconSize.standard} />
             </TabIcon>
           ),
         }}
@@ -76,7 +80,7 @@ export default function TabLayout() {
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused}>
-              <Ionicons color={color} name={focused ? 'settings' : 'settings-outline'} size={24} />
+              <Ionicons color={color} name={focused ? 'settings' : 'settings-outline'} size={iconSize.standard} />
             </TabIcon>
           ),
         }}

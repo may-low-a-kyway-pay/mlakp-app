@@ -11,6 +11,7 @@ import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
+import { iconSize } from '@/src/shared/theme/metrics'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { appCurrency } from '@/src/shared/utils/currency'
 
@@ -167,6 +168,9 @@ export function DashboardScreen() {
                       {canReview ? (
                         <View style={styles.reviewActions}>
                           <Pressable
+                            accessibilityLabel={`Reject ${item.other_user.name}'s debt`}
+                            accessibilityRole="button"
+                            accessibilityState={{ disabled: isUpdating }}
                             disabled={isUpdating}
                             onPress={() => transitionDebt(item.id, 'reject')}
                             style={({ pressed }) => [
@@ -175,10 +179,13 @@ export function DashboardScreen() {
                               (pressed || isUpdating) && styles.actionPressed,
                             ]}
                           >
-                            <Ionicons color={colors.danger} name="close" size={16} />
+                            <Ionicons color={colors.danger} name="close" size={iconSize.small} />
                             <Text style={[styles.reviewButtonText, styles.rejectButtonText]}>Reject</Text>
                           </Pressable>
                           <Pressable
+                            accessibilityLabel={`Accept ${item.other_user.name}'s debt`}
+                            accessibilityRole="button"
+                            accessibilityState={{ disabled: isUpdating }}
                             disabled={isUpdating}
                             onPress={() => transitionDebt(item.id, 'accept')}
                             style={({ pressed }) => [
@@ -187,7 +194,7 @@ export function DashboardScreen() {
                               (pressed || isUpdating) && styles.actionPressed,
                             ]}
                           >
-                            <Ionicons color={colors.white} name="checkmark" size={16} />
+                            <Ionicons color={colors.white} name="checkmark" size={iconSize.small} />
                             <Text style={[styles.reviewButtonText, styles.acceptButtonText]}>
                               {isUpdating ? 'Updating' : 'Accept'}
                             </Text>
@@ -258,6 +265,13 @@ export function DashboardScreen() {
                     {isDebt ? (
                       <View style={styles.reviewActions}>
                         <Pressable
+                          accessibilityLabel={
+                            hasPendingPayment
+                              ? `Payment to ${person.other_user.name} is pending review`
+                              : `Pay ${person.other_user.name}`
+                          }
+                          accessibilityRole="button"
+                          accessibilityState={{ disabled: hasPendingPayment }}
                           disabled={hasPendingPayment}
                           onPress={() => openBulkPayment(person)}
                           style={({ pressed }) => [
@@ -269,7 +283,7 @@ export function DashboardScreen() {
                           <Ionicons
                             color={colors.white}
                             name={hasPendingPayment ? 'time-outline' : 'card-outline'}
-                            size={17}
+                            size={iconSize.small}
                           />
                           <Text style={styles.payButtonText}>{hasPendingPayment ? 'Pending Review' : 'Pay'}</Text>
                         </Pressable>
@@ -335,7 +349,7 @@ export function DashboardScreen() {
                   onPress={useFullBulkPaymentAmount}
                   style={styles.quickActionButton}
                 >
-                  <Ionicons color={colors.primary} name="refresh" size={16} />
+                  <Ionicons color={colors.primary} name="refresh" size={iconSize.small} />
                   <Text style={styles.quickActionText}>Full Amount</Text>
                 </Pressable>
               </View>
@@ -357,6 +371,9 @@ export function DashboardScreen() {
             </View>
 
             <Pressable
+              accessibilityLabel="Submit payment"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !canSubmitBulkPayment }}
               disabled={!canSubmitBulkPayment}
               onPress={submitBulkPayment}
               style={[styles.submitPaymentButton, !canSubmitBulkPayment && styles.submitPaymentButtonDisabled]}

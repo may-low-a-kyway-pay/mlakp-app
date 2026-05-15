@@ -5,6 +5,7 @@ import * as Linking from 'expo-linking'
 import { ComponentProps, useMemo } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 
+import { iconSize, touchTarget } from '@/src/shared/theme/metrics'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { typography } from '@/src/shared/theme/typography'
 
@@ -36,7 +37,7 @@ const highlights: {
 ]
 
 export function DownloadLandingScreen() {
-  const { colors, dark } = useAppTheme()
+  const { colors, dark, toggleDarkMode } = useAppTheme()
   const { width } = useWindowDimensions()
   const version = Constants.expoConfig?.version ?? '1.0.0'
   const isCompact = width < 820
@@ -49,10 +50,21 @@ export function DownloadLandingScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.page} style={styles.root}>
+      <View style={styles.topBar}>
+        <Pressable
+          accessibilityLabel={dark ? 'Use light theme' : 'Use dark theme'}
+          accessibilityRole="button"
+          onPress={toggleDarkMode}
+          style={({ pressed }) => [styles.themeButton, pressed && styles.themeButtonPressed]}
+        >
+          <Ionicons color={colors.text} name={dark ? 'sunny-outline' : 'moon-outline'} size={iconSize.standard} />
+        </Pressable>
+      </View>
+
       <View style={styles.hero}>
         <View style={styles.heroContent}>
           <View style={styles.badge}>
-            <Ionicons color={colors.primary} name="logo-android" size={18} />
+            <Ionicons color={colors.primary} name="logo-android" size={iconSize.small} />
             <Text style={styles.badgeText}>Android APK</Text>
           </View>
 
@@ -63,7 +75,7 @@ export function DownloadLandingScreen() {
 
           <View style={styles.actions}>
             <Pressable accessibilityRole="link" onPress={handleDownload} style={styles.primaryButton}>
-              <Ionicons color={colors.white} name="download-outline" size={21} />
+              <Ionicons color={colors.white} name="download-outline" size={iconSize.medium} />
               <Text style={styles.primaryButtonText}>Download APK</Text>
             </Pressable>
             <View style={styles.versionBlock}>
@@ -73,7 +85,7 @@ export function DownloadLandingScreen() {
           </View>
 
           <View style={styles.installNote}>
-            <Ionicons color={colors.tertiary} name="shield-checkmark-outline" size={20} />
+            <Ionicons color={colors.tertiary} name="shield-checkmark-outline" size={iconSize.medium} />
             <Text style={styles.installNoteText}>
               If Android blocks installation, allow installs from this browser in Android settings and open the APK
               again.
@@ -112,7 +124,7 @@ export function DownloadLandingScreen() {
         {highlights.map((item) => (
           <View key={item.label} style={styles.featureCard}>
             <View style={styles.featureIcon}>
-              <Ionicons color={colors.primary} name={item.icon} size={23} />
+              <Ionicons color={colors.primary} name={item.icon} size={iconSize.standard} />
             </View>
             <Text style={styles.featureTitle}>{item.label}</Text>
             <Text style={styles.featureDescription}>{item.description}</Text>
@@ -156,6 +168,27 @@ function createStyles(colors: ReturnType<typeof useAppTheme>['colors'], dark: bo
       paddingHorizontal: isCompact ? 18 : 24,
       paddingVertical: 28,
     },
+    topBar: {
+      alignItems: 'center',
+      alignSelf: 'center',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      maxWidth: 1120,
+      width: '100%',
+    },
+    themeButton: {
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderColor: colors.surfaceVariant,
+      borderRadius: 24,
+      borderWidth: 1,
+      height: touchTarget.minimum,
+      justifyContent: 'center',
+      width: touchTarget.minimum,
+    },
+    themeButtonPressed: {
+      opacity: 0.72,
+    },
     hero: {
       alignItems: 'center',
       alignSelf: 'center',
@@ -165,7 +198,7 @@ function createStyles(colors: ReturnType<typeof useAppTheme>['colors'], dark: bo
       maxWidth: 1120,
       minHeight: isCompact ? 0 : 610,
       paddingBottom: isCompact ? 36 : 0,
-      paddingTop: isCompact ? 16 : 0,
+      paddingTop: isCompact ? 16 : 12,
       width: '100%',
     },
     heroContent: {
