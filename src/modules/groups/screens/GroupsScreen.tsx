@@ -160,9 +160,12 @@ export function GroupsScreen() {
               <Text style={styles.label}>Find People</Text>
               <TextInput
                 autoCapitalize="none"
+                autoComplete="username"
+                autoCorrect={false}
                 onChangeText={updatePeopleQuery}
                 placeholder="Search by username"
                 placeholderTextColor={colors.outline}
+                returnKeyType="search"
                 style={styles.input}
                 value={peopleQuery}
               />
@@ -247,9 +250,11 @@ export function GroupsScreen() {
               <Text style={styles.label}>Group Name</Text>
               <TextInput
                 autoCapitalize="words"
+                autoComplete="off"
                 onChangeText={setGroupName}
                 placeholder="Group name"
                 placeholderTextColor={colors.outline}
+                returnKeyType="done"
                 style={styles.input}
                 value={groupName}
               />
@@ -333,9 +338,12 @@ export function GroupsScreen() {
                       <Text style={styles.label}>Add Member by Username</Text>
                       <TextInput
                         autoCapitalize="none"
+                        autoComplete="username"
+                        autoCorrect={false}
                         onChangeText={setMemberUsername}
                         placeholder="Search by username"
                         placeholderTextColor={colors.outline}
+                        returnKeyType="search"
                         style={styles.input}
                         value={memberUsername}
                       />

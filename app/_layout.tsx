@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 
 import { NotificationsProvider } from '@/src/modules/notifications/context/NotificationsProvider'
+import { AppUpdateGate } from '@/src/modules/updates/components/AppUpdateGate'
 import { AppThemeProvider, useAppTheme } from '@/src/shared/theme/ThemeContext'
 
 export const unstable_settings = {
@@ -49,19 +50,21 @@ function RootNavigator() {
 
   return (
     <ThemeProvider value={navigationTheme}>
-      <NotificationsProvider>
-        <Stack>
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-          <Stack.Screen name="verify-email" options={{ headerShown: false }} />
-          <Stack.Screen name="reset-password" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="add-expense" options={{ headerShown: false, presentation: 'modal' }} />
-          <Stack.Screen name="debts" options={{ headerShown: false }} />
-          <Stack.Screen name="notifications" options={{ animation: 'slide_from_right', headerShown: false }} />
-        </Stack>
-        <StatusBar style={dark ? 'light' : 'dark'} />
-      </NotificationsProvider>
+      <AppUpdateGate>
+        <NotificationsProvider>
+          <Stack>
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="register" options={{ headerShown: false }} />
+            <Stack.Screen name="verify-email" options={{ headerShown: false }} />
+            <Stack.Screen name="reset-password" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="add-expense" options={{ headerShown: false, presentation: 'modal' }} />
+            <Stack.Screen name="debts" options={{ headerShown: false }} />
+            <Stack.Screen name="notifications" options={{ animation: 'slide_from_right', headerShown: false }} />
+          </Stack>
+          <StatusBar style={dark ? 'light' : 'dark'} />
+        </NotificationsProvider>
+      </AppUpdateGate>
     </ThemeProvider>
   )
 }

@@ -100,11 +100,15 @@ export function EmailVerificationScreen() {
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="keypad-outline" size={24} />
                 <TextInput
+                  autoComplete="one-time-code"
+                  autoCorrect={false}
+                  inputMode="numeric"
                   keyboardType="number-pad"
                   maxLength={6}
                   onChangeText={setOtp}
                   placeholder="123456"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="done"
                   style={styles.input}
                   value={otp}
                 />
@@ -115,6 +119,8 @@ export function EmailVerificationScreen() {
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isVerifying || !email }}
               disabled={isVerifying || !email}
               onPress={submit}
               style={[styles.primaryButton, (isVerifying || !email) && styles.disabledButton]}
@@ -129,6 +135,7 @@ export function EmailVerificationScreen() {
 
             <Pressable
               accessibilityRole="button"
+              accessibilityState={{ disabled: isSending || !email }}
               disabled={isSending || !email}
               onPress={requestOTP}
               style={styles.secondaryAction}

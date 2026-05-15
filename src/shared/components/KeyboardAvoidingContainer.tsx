@@ -13,6 +13,7 @@ function behaviorForMode(mode: KeyboardAvoidingMode): KeyboardAvoidingViewProps[
     return 'padding'
   }
 
+  // Android already uses app-level resize for full-screen forms; modal flows opt into height adjustment.
   return mode === 'resizing' ? 'height' : undefined
 }
 

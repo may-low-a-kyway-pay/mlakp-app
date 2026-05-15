@@ -330,10 +330,13 @@ export function DashboardScreen() {
               <View style={styles.paymentAmountRow}>
                 <Text style={styles.currency}>{appCurrency.symbol}</Text>
                 <TextInput
+                  autoComplete="off"
+                  inputMode="decimal"
                   keyboardType="decimal-pad"
                   onChangeText={setBulkPaymentAmount}
                   placeholder="0.00"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="done"
                   style={styles.paymentAmountInput}
                   value={bulkPaymentAmount}
                 />
@@ -361,6 +364,7 @@ export function DashboardScreen() {
             <View style={styles.paymentField}>
               <Text style={styles.paymentLabel}>Note</Text>
               <TextInput
+                autoComplete="off"
                 multiline
                 onChangeText={setBulkPaymentNote}
                 placeholder="Transfer note (optional)"

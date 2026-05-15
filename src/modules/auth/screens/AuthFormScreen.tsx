@@ -60,6 +60,7 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                 <View style={styles.inputShell}>
                   <Ionicons color={colors.outline} name="person-outline" size={24} />
                   <TextInput
+                    autoComplete="name"
                     autoCapitalize="words"
                     onChangeText={setName}
                     placeholder="Full name"
@@ -77,7 +78,9 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
                 <View style={styles.inputShell}>
                   <Ionicons color={colors.outline} name="at-outline" size={24} />
                   <TextInput
+                    autoComplete="username-new"
                     autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={setUsername}
                     placeholder="Username"
                     placeholderTextColor={colors.outline}
@@ -93,10 +96,13 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="mail-outline" size={24} />
                 <TextInput
+                  autoComplete="email"
                   autoCapitalize="none"
+                  autoCorrect={false}
                   keyboardType="email-address"
                   onChangeText={setEmail}
                   placeholder="Email address"
+                  returnKeyType="next"
                   placeholderTextColor={colors.outline}
                   style={styles.input}
                   value={email}
@@ -109,8 +115,10 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="lock-closed-outline" size={24} />
                 <TextInput
+                  autoComplete={isRegister ? 'new-password' : 'current-password'}
                   onChangeText={setPassword}
                   placeholder="Password"
+                  returnKeyType="done"
                   placeholderTextColor={colors.outline}
                   secureTextEntry={!showPassword}
                   style={styles.input}
@@ -140,6 +148,8 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isSubmitting }}
               disabled={isSubmitting}
               onPress={submit}
               style={[styles.primaryButton, isSubmitting && styles.disabledButton]}
@@ -159,7 +169,12 @@ export function AuthFormScreen({ mode }: AuthFormScreenProps) {
             <View style={styles.divider} />
           </View>
 
-          <Pressable accessibilityRole="button" onPress={navigateToOtherMode} style={styles.secondaryAction}>
+          <Pressable
+            accessibilityLabel={isRegister ? 'Go to login' : 'Go to registration'}
+            accessibilityRole="button"
+            onPress={navigateToOtherMode}
+            style={styles.secondaryAction}
+          >
             <Text style={styles.registerText}>
               {isRegister ? 'Already have an account? ' : "Don't have an account? "}
               <Text style={styles.registerLink}>{isRegister ? 'Login here' : 'Register here'}</Text>

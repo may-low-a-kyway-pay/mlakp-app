@@ -266,7 +266,12 @@ export function DebtRecordsScreen() {
                   {paymentDebt ? `You owe ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
                 </Text>
               </View>
-              <Pressable onPress={closePayment} style={styles.closeButton}>
+              <Pressable
+                accessibilityLabel="Close payment form"
+                accessibilityRole="button"
+                onPress={closePayment}
+                style={styles.closeButton}
+              >
                 <Ionicons color={colors.textMuted} name="close" size={24} />
               </Pressable>
             </View>
@@ -276,10 +281,13 @@ export function DebtRecordsScreen() {
               <View style={styles.paymentAmountRow}>
                 <Text style={styles.currency}>{appCurrency.symbol}</Text>
                 <TextInput
+                  autoComplete="off"
+                  inputMode="decimal"
                   keyboardType="decimal-pad"
                   onChangeText={setPaymentAmount}
                   placeholder="0.00"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="done"
                   style={styles.paymentAmountInput}
                   value={paymentAmount}
                 />
@@ -303,6 +311,7 @@ export function DebtRecordsScreen() {
             <View style={styles.paymentField}>
               <Text style={styles.paymentLabel}>Note</Text>
               <TextInput
+                autoComplete="off"
                 multiline
                 onChangeText={setPaymentNote}
                 placeholder="Transfer note (optional)"
@@ -313,6 +322,9 @@ export function DebtRecordsScreen() {
             </View>
 
             <Pressable
+              accessibilityLabel="Submit payment"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !canSubmitPayment }}
               disabled={!canSubmitPayment}
               onPress={submitPayment}
               style={[styles.submitPaymentButton, !canSubmitPayment && styles.submitPaymentButtonDisabled]}
