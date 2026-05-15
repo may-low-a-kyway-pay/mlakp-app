@@ -134,12 +134,15 @@ export function PasswordResetScreen() {
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="mail-outline" size={24} />
                 <TextInput
+                  autoComplete="email"
                   autoCapitalize="none"
+                  autoCorrect={false}
                   editable={mode !== 'account'}
                   keyboardType="email-address"
                   onChangeText={setEmail}
                   placeholder="Email address"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="next"
                   style={styles.input}
                   value={email}
                 />
@@ -148,6 +151,7 @@ export function PasswordResetScreen() {
 
             <Pressable
               accessibilityRole="button"
+              accessibilityState={{ disabled: isSending }}
               disabled={isSending}
               onPress={requestOTP}
               style={[styles.primaryButton, isSending && styles.disabledButton]}
@@ -165,11 +169,15 @@ export function PasswordResetScreen() {
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="keypad-outline" size={24} />
                 <TextInput
+                  autoComplete="one-time-code"
+                  autoCorrect={false}
+                  inputMode="numeric"
                   keyboardType="number-pad"
                   maxLength={6}
                   onChangeText={setOtp}
                   placeholder="123456"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="next"
                   style={styles.input}
                   value={otp}
                 />
@@ -181,9 +189,11 @@ export function PasswordResetScreen() {
               <View style={styles.inputShell}>
                 <Ionicons color={colors.outline} name="lock-closed-outline" size={24} />
                 <TextInput
+                  autoComplete="new-password"
                   onChangeText={setNewPassword}
                   placeholder="New password"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="done"
                   secureTextEntry={!showPassword}
                   style={styles.input}
                   value={newPassword}
@@ -203,6 +213,8 @@ export function PasswordResetScreen() {
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isSubmitting }}
               disabled={isSubmitting}
               onPress={submit}
               style={[styles.primaryButton, isSubmitting && styles.disabledButton]}

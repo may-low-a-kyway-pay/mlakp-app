@@ -124,6 +124,9 @@ export function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              accessibilityLabel="Dark theme"
+              accessibilityRole="switch"
+              accessibilityState={{ checked: dark }}
               ios_backgroundColor={colors.surfaceVariant}
               onValueChange={toggleDarkMode}
               thumbColor={dark ? colors.white : colors.textSoft}
@@ -133,7 +136,14 @@ export function SettingsScreen() {
           </View>
         </Card>
 
-        <Pressable disabled={isSigningOut} onPress={signOut} style={[styles.signOut, isSigningOut && styles.disabled]}>
+        <Pressable
+          accessibilityLabel="Sign out"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: isSigningOut }}
+          disabled={isSigningOut}
+          onPress={signOut}
+          style={[styles.signOut, isSigningOut && styles.disabled]}
+        >
           {isSigningOut ? (
             <ActivityIndicator color={colors.danger} />
           ) : (
@@ -162,10 +172,13 @@ export function SettingsScreen() {
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>Username</Text>
               <TextInput
+                autoComplete="username"
                 autoCapitalize="none"
+                autoCorrect={false}
                 onChangeText={setUsername}
                 placeholder="Username"
                 placeholderTextColor={colors.outline}
+                returnKeyType="done"
                 style={styles.input}
                 value={username}
               />
@@ -174,6 +187,9 @@ export function SettingsScreen() {
             {profileError ? <Text style={styles.errorText}>{profileError}</Text> : null}
 
             <Pressable
+              accessibilityLabel="Save username"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isSavingUsername }}
               disabled={isSavingUsername}
               onPress={saveUsername}
               style={[styles.saveButton, isSavingUsername && styles.disabled]}

@@ -76,7 +76,12 @@ export function GroupsScreen() {
         <View style={styles.titleRow}>
           <Text style={styles.title}>Groups</Text>
           {activeTab === 'groups' ? (
-            <Pressable onPress={() => setIsCreateOpen(true)} style={styles.addButton}>
+            <Pressable
+              accessibilityLabel="Create group"
+              accessibilityRole="button"
+              onPress={() => setIsCreateOpen(true)}
+              style={styles.addButton}
+            >
               <Ionicons color={colors.white} name="add" size={22} />
             </Pressable>
           ) : (
@@ -87,6 +92,8 @@ export function GroupsScreen() {
         <View style={styles.tabRow}>
           {groupsTabOptions.map((option) => (
             <Pressable
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === option.value }}
               key={option.value}
               onPress={() => setActiveTab(option.value)}
               style={[styles.tabButton, activeTab === option.value && styles.tabButtonActive]}
@@ -106,7 +113,7 @@ export function GroupsScreen() {
         {error ? (
           <View style={styles.errorBlock}>
             <Text style={styles.errorText}>{error}</Text>
-            <Pressable onPress={loadGroups} style={styles.retryButton}>
+            <Pressable accessibilityRole="button" onPress={loadGroups} style={styles.retryButton}>
               <Ionicons color={colors.white} name="refresh" size={18} />
               <Text style={styles.retryText}>Retry</Text>
             </Pressable>
@@ -125,7 +132,12 @@ export function GroupsScreen() {
 
             <View style={styles.list}>
               {groups.map((group, index) => (
-                <Pressable key={group.id} onPress={() => openGroupDetails(group)}>
+                <Pressable
+                  accessibilityLabel={`Open ${group.name} group details`}
+                  accessibilityRole="button"
+                  key={group.id}
+                  onPress={() => openGroupDetails(group)}
+                >
                   <Card style={styles.groupCard}>
                     <View style={styles.left}>
                       <Avatar initials={groupInitials(group.name)} tone={avatarTones[index % avatarTones.length]} />
@@ -148,9 +160,12 @@ export function GroupsScreen() {
               <Text style={styles.label}>Find People</Text>
               <TextInput
                 autoCapitalize="none"
+                autoComplete="username"
+                autoCorrect={false}
                 onChangeText={updatePeopleQuery}
                 placeholder="Search by username"
                 placeholderTextColor={colors.outline}
+                returnKeyType="search"
                 style={styles.input}
                 value={peopleQuery}
               />
@@ -197,6 +212,7 @@ export function GroupsScreen() {
                       </View>
                       <Pressable
                         accessibilityLabel={`Copy ${user.username}`}
+                        accessibilityRole="button"
                         onPress={() => copyUsername(user.username)}
                         style={styles.copyIconButton}
                       >
@@ -220,7 +236,12 @@ export function GroupsScreen() {
           <Card style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>New Group</Text>
-              <Pressable onPress={() => setIsCreateOpen(false)} style={styles.closeButton}>
+              <Pressable
+                accessibilityLabel="Close group form"
+                accessibilityRole="button"
+                onPress={() => setIsCreateOpen(false)}
+                style={styles.closeButton}
+              >
                 <Ionicons color={colors.textMuted} name="close" size={24} />
               </Pressable>
             </View>
@@ -229,15 +250,20 @@ export function GroupsScreen() {
               <Text style={styles.label}>Group Name</Text>
               <TextInput
                 autoCapitalize="words"
+                autoComplete="off"
                 onChangeText={setGroupName}
                 placeholder="Group name"
                 placeholderTextColor={colors.outline}
+                returnKeyType="done"
                 style={styles.input}
                 value={groupName}
               />
             </View>
 
             <Pressable
+              accessibilityLabel="Create group"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isCreating }}
               disabled={isCreating}
               onPress={submitGroup}
               style={[styles.createButton, isCreating && styles.disabledButton]}
@@ -261,7 +287,12 @@ export function GroupsScreen() {
                 <Text style={styles.modalTitle}>{selectedGroup?.group.name ?? 'Group'}</Text>
                 <Text style={styles.detailsSubtitle}>{selectedGroup?.members.length ?? 0} members</Text>
               </View>
-              <Pressable onPress={closeGroupDetails} style={styles.closeButton}>
+              <Pressable
+                accessibilityLabel="Close group details"
+                accessibilityRole="button"
+                onPress={closeGroupDetails}
+                style={styles.closeButton}
+              >
                 <Ionicons color={colors.textMuted} name="close" size={24} />
               </Pressable>
             </View>
@@ -307,9 +338,12 @@ export function GroupsScreen() {
                       <Text style={styles.label}>Add Member by Username</Text>
                       <TextInput
                         autoCapitalize="none"
+                        autoComplete="username"
+                        autoCorrect={false}
                         onChangeText={setMemberUsername}
                         placeholder="Search by username"
                         placeholderTextColor={colors.outline}
+                        returnKeyType="search"
                         style={styles.input}
                         value={memberUsername}
                       />
@@ -337,7 +371,12 @@ export function GroupsScreen() {
                                   <Text style={styles.groupMembers}>@{user.username}</Text>
                                 </View>
                               </View>
-                              <Pressable onPress={() => selectMemberUser(user)} style={styles.addMemberIconButton}>
+                              <Pressable
+                                accessibilityLabel={`Select ${user.username}`}
+                                accessibilityRole="button"
+                                onPress={() => selectMemberUser(user)}
+                                style={styles.addMemberIconButton}
+                              >
                                 <Ionicons color={colors.primary} name="add" size={22} />
                               </Pressable>
                             </View>
@@ -363,7 +402,12 @@ export function GroupsScreen() {
                                 <Text style={styles.groupMembers}>@{user.username}</Text>
                               </View>
                             </View>
-                            <Pressable onPress={() => removePendingMember(user.id)} style={styles.removePendingButton}>
+                            <Pressable
+                              accessibilityLabel={`Remove ${user.username}`}
+                              accessibilityRole="button"
+                              onPress={() => removePendingMember(user.id)}
+                              style={styles.removePendingButton}
+                            >
                               <Ionicons color={colors.textMuted} name="close" size={20} />
                             </Pressable>
                           </View>
@@ -372,6 +416,9 @@ export function GroupsScreen() {
                     ) : null}
 
                     <Pressable
+                      accessibilityLabel="Add selected members"
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: isAddingMember || pendingMemberUsers.length === 0 }}
                       disabled={isAddingMember || pendingMemberUsers.length === 0}
                       onPress={submitMember}
                       style={[

@@ -20,6 +20,7 @@ import { clearAuthSession } from '@/src/modules/auth/services/authSession'
 import { Card } from '@/src/shared/components/Card'
 import { Screen } from '@/src/shared/components/Screen'
 import { AppColors } from '@/src/shared/theme/colors'
+import { iconSize, touchTarget } from '@/src/shared/theme/metrics'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { typography } from '@/src/shared/theme/typography'
 
@@ -362,12 +363,18 @@ export function NotificationsScreen() {
           <Text style={styles.subtitle}>{unreadCount} unread</Text>
         </View>
         <Pressable
+          accessibilityLabel="Mark all notifications as read"
           accessibilityRole="button"
+          accessibilityState={{ disabled: isMarkingAllRead || unreadCount === 0 }}
           disabled={isMarkingAllRead || unreadCount === 0}
           onPress={markAllRead}
           style={styles.markAllButton}
         >
-          <Ionicons color={unreadCount === 0 ? colors.textSoft : colors.primary} name="checkmark-done" size={18} />
+          <Ionicons
+            color={unreadCount === 0 ? colors.textSoft : colors.primary}
+            name="checkmark-done"
+            size={iconSize.small}
+          />
           <Text style={[styles.markAllText, unreadCount === 0 && styles.markAllTextDisabled]}>Mark all</Text>
         </Pressable>
       </View>
@@ -376,7 +383,7 @@ export function NotificationsScreen() {
         <View style={styles.errorBlock}>
           <Text style={styles.errorText}>{error}</Text>
           <Pressable accessibilityRole="button" onPress={loadNotifications} style={styles.retryButton}>
-            <Ionicons color={colors.white} name="refresh" size={18} />
+            <Ionicons color={colors.white} name="refresh" size={iconSize.small} />
             <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
@@ -396,7 +403,7 @@ export function NotificationsScreen() {
         ListEmptyComponent={
           !isLoading && !error ? (
             <Card style={styles.emptyCard}>
-              <Ionicons color={colors.textSoft} name="notifications-outline" size={32} />
+              <Ionicons color={colors.textSoft} name="notifications-outline" size={iconSize.empty} />
               <Text style={styles.emptyTitle}>No notifications</Text>
               <Text style={styles.emptyText}>New expense, debt, and payment updates will appear here.</Text>
             </Card>
@@ -414,7 +421,11 @@ export function NotificationsScreen() {
             <Card style={[styles.notificationCard, isUnread && styles.unreadCard]}>
               <View style={styles.notificationHeader}>
                 <View style={[styles.notificationIcon, actions.length > 0 && styles.notificationIconAction]}>
-                  <Ionicons color={actions.length > 0 ? colors.tertiary : colors.primary} name={iconName} size={22} />
+                  <Ionicons
+                    color={actions.length > 0 ? colors.tertiary : colors.primary}
+                    name={iconName}
+                    size={iconSize.standard}
+                  />
                 </View>
                 <View style={styles.notificationTitleBlock}>
                   <View style={styles.notificationTitleRow}>
@@ -434,7 +445,9 @@ export function NotificationsScreen() {
                 </View>
                 {isUnread && actions.length === 0 ? (
                   <Pressable
+                    accessibilityLabel="Mark notification as read"
                     accessibilityRole="button"
+                    accessibilityState={{ disabled: isUpdating }}
                     disabled={isUpdating}
                     onPress={() => markRead(item.id)}
                     style={styles.markReadButton}
@@ -450,6 +463,9 @@ export function NotificationsScreen() {
                     const isPositive = action === 'accept-debt' || action === 'confirm-payment'
                     return (
                       <Pressable
+                        accessibilityLabel={`${actionLabel(action)} notification`}
+                        accessibilityRole="button"
+                        accessibilityState={{ disabled: isUpdating }}
                         disabled={isUpdating}
                         key={action}
                         onPress={() => runAction(item, action)}
@@ -462,7 +478,7 @@ export function NotificationsScreen() {
                         <Ionicons
                           color={isPositive ? colors.white : colors.danger}
                           name={actionIcon(action)}
-                          size={16}
+                          size={iconSize.small}
                         />
                         <Text style={[styles.actionText, isPositive ? styles.positiveText : styles.negativeText]}>
                           {isUpdating ? 'Updating' : actionLabel(action)}
@@ -503,7 +519,7 @@ function createStyles(colors: AppColors) {
     },
     actionText: {
       fontFamily: typography.familyBold,
-      fontSize: 13,
+      fontSize: typography.size.label,
       fontWeight: typography.weight.bold,
     },
     emptyCard: {
@@ -514,14 +530,14 @@ function createStyles(colors: AppColors) {
     emptyText: {
       color: colors.textMuted,
       fontFamily: typography.family,
-      fontSize: 14,
-      lineHeight: 20,
+      fontSize: typography.size.bodySmall,
+      lineHeight: typography.lineHeight.bodySmall,
       textAlign: 'center',
     },
     emptyTitle: {
       color: colors.text,
       fontFamily: typography.familyBold,
-      fontSize: 16,
+      fontSize: typography.size.bodyLarge,
       fontWeight: typography.weight.bold,
     },
     errorBlock: {
@@ -537,8 +553,8 @@ function createStyles(colors: AppColors) {
     errorText: {
       color: colors.danger,
       fontFamily: typography.family,
-      fontSize: 14,
-      lineHeight: 20,
+      fontSize: typography.size.bodySmall,
+      lineHeight: typography.lineHeight.bodySmall,
     },
     header: {
       alignItems: 'center',
@@ -577,7 +593,7 @@ function createStyles(colors: AppColors) {
     markAllText: {
       color: colors.primary,
       fontFamily: typography.familyBold,
-      fontSize: 13,
+      fontSize: typography.size.label,
       fontWeight: typography.weight.bold,
     },
     markAllTextDisabled: {
@@ -593,7 +609,7 @@ function createStyles(colors: AppColors) {
     markReadText: {
       color: colors.primary,
       fontFamily: typography.familyBold,
-      fontSize: 13,
+      fontSize: typography.size.label,
       fontWeight: typography.weight.bold,
     },
     metaRow: {
@@ -612,21 +628,21 @@ function createStyles(colors: AppColors) {
     notificationActor: {
       color: colors.text,
       fontFamily: typography.familyBold,
-      fontSize: 14,
+      fontSize: typography.size.bodySmall,
       fontWeight: typography.weight.semibold,
       marginTop: 4,
     },
     notificationAmount: {
       color: colors.text,
       fontFamily: typography.familyBold,
-      fontSize: 12,
+      fontSize: typography.size.caption,
       fontWeight: typography.weight.bold,
     },
     notificationBody: {
       color: colors.textMuted,
       fontFamily: typography.family,
-      fontSize: 14,
-      lineHeight: 20,
+      fontSize: typography.size.bodySmall,
+      lineHeight: typography.lineHeight.bodySmall,
       marginTop: 3,
     },
     notificationCard: {
@@ -647,10 +663,10 @@ function createStyles(colors: AppColors) {
     notificationIcon: {
       alignItems: 'center',
       backgroundColor: colors.primarySoft,
-      borderRadius: 20,
-      height: 40,
+      borderRadius: 24,
+      height: touchTarget.minimum,
       justifyContent: 'center',
-      width: 40,
+      width: touchTarget.minimum,
     },
     notificationIconAction: {
       backgroundColor: colors.tertiarySoft,
@@ -658,12 +674,12 @@ function createStyles(colors: AppColors) {
     notificationMeta: {
       color: colors.textSoft,
       fontFamily: typography.family,
-      fontSize: 12,
+      fontSize: typography.size.caption,
     },
     notificationTitle: {
       color: colors.text,
       fontFamily: typography.familyBold,
-      fontSize: 16,
+      fontSize: typography.size.bodyLarge,
       fontWeight: typography.weight.bold,
     },
     notificationTitleBlock: {
@@ -694,7 +710,7 @@ function createStyles(colors: AppColors) {
     retryText: {
       color: colors.white,
       fontFamily: typography.familyBold,
-      fontSize: 13,
+      fontSize: typography.size.label,
       fontWeight: typography.weight.bold,
     },
     root: {
@@ -709,14 +725,14 @@ function createStyles(colors: AppColors) {
     stateText: {
       color: colors.textMuted,
       fontFamily: typography.family,
-      fontSize: 14,
+      fontSize: typography.size.bodySmall,
     },
     statusPill: {
       backgroundColor: colors.surfaceVariant,
       borderRadius: 999,
       color: colors.textMuted,
       fontFamily: typography.familyBold,
-      fontSize: 11,
+      fontSize: typography.size.caption,
       fontWeight: typography.weight.semibold,
       overflow: 'hidden',
       paddingHorizontal: 8,
@@ -726,13 +742,13 @@ function createStyles(colors: AppColors) {
     subtitle: {
       color: colors.textMuted,
       fontFamily: typography.family,
-      fontSize: 13,
+      fontSize: typography.size.label,
       marginTop: 2,
     },
     title: {
       color: colors.text,
       fontFamily: typography.familyBold,
-      fontSize: 20,
+      fontSize: typography.size.title,
       fontWeight: typography.weight.bold,
     },
     unreadCard: {

@@ -9,6 +9,7 @@ import { Avatar } from '@/src/shared/components/Avatar'
 import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
+import { iconSize } from '@/src/shared/theme/metrics'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { appCurrency } from '@/src/shared/utils/currency'
 
@@ -164,6 +165,7 @@ export function DebtRecordsScreen() {
           const canPay =
             isDebt && (item.status === 'accepted' || item.status === 'partially_settled') && !hasPendingPayment
           const isUpdating = updatingDebtID === item.id
+          const counterpartyDisplayName = counterpartyName(item, currentUserID)
 
           return (
             <View style={styles.recordItem}>
@@ -173,7 +175,7 @@ export function DebtRecordsScreen() {
                   <View style={styles.itemLeft}>
                     <Avatar initials={isDebt ? 'O' : 'R'} tone="neutral" />
                     <View style={styles.itemText}>
-                      <Text style={styles.itemName}>{counterpartyName(item, currentUserID)}</Text>
+                      <Text style={styles.itemName}>{counterpartyDisplayName}</Text>
                       <View style={styles.titleRow}>
                         <Text style={styles.itemTitle}>{item.expense_title ?? 'Expense'}</Text>
                         <Text style={styles.tag}>{statusLabel(item.status)}</Text>
@@ -191,6 +193,9 @@ export function DebtRecordsScreen() {
                 {canReview ? (
                   <View style={styles.reviewActions}>
                     <Pressable
+                      accessibilityLabel={`Reject ${counterpartyDisplayName}'s debt`}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: isUpdating }}
                       disabled={isUpdating}
                       onPress={() => transitionDebt(item.id, 'reject')}
                       style={({ pressed }) => [
@@ -199,10 +204,13 @@ export function DebtRecordsScreen() {
                         (pressed || isUpdating) && styles.actionPressed,
                       ]}
                     >
-                      <Ionicons color={colors.danger} name="close" size={16} />
+                      <Ionicons color={colors.danger} name="close" size={iconSize.small} />
                       <Text style={[styles.reviewButtonText, styles.rejectButtonText]}>Reject</Text>
                     </Pressable>
                     <Pressable
+                      accessibilityLabel={`Accept ${counterpartyDisplayName}'s debt`}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: isUpdating }}
                       disabled={isUpdating}
                       onPress={() => transitionDebt(item.id, 'accept')}
                       style={({ pressed }) => [
@@ -211,7 +219,7 @@ export function DebtRecordsScreen() {
                         (pressed || isUpdating) && styles.actionPressed,
                       ]}
                     >
-                      <Ionicons color={colors.white} name="checkmark" size={16} />
+                      <Ionicons color={colors.white} name="checkmark" size={iconSize.small} />
                       <Text style={[styles.reviewButtonText, styles.acceptButtonText]}>
                         {isUpdating ? 'Updating' : 'Accept'}
                       </Text>
@@ -222,10 +230,12 @@ export function DebtRecordsScreen() {
                 {canPay ? (
                   <View style={styles.reviewActions}>
                     <Pressable
+                      accessibilityLabel={`Pay ${counterpartyDisplayName}`}
+                      accessibilityRole="button"
                       onPress={() => openPayment(item)}
                       style={({ pressed }) => [styles.payButton, pressed && styles.actionPressed]}
                     >
-                      <Ionicons color={colors.white} name="card-outline" size={17} />
+                      <Ionicons color={colors.white} name="card-outline" size={iconSize.small} />
                       <Text style={styles.payButtonText}>Pay</Text>
                     </Pressable>
                   </View>
@@ -234,7 +244,7 @@ export function DebtRecordsScreen() {
                 {hasPendingPayment ? (
                   <View style={styles.reviewActions}>
                     <View style={styles.pendingPaymentPill}>
-                      <Ionicons color={colors.tertiary} name="time-outline" size={17} />
+                      <Ionicons color={colors.tertiary} name="time-outline" size={iconSize.small} />
                       <Text style={styles.pendingPaymentText}>Payment pending review</Text>
                     </View>
                   </View>
@@ -256,7 +266,12 @@ export function DebtRecordsScreen() {
                   {paymentDebt ? `You owe ${moneyLabel(paymentDebt.remaining_amount)}` : 'Accepted debt'}
                 </Text>
               </View>
-              <Pressable onPress={closePayment} style={styles.closeButton}>
+              <Pressable
+                accessibilityLabel="Close payment form"
+                accessibilityRole="button"
+                onPress={closePayment}
+                style={styles.closeButton}
+              >
                 <Ionicons color={colors.textMuted} name="close" size={24} />
               </Pressable>
             </View>
@@ -266,10 +281,13 @@ export function DebtRecordsScreen() {
               <View style={styles.paymentAmountRow}>
                 <Text style={styles.currency}>{appCurrency.symbol}</Text>
                 <TextInput
+                  autoComplete="off"
+                  inputMode="decimal"
                   keyboardType="decimal-pad"
                   onChangeText={setPaymentAmount}
                   placeholder="0.00"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="done"
                   style={styles.paymentAmountInput}
                   value={paymentAmount}
                 />
@@ -280,8 +298,8 @@ export function DebtRecordsScreen() {
                 </Text>
               ) : null}
               <View style={styles.quickActionRow}>
-                <Pressable onPress={useFullPaymentAmount} style={styles.quickActionButton}>
-                  <Ionicons color={colors.primary} name="refresh" size={16} />
+                <Pressable accessibilityRole="button" onPress={useFullPaymentAmount} style={styles.quickActionButton}>
+                  <Ionicons color={colors.primary} name="refresh" size={iconSize.small} />
                   <Text style={styles.quickActionText}>Full Amount</Text>
                 </Pressable>
               </View>
@@ -293,6 +311,7 @@ export function DebtRecordsScreen() {
             <View style={styles.paymentField}>
               <Text style={styles.paymentLabel}>Note</Text>
               <TextInput
+                autoComplete="off"
                 multiline
                 onChangeText={setPaymentNote}
                 placeholder="Transfer note (optional)"
@@ -303,6 +322,9 @@ export function DebtRecordsScreen() {
             </View>
 
             <Pressable
+              accessibilityLabel="Submit payment"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !canSubmitPayment }}
               disabled={!canSubmitPayment}
               onPress={submitPayment}
               style={[styles.submitPaymentButton, !canSubmitPayment && styles.submitPaymentButtonDisabled]}

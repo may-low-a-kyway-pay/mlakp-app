@@ -79,10 +79,13 @@ export function AddExpenseScreen() {
             <View style={styles.amountRow}>
               <Text style={styles.currency}>{appCurrency.symbol}</Text>
               <TextInput
+                autoComplete="off"
+                inputMode="decimal"
                 keyboardType="decimal-pad"
                 onChangeText={setAmount}
                 placeholder="0.00"
                 placeholderTextColor={colors.outline}
+                returnKeyType="done"
                 style={styles.amountInput}
                 value={amount}
               />
@@ -95,9 +98,11 @@ export function AddExpenseScreen() {
               <View style={styles.outlinedInput}>
                 <Ionicons color={colors.textSoft} name="receipt-outline" size={24} />
                 <TextInput
+                  autoComplete="off"
                   onChangeText={setTitle}
                   placeholder="Expense title"
                   placeholderTextColor={colors.outline}
+                  returnKeyType="next"
                   style={styles.titleInput}
                   value={title}
                 />
@@ -212,10 +217,13 @@ export function AddExpenseScreen() {
                     </View>
                     {splitType === 'manual' ? (
                       <TextInput
+                        autoComplete="off"
+                        inputMode="decimal"
                         keyboardType="decimal-pad"
                         onChangeText={(value) => setShareAmount(participant.id, value)}
                         placeholder="0.00"
                         placeholderTextColor={colors.outline}
+                        returnKeyType="done"
                         style={styles.shareInput}
                         value={shareAmounts[participant.id] ?? ''}
                       />
@@ -246,6 +254,9 @@ export function AddExpenseScreen() {
 
         <View style={styles.bottomAction}>
           <Pressable
+            accessibilityLabel="Create expense"
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !canSubmit }}
             disabled={!canSubmit}
             onPress={submit}
             style={[styles.createButton, !canSubmit ? styles.createButtonDisabled : null]}
@@ -329,7 +340,12 @@ export function AddExpenseScreen() {
                 })}
               </ScrollView>
 
-              <Pressable onPress={() => setIsPickerOpen(false)} style={styles.doneButton}>
+              <Pressable
+                accessibilityLabel="Done choosing members"
+                accessibilityRole="button"
+                onPress={() => setIsPickerOpen(false)}
+                style={styles.doneButton}
+              >
                 <Text style={styles.doneText}>Done</Text>
               </Pressable>
             </Card>
