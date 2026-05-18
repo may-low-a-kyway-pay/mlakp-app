@@ -14,6 +14,16 @@ import { PaymentListItem, PaymentStatus, ReviewPaymentType } from '@/src/modules
 export type ActivityFilter = 'review' | 'sent' | 'history'
 export type ActivityHistoryStatusFilter = 'all' | 'confirmed' | 'rejected'
 
+function getReviewablePayments(payments: PaymentListItem[], currentUserID: string | null) {
+  if (!currentUserID) {
+    return []
+  }
+
+  return payments.filter(
+    (payment) => payment.received_by === currentUserID && payment.status === 'pending_confirmation',
+  )
+}
+
 export function usePaymentActivity() {
   const { latestRealtimeEvent } = useNotifications()
   const handledRealtimeEvent = useRef<unknown>(null)
@@ -23,6 +33,7 @@ export function usePaymentActivity() {
   const [historyStatusFilter, setHistoryStatusFilter] = useState<ActivityHistoryStatusFilter>('all')
   const [isLoading, setIsLoading] = useState(true)
   const [payments, setPayments] = useState<PaymentListItem[]>([])
+  const [isReviewingAll, setIsReviewingAll] = useState(false)
   const [reviewingPaymentID, setReviewingPaymentID] = useState<string | null>(null)
 
   const requestFilters = useMemo(() => {
@@ -113,15 +124,47 @@ export function usePaymentActivity() {
     [loadPayments],
   )
 
+  const reviewAll = useCallback(async () => {
+    const reviewablePayments = getReviewablePayments(payments, currentUserID)
+    if (reviewablePayments.length === 0) {
+      return
+    }
+
+    setError(null)
+    setIsReviewingAll(true)
+
+    try {
+      for (const payment of reviewablePayments) {
+        setReviewingPaymentID(payment.id)
+        await reviewPayment(payment.id, 'confirm')
+      }
+      await loadPayments()
+    } catch (caughtError) {
+      if (isUnauthorizedPaymentError(caughtError)) {
+        await clearAuthSession()
+        router.replace('/login')
+        return
+      }
+
+      await loadPayments()
+      setError(getPaymentErrorMessage(caughtError))
+    } finally {
+      setIsReviewingAll(false)
+      setReviewingPaymentID(null)
+    }
+  }, [currentUserID, loadPayments, payments])
+
   return {
     currentUserID,
     error,
     filter,
     historyStatusFilter,
+    isReviewingAll,
     isLoading,
     loadPayments,
     payments,
     review,
+    reviewAll,
     reviewingPaymentID,
     setFilter,
     setHistoryStatusFilter,
