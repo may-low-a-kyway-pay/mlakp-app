@@ -12,13 +12,29 @@ import { Card } from '@/src/shared/components/Card'
 import { KeyboardAvoidingContainer } from '@/src/shared/components/KeyboardAvoidingContainer'
 import { Screen } from '@/src/shared/components/Screen'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
+import { formatMoneyLabel } from '@/src/shared/utils/currency'
 
 type GroupsTab = 'groups' | 'people'
+type GroupDetailsTab = 'members' | 'expenses'
 
 const groupsTabOptions: { label: string; value: GroupsTab }[] = [
   { label: 'Groups', value: 'groups' },
   { label: 'People', value: 'people' },
 ]
+
+const groupDetailsTabOptions: { label: string; value: GroupDetailsTab }[] = [
+  { label: 'Members', value: 'members' },
+  { label: 'Expenses', value: 'expenses' },
+]
+
+function formatExpenseDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return 'Unknown date'
+  }
+
+  return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' }).format(date)
+}
 
 export function GroupsScreen() {
   const theme = useAppTheme()
@@ -26,30 +42,41 @@ export function GroupsScreen() {
   const styles = createStyles(theme)
   const [activeTab, setActiveTab] = useState<GroupsTab>('groups')
   const [copiedUsername, setCopiedUsername] = useState<string | null>(null)
+  const [detailsTab, setDetailsTab] = useState<GroupDetailsTab>('members')
   const {
     canAddMembers,
+    closeExpenseDetails,
     closeGroupDetails,
     error,
     groupName,
+    groupExpensePagination,
+    groupExpenses,
     groups,
+    hasLoadedGroupExpenses,
     isAddingMember,
     isCreateOpen,
     isCreating,
     isDetailsOpen,
     isLoading,
     isLoadingDetails,
+    isLoadingExpenseDetails,
+    isLoadingExpenses,
     isSearchingMembers,
     isSearchingPeople,
+    loadGroupExpenses,
     loadGroups,
+    loadNextGroupExpenses,
     memberError,
     memberSearchResults,
     memberUsername,
+    openExpenseDetails,
     openGroupDetails,
     peopleQuery,
     peopleSearchResults,
     pendingMemberUsers,
     removePendingMember,
     selectMemberUser,
+    selectedExpense,
     selectedGroup,
     setGroupName,
     setIsCreateOpen,
@@ -67,6 +94,38 @@ export function GroupsScreen() {
   function updatePeopleQuery(value: string) {
     setPeopleQuery(value)
     setCopiedUsername(null)
+  }
+
+  function openGroup(group: Parameters<typeof openGroupDetails>[0]) {
+    setDetailsTab('members')
+    void openGroupDetails(group)
+  }
+
+  function selectDetailsTab(tab: GroupDetailsTab) {
+    setDetailsTab(tab)
+    if (tab === 'expenses' && !hasLoadedGroupExpenses && !isLoadingExpenses) {
+      void loadGroupExpenses()
+    }
+  }
+
+  const memberByUserID =
+    selectedGroup?.members.reduce<Record<string, NonNullable<typeof selectedGroup>['members'][number]>>(
+      (index, member) => {
+        index[member.user_id] = member
+        return index
+      },
+      {},
+    ) ?? {}
+
+  const selectedExpensePayer = selectedExpense ? memberByUserID[selectedExpense.expense.paid_by] : undefined
+
+  function handleGroupDetailsRequestClose() {
+    if (selectedExpense) {
+      closeExpenseDetails()
+      return
+    }
+
+    closeGroupDetails()
   }
 
   return (
@@ -136,7 +195,7 @@ export function GroupsScreen() {
                   accessibilityLabel={`Open ${group.name} group details`}
                   accessibilityRole="button"
                   key={group.id}
-                  onPress={() => openGroupDetails(group)}
+                  onPress={() => openGroup(group)}
                 >
                   <Card style={styles.groupCard}>
                     <View style={styles.left}>
@@ -279,13 +338,17 @@ export function GroupsScreen() {
         </KeyboardAvoidingContainer>
       </Modal>
 
-      <Modal animationType="fade" onRequestClose={closeGroupDetails} transparent visible={isDetailsOpen}>
+      <Modal animationType="fade" onRequestClose={handleGroupDetailsRequestClose} transparent visible={isDetailsOpen}>
         <KeyboardAvoidingContainer style={styles.modalOverlay}>
-          <Card style={styles.detailsCard}>
+          <Card accessibilityViewIsModal importantForAccessibility="yes" style={styles.detailsCard}>
             <View style={styles.modalHeader}>
               <View style={styles.detailsHeaderText}>
-                <Text style={styles.modalTitle}>{selectedGroup?.group.name ?? 'Group'}</Text>
-                <Text style={styles.detailsSubtitle}>{selectedGroup?.members.length ?? 0} members</Text>
+                <Text numberOfLines={1} style={styles.modalTitle}>
+                  {selectedGroup?.group.name ?? 'Group'}
+                </Text>
+                <Text numberOfLines={1} style={styles.detailsSubtitle}>
+                  {selectedGroup?.members.length ?? 0} members
+                </Text>
               </View>
               <Pressable
                 accessibilityLabel="Close group details"
@@ -311,137 +374,326 @@ export function GroupsScreen() {
             ) : null}
 
             {!isLoadingDetails ? (
-              <>
-                <ScrollView contentContainerStyle={styles.memberList} keyboardShouldPersistTaps="handled">
-                  {selectedGroup?.members.map((member, index) => (
-                    <View key={member.id} style={styles.memberRow}>
-                      <View style={styles.left}>
-                        <Avatar
-                          initials={groupInitials(displayNameForMember(member))}
-                          tone={avatarTones[index % avatarTones.length]}
-                        />
-                        <View style={styles.groupText}>
-                          <View style={styles.memberTitleRow}>
-                            <Text style={styles.groupName}>{displayNameForMember(member)}</Text>
-                            <Text style={styles.roleTag}>{member.role}</Text>
-                          </View>
-                          <Text style={styles.groupMembers}>{secondaryTextForMember(member)}</Text>
-                        </View>
-                      </View>
-                    </View>
-                  ))}
-                </ScrollView>
+              selectedExpense ? (
+                <View style={styles.expenseDetails}>
+                  <Pressable
+                    accessibilityLabel="Back to group expenses"
+                    accessibilityRole="button"
+                    onPress={closeExpenseDetails}
+                    style={styles.backToListButton}
+                  >
+                    <Ionicons color={colors.primary} name="chevron-back" size={22} />
+                    <Text style={styles.backToListText}>Expenses</Text>
+                  </Pressable>
 
-                {canAddMembers ? (
-                  <View style={styles.addMemberBlock}>
-                    <View style={styles.fieldGroup}>
-                      <Text style={styles.label}>Add Member by Username</Text>
-                      <TextInput
-                        autoCapitalize="none"
-                        autoComplete="username"
-                        autoCorrect={false}
-                        onChangeText={setMemberUsername}
-                        placeholder="Search by username"
-                        placeholderTextColor={colors.outline}
-                        returnKeyType="search"
-                        style={styles.input}
-                        value={memberUsername}
-                      />
-                    </View>
-
-                    {isSearchingMembers ? (
-                      <View style={styles.searchState}>
-                        <ActivityIndicator color={colors.primary} />
-                        <Text style={styles.stateText}>Searching...</Text>
-                      </View>
-                    ) : null}
-
-                    {memberSearchResults.length > 0 ? (
-                      <View style={styles.searchResults}>
-                        {memberSearchResults.map((user, index) => {
-                          return (
-                            <View key={user.id} style={styles.searchResultRow}>
-                              <View style={styles.left}>
-                                <Avatar
-                                  initials={groupInitials(user.name)}
-                                  tone={avatarTones[index % avatarTones.length]}
-                                />
-                                <View style={styles.groupText}>
-                                  <Text style={styles.groupName}>{user.name}</Text>
-                                  <Text style={styles.groupMembers}>@{user.username}</Text>
-                                </View>
-                              </View>
-                              <Pressable
-                                accessibilityLabel={`Select ${user.username}`}
-                                accessibilityRole="button"
-                                onPress={() => selectMemberUser(user)}
-                                style={styles.addMemberIconButton}
-                              >
-                                <Ionicons color={colors.primary} name="add" size={22} />
-                              </Pressable>
-                            </View>
-                          )
-                        })}
-                      </View>
-                    ) : null}
-
-                    {pendingMemberUsers.length > 0 ? (
-                      <View style={styles.pendingList}>
-                        <Text style={styles.pendingTitle}>
-                          {pendingMemberUsers.length === 1 ? 'Selected Member' : 'Selected Members'}
+                  <View style={styles.expenseSummary}>
+                    <Text numberOfLines={2} style={styles.expenseDetailTitle}>
+                      {selectedExpense.expense.title}
+                    </Text>
+                    <Text style={styles.expenseDetailAmount}>
+                      {formatMoneyLabel(selectedExpense.expense.total_amount)}
+                    </Text>
+                    <View style={styles.expenseMetaGrid}>
+                      <View style={styles.expenseMetaItem}>
+                        <Text style={styles.expenseMetaLabel}>Paid by</Text>
+                        <Text numberOfLines={1} style={styles.expenseMetaValue}>
+                          {selectedExpensePayer ? displayNameForMember(selectedExpensePayer) : 'Group member'}
                         </Text>
-                        {pendingMemberUsers.map((user, index) => (
-                          <View key={user.id} style={styles.pendingRow}>
+                      </View>
+                      <View style={styles.expenseMetaItem}>
+                        <Text style={styles.expenseMetaLabel}>Split</Text>
+                        <Text numberOfLines={1} style={styles.expenseMetaValue}>
+                          {selectedExpense.expense.split_type === 'equal' ? 'Equal' : 'Manual'}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Keep group expense details scoped to split shares; payment activity stays in private payment views. */}
+                  <ScrollView contentContainerStyle={styles.shareList} style={styles.modalScrollArea}>
+                    {selectedExpense.participants.map((participant, index) => {
+                      const member = memberByUserID[participant.user_id]
+                      const participantName = member ? displayNameForMember(member) : 'Group member'
+                      const participantUsername = member ? secondaryTextForMember(member) : ''
+
+                      return (
+                        <View key={participant.id} style={styles.shareRow}>
+                          <View style={styles.left}>
+                            <Avatar
+                              initials={groupInitials(participantName)}
+                              tone={avatarTones[index % avatarTones.length]}
+                            />
+                            <View style={styles.groupText}>
+                              <Text numberOfLines={1} style={styles.groupName}>
+                                {participantName}
+                              </Text>
+                              {participantUsername ? (
+                                <Text numberOfLines={1} style={styles.groupMembers}>
+                                  {participantUsername}
+                                </Text>
+                              ) : null}
+                            </View>
+                          </View>
+                          <Text numberOfLines={1} style={styles.shareAmount}>
+                            {formatMoneyLabel(participant.share_amount)}
+                          </Text>
+                        </View>
+                      )
+                    })}
+                  </ScrollView>
+                </View>
+              ) : (
+                <>
+                  <View style={styles.tabRow}>
+                    {groupDetailsTabOptions.map((option) => (
+                      <Pressable
+                        accessibilityRole="tab"
+                        accessibilityState={{ selected: detailsTab === option.value }}
+                        key={option.value}
+                        onPress={() => selectDetailsTab(option.value)}
+                        style={[styles.tabButton, detailsTab === option.value && styles.tabButtonActive]}
+                      >
+                        <Text style={[styles.tabText, detailsTab === option.value && styles.tabTextActive]}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+
+                  {detailsTab === 'members' ? (
+                    <>
+                      <ScrollView
+                        contentContainerStyle={styles.memberList}
+                        keyboardShouldPersistTaps="handled"
+                        style={styles.modalScrollArea}
+                      >
+                        {selectedGroup?.members.map((member, index) => (
+                          <View key={member.id} style={styles.memberRow}>
                             <View style={styles.left}>
                               <Avatar
-                                initials={groupInitials(user.name)}
+                                initials={groupInitials(displayNameForMember(member))}
                                 tone={avatarTones[index % avatarTones.length]}
                               />
                               <View style={styles.groupText}>
-                                <Text style={styles.groupName}>{user.name}</Text>
-                                <Text style={styles.groupMembers}>@{user.username}</Text>
+                                <View style={styles.memberTitleRow}>
+                                  <Text numberOfLines={1} style={styles.groupName}>
+                                    {displayNameForMember(member)}
+                                  </Text>
+                                  <Text style={styles.roleTag}>{member.role}</Text>
+                                </View>
+                                <Text numberOfLines={1} style={styles.groupMembers}>
+                                  {secondaryTextForMember(member)}
+                                </Text>
                               </View>
                             </View>
-                            <Pressable
-                              accessibilityLabel={`Remove ${user.username}`}
-                              accessibilityRole="button"
-                              onPress={() => removePendingMember(user.id)}
-                              style={styles.removePendingButton}
-                            >
-                              <Ionicons color={colors.textMuted} name="close" size={20} />
-                            </Pressable>
                           </View>
                         ))}
-                      </View>
-                    ) : null}
+                      </ScrollView>
 
-                    <Pressable
-                      accessibilityLabel="Add selected members"
-                      accessibilityRole="button"
-                      accessibilityState={{ disabled: isAddingMember || pendingMemberUsers.length === 0 }}
-                      disabled={isAddingMember || pendingMemberUsers.length === 0}
-                      onPress={submitMember}
-                      style={[
-                        styles.createButton,
-                        (isAddingMember || pendingMemberUsers.length === 0) && styles.disabledButton,
-                      ]}
-                    >
-                      {isAddingMember ? (
-                        <ActivityIndicator color={colors.white} />
+                      {canAddMembers ? (
+                        <View style={styles.addMemberBlock}>
+                          <View style={styles.fieldGroup}>
+                            <Text style={styles.label}>Add Member by Username</Text>
+                            <TextInput
+                              autoCapitalize="none"
+                              autoComplete="username"
+                              autoCorrect={false}
+                              onChangeText={setMemberUsername}
+                              placeholder="Search by username"
+                              placeholderTextColor={colors.outline}
+                              returnKeyType="search"
+                              style={styles.input}
+                              value={memberUsername}
+                            />
+                          </View>
+
+                          {isSearchingMembers ? (
+                            <View style={styles.searchState}>
+                              <ActivityIndicator color={colors.primary} />
+                              <Text style={styles.stateText}>Searching...</Text>
+                            </View>
+                          ) : null}
+
+                          {memberSearchResults.length > 0 ? (
+                            <View style={styles.searchResults}>
+                              {memberSearchResults.map((user, index) => {
+                                return (
+                                  <View key={user.id} style={styles.searchResultRow}>
+                                    <View style={styles.left}>
+                                      <Avatar
+                                        initials={groupInitials(user.name)}
+                                        tone={avatarTones[index % avatarTones.length]}
+                                      />
+                                      <View style={styles.groupText}>
+                                        <Text numberOfLines={1} style={styles.groupName}>
+                                          {user.name}
+                                        </Text>
+                                        <Text numberOfLines={1} style={styles.groupMembers}>
+                                          @{user.username}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <Pressable
+                                      accessibilityLabel={`Select ${user.username}`}
+                                      accessibilityRole="button"
+                                      onPress={() => selectMemberUser(user)}
+                                      style={styles.addMemberIconButton}
+                                    >
+                                      <Ionicons color={colors.primary} name="add" size={22} />
+                                    </Pressable>
+                                  </View>
+                                )
+                              })}
+                            </View>
+                          ) : null}
+
+                          {pendingMemberUsers.length > 0 ? (
+                            <View style={styles.pendingList}>
+                              <Text style={styles.pendingTitle}>
+                                {pendingMemberUsers.length === 1 ? 'Selected Member' : 'Selected Members'}
+                              </Text>
+                              {pendingMemberUsers.map((user, index) => (
+                                <View key={user.id} style={styles.pendingRow}>
+                                  <View style={styles.left}>
+                                    <Avatar
+                                      initials={groupInitials(user.name)}
+                                      tone={avatarTones[index % avatarTones.length]}
+                                    />
+                                    <View style={styles.groupText}>
+                                      <Text numberOfLines={1} style={styles.groupName}>
+                                        {user.name}
+                                      </Text>
+                                      <Text numberOfLines={1} style={styles.groupMembers}>
+                                        @{user.username}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                  <Pressable
+                                    accessibilityLabel={`Remove ${user.username}`}
+                                    accessibilityRole="button"
+                                    onPress={() => removePendingMember(user.id)}
+                                    style={styles.removePendingButton}
+                                  >
+                                    <Ionicons color={colors.textMuted} name="close" size={20} />
+                                  </Pressable>
+                                </View>
+                              ))}
+                            </View>
+                          ) : null}
+
+                          <Pressable
+                            accessibilityLabel="Add selected members"
+                            accessibilityRole="button"
+                            accessibilityState={{ disabled: isAddingMember || pendingMemberUsers.length === 0 }}
+                            disabled={isAddingMember || pendingMemberUsers.length === 0}
+                            onPress={submitMember}
+                            style={[
+                              styles.createButton,
+                              (isAddingMember || pendingMemberUsers.length === 0) && styles.disabledButton,
+                            ]}
+                          >
+                            {isAddingMember ? (
+                              <ActivityIndicator color={colors.white} />
+                            ) : (
+                              <Ionicons color={colors.white} name="person-add-outline" size={22} />
+                            )}
+                            {!isAddingMember ? (
+                              <Text style={styles.createText}>
+                                {pendingMemberUsers.length > 1
+                                  ? `Add ${pendingMemberUsers.length} Members`
+                                  : 'Add Member'}
+                              </Text>
+                            ) : null}
+                          </Pressable>
+                        </View>
                       ) : (
-                        <Ionicons color={colors.white} name="person-add-outline" size={22} />
+                        <Text style={styles.emptyText}>Only group owners can add members.</Text>
                       )}
-                      {!isAddingMember ? (
-                        <Text style={styles.createText}>
-                          {pendingMemberUsers.length > 1 ? `Add ${pendingMemberUsers.length} Members` : 'Add Member'}
-                        </Text>
+                    </>
+                  ) : (
+                    <View style={styles.expenseListBlock}>
+                      {isLoadingExpenses && !hasLoadedGroupExpenses ? (
+                        <View style={styles.searchState}>
+                          <ActivityIndicator color={colors.primary} />
+                          <Text style={styles.stateText}>Loading expenses...</Text>
+                        </View>
                       ) : null}
-                    </Pressable>
-                  </View>
-                ) : (
-                  <Text style={styles.emptyText}>Only group owners can add members.</Text>
-                )}
-              </>
+
+                      {isLoadingExpenseDetails ? (
+                        <View style={styles.searchState}>
+                          <ActivityIndicator color={colors.primary} />
+                          <Text style={styles.stateText}>Loading expense...</Text>
+                        </View>
+                      ) : null}
+
+                      {hasLoadedGroupExpenses && groupExpenses.length === 0 ? (
+                        <Card style={styles.emptyCard}>
+                          <Ionicons color={colors.textSoft} name="receipt-outline" size={30} />
+                          <Text style={styles.emptyTitle}>No expenses yet</Text>
+                          <Text style={styles.emptyText}>Created expenses for this group will appear here.</Text>
+                        </Card>
+                      ) : null}
+
+                      <ScrollView contentContainerStyle={styles.expenseList} style={styles.modalScrollArea}>
+                        {groupExpenses.map((expense) => {
+                          const payer = memberByUserID[expense.paid_by]
+
+                          return (
+                            <Pressable
+                              accessibilityLabel={`Open ${expense.title} expense details`}
+                              accessibilityRole="button"
+                              key={expense.id}
+                              onPress={() => openExpenseDetails(expense)}
+                              style={styles.expenseRow}
+                            >
+                              <View style={styles.left}>
+                                <View style={styles.expenseIcon}>
+                                  <Ionicons color={colors.primary} name="receipt-outline" size={22} />
+                                </View>
+                                <View style={styles.groupText}>
+                                  <Text numberOfLines={1} style={styles.groupName}>
+                                    {expense.title}
+                                  </Text>
+                                  <Text numberOfLines={2} style={styles.groupMembers}>
+                                    {payer ? `Paid by ${displayNameForMember(payer)}` : 'Group expense'} ·{' '}
+                                    {formatExpenseDate(expense.expense_date ?? expense.created_at)}
+                                  </Text>
+                                </View>
+                              </View>
+                              <View style={styles.expenseAmountBlock}>
+                                <Text numberOfLines={1} style={styles.expenseAmount}>
+                                  {formatMoneyLabel(expense.total_amount)}
+                                </Text>
+                                <Ionicons color={colors.textSoft} name="chevron-forward" size={22} />
+                              </View>
+                            </Pressable>
+                          )
+                        })}
+                      </ScrollView>
+
+                      {groupExpensePagination && groupExpensePagination.page < groupExpensePagination.total_pages ? (
+                        <Pressable
+                          accessibilityLabel="Load more expenses"
+                          accessibilityRole="button"
+                          accessibilityState={{ disabled: isLoadingExpenses }}
+                          disabled={isLoadingExpenses}
+                          onPress={loadNextGroupExpenses}
+                          style={[styles.loadMoreButton, isLoadingExpenses && styles.disabledButton]}
+                        >
+                          {isLoadingExpenses ? (
+                            <ActivityIndicator color={colors.primary} />
+                          ) : (
+                            <>
+                              <Ionicons color={colors.primary} name="add-circle-outline" size={22} />
+                              <Text style={styles.loadMoreText}>Load More</Text>
+                            </>
+                          )}
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  )}
+                </>
+              )
             ) : null}
           </Card>
         </KeyboardAvoidingContainer>

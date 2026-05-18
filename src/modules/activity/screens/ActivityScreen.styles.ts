@@ -9,6 +9,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       paddingTop: 0,
     },
     inner: {
+      flex: 1,
       padding: 18,
     },
     titleRow: {
@@ -151,6 +152,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     list: {
       gap: 12,
+      paddingBottom: 100,
     },
     item: {
       gap: 12,
@@ -266,6 +268,25 @@ export function createStyles({ colors, shadows }: AppTheme) {
       fontSize: typography.size.bodySmall,
       lineHeight: typography.lineHeight.bodySmall,
       textAlign: 'center',
+    },
+    loadMoreButton: {
+      alignItems: 'center',
+      alignSelf: 'center',
+      backgroundColor: colors.surface,
+      borderColor: colors.surfaceVariant,
+      borderRadius: 8,
+      borderWidth: StyleSheet.hairlineWidth,
+      justifyContent: 'center',
+      marginTop: 4,
+      minHeight: 48,
+      minWidth: 132,
+      paddingHorizontal: 16,
+    },
+    loadMoreText: {
+      color: colors.primary,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.label,
+      fontWeight: typography.weight.semibold,
     },
   })
 }

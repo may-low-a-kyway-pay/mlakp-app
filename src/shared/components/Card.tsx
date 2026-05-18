@@ -1,17 +1,23 @@
 import { PropsWithChildren } from 'react'
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
+import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native'
 import { AppTheme } from '@/src/shared/theme/colors'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 
-type CardProps = PropsWithChildren<{
-  style?: StyleProp<ViewStyle>
-}>
+type CardProps = PropsWithChildren<
+  ViewProps & {
+    style?: StyleProp<ViewStyle>
+  }
+>
 
-export function Card({ children, style }: CardProps) {
+export function Card({ children, style, ...viewProps }: CardProps) {
   const theme = useAppTheme()
   const styles = createStyles(theme)
 
-  return <View style={[styles.card, style]}>{children}</View>
+  return (
+    <View {...viewProps} style={[styles.card, style]}>
+      {children}
+    </View>
+  )
 }
 
 function createStyles({ colors, shadows }: AppTheme) {

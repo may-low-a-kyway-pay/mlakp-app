@@ -4,6 +4,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { AuthUser } from '@/src/modules/auth/types/authTypes'
 import { clearAuthSession, getAuthSession } from '@/src/modules/auth/services/authSession'
 import {
+  getExpense,
+  getExpenseLoadErrorMessage,
+  isUnauthorizedExpenseError,
+  listGroupExpenses,
+} from '@/src/modules/expense/api/expenseApi'
+import { Expense, ExpenseListPagination, ExpenseParticipant } from '@/src/modules/expense/types/expenseTypes'
+import {
   addGroupMember,
   createGroup,
   getGroup,
@@ -18,6 +25,13 @@ type SelectedGroup = {
   group: Group
   members: GroupMember[]
 }
+
+type SelectedExpense = {
+  expense: Expense
+  participants: ExpenseParticipant[]
+}
+
+const expensePageSize = 20
 
 export function useGroups() {
   const [groups, setGroups] = useState<Group[]>([])
@@ -35,9 +49,15 @@ export function useGroups() {
   const [isCreating, setIsCreating] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
+  const [isLoadingExpenseDetails, setIsLoadingExpenseDetails] = useState(false)
+  const [isLoadingExpenses, setIsLoadingExpenses] = useState(false)
   const [isAddingMember, setIsAddingMember] = useState(false)
   const [isSearchingMembers, setIsSearchingMembers] = useState(false)
   const [isSearchingPeople, setIsSearchingPeople] = useState(false)
+  const [groupExpenses, setGroupExpenses] = useState<Expense[]>([])
+  const [groupExpensePagination, setGroupExpensePagination] = useState<ExpenseListPagination | null>(null)
+  const [hasLoadedGroupExpenses, setHasLoadedGroupExpenses] = useState(false)
+  const [selectedExpense, setSelectedExpense] = useState<SelectedExpense | null>(null)
   const [selectedGroup, setSelectedGroup] = useState<SelectedGroup | null>(null)
 
   const canAddMembers = Boolean(
@@ -60,7 +80,7 @@ export function useGroups() {
       setGroups(await listGroups())
     } catch (caughtError) {
       // A 401 means the stored session is no longer usable, so clear it before returning to auth.
-      if (isUnauthorizedGroupsError(caughtError)) {
+      if (isUnauthorizedGroupsError(caughtError) || isUnauthorizedExpenseError(caughtError)) {
         await clearAuthSession()
         router.replace('/login')
         return
@@ -190,10 +210,14 @@ export function useGroups() {
   async function openGroupDetails(group: Group) {
     setIsDetailsOpen(true)
     setIsLoadingDetails(true)
+    setGroupExpenses([])
+    setGroupExpensePagination(null)
+    setHasLoadedGroupExpenses(false)
     setMemberError(null)
     setMemberUsername('')
     setMemberSearchResults([])
     setPendingMemberUsers([])
+    setSelectedExpense(null)
     setSelectedGroup({ group, members: [] })
 
     const session = await getAuthSession()
@@ -206,7 +230,7 @@ export function useGroups() {
     try {
       setSelectedGroup(await getGroup(group.id))
     } catch (caughtError) {
-      if (isUnauthorizedGroupsError(caughtError)) {
+      if (isUnauthorizedGroupsError(caughtError) || isUnauthorizedExpenseError(caughtError)) {
         await clearAuthSession()
         router.replace('/login')
         return
@@ -225,6 +249,71 @@ export function useGroups() {
     setMemberUsername('')
     setMemberSearchResults([])
     setPendingMemberUsers([])
+    setGroupExpenses([])
+    setGroupExpensePagination(null)
+    setHasLoadedGroupExpenses(false)
+    setSelectedExpense(null)
+  }
+
+  async function loadGroupExpenses(page = 1) {
+    if (!selectedGroup || isLoadingExpenses) {
+      return
+    }
+
+    setIsLoadingExpenses(true)
+    setMemberError(null)
+
+    try {
+      const result = await listGroupExpenses(selectedGroup.group.id, {
+        page,
+        perPage: expensePageSize,
+      })
+      setGroupExpenses((current) => (page === 1 ? result.expenses : [...current, ...result.expenses]))
+      setGroupExpensePagination(result.pagination)
+      setHasLoadedGroupExpenses(true)
+    } catch (caughtError) {
+      if (isUnauthorizedExpenseError(caughtError)) {
+        await clearAuthSession()
+        router.replace('/login')
+        return
+      }
+
+      setMemberError(getExpenseLoadErrorMessage(caughtError))
+    } finally {
+      setIsLoadingExpenses(false)
+    }
+  }
+
+  function loadNextGroupExpenses() {
+    if (!groupExpensePagination || groupExpensePagination.page >= groupExpensePagination.total_pages) {
+      return
+    }
+
+    void loadGroupExpenses(groupExpensePagination.page + 1)
+  }
+
+  async function openExpenseDetails(expense: Expense) {
+    setIsLoadingExpenseDetails(true)
+    setMemberError(null)
+
+    try {
+      const details = await getExpense(expense.id)
+      setSelectedExpense({ expense: details.expense, participants: details.participants })
+    } catch (caughtError) {
+      if (isUnauthorizedExpenseError(caughtError)) {
+        await clearAuthSession()
+        router.replace('/login')
+        return
+      }
+
+      setMemberError(getExpenseLoadErrorMessage(caughtError))
+    } finally {
+      setIsLoadingExpenseDetails(false)
+    }
+  }
+
+  function closeExpenseDetails() {
+    setSelectedExpense(null)
   }
 
   function selectMemberUser(user: AuthUser) {
@@ -300,28 +389,38 @@ export function useGroups() {
 
   return {
     canAddMembers,
+    closeExpenseDetails,
     closeGroupDetails,
     error,
     groupName,
+    groupExpensePagination,
+    groupExpenses,
     groups,
+    hasLoadedGroupExpenses,
     isAddingMember,
     isCreateOpen,
     isCreating,
     isDetailsOpen,
     isLoading,
     isLoadingDetails,
+    isLoadingExpenseDetails,
+    isLoadingExpenses,
     isSearchingMembers,
     isSearchingPeople,
     loadGroups,
     memberError,
     memberSearchResults,
     memberUsername,
+    loadGroupExpenses,
+    loadNextGroupExpenses,
+    openExpenseDetails,
     openGroupDetails,
     peopleQuery,
     peopleSearchResults,
     pendingMemberUsers,
     removePendingMember,
     selectMemberUser,
+    selectedExpense,
     selectedGroup,
     setGroupName,
     setIsCreateOpen,

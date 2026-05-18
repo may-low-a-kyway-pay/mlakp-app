@@ -1,3 +1,5 @@
+import { Pagination } from '@/src/shared/types/apiTypes'
+
 export type PaymentStatus = 'pending_confirmation' | 'confirmed' | 'rejected'
 
 export type Payment = {
@@ -50,6 +52,12 @@ export type PaymentsResponse = {
   data: {
     payments: PaymentListItem[]
   }
+  pagination: Pagination
+}
+
+export type PaymentsResult = {
+  payments: PaymentListItem[]
+  pagination: Pagination
 }
 
 export type BulkPaymentResponse = {

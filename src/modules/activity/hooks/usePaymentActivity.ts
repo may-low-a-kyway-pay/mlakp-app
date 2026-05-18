@@ -10,9 +10,11 @@ import {
   reviewPayment,
 } from '@/src/modules/payments/api/paymentsApi'
 import { PaymentListItem, PaymentStatus, ReviewPaymentType } from '@/src/modules/payments/types/paymentTypes'
+import { Pagination } from '@/src/shared/types/apiTypes'
 
 export type ActivityFilter = 'review' | 'sent' | 'history'
 export type ActivityHistoryStatusFilter = 'all' | 'confirmed' | 'rejected'
+const paymentPageSize = 20
 
 function getReviewablePayments(payments: PaymentListItem[], currentUserID: string | null) {
   if (!currentUserID) {
@@ -32,7 +34,9 @@ export function usePaymentActivity() {
   const [filter, setFilter] = useState<ActivityFilter>('review')
   const [historyStatusFilter, setHistoryStatusFilter] = useState<ActivityHistoryStatusFilter>('all')
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [payments, setPayments] = useState<PaymentListItem[]>([])
+  const [paymentsPagination, setPaymentsPagination] = useState<Pagination | null>(null)
   const [isReviewingAll, setIsReviewingAll] = useState(false)
   const [reviewingPaymentID, setReviewingPaymentID] = useState<string | null>(null)
 
@@ -49,41 +53,54 @@ export function usePaymentActivity() {
     return { type: 'all' as const }
   }, [filter, historyStatusFilter])
 
-  const loadPayments = useCallback(async () => {
-    setError(null)
-    setIsLoading(true)
+  const loadPayments = useCallback(
+    async (page = 1) => {
+      setError(null)
+      if (page === 1) {
+        setIsLoading(true)
+      } else {
+        setIsLoadingMore(true)
+      }
 
-    const session = await getAuthSession()
-    if (!session) {
-      router.replace('/login')
-      return
-    }
-
-    setCurrentUserID(session.user.id)
-
-    try {
-      const loadedPayments = await listPayments(requestFilters)
-      setPayments(
-        filter === 'history' && historyStatusFilter === 'all'
-          ? loadedPayments.filter((payment) => payment.status !== 'pending_confirmation')
-          : loadedPayments,
-      )
-    } catch (caughtError) {
-      if (isUnauthorizedPaymentError(caughtError)) {
-        await clearAuthSession()
+      const session = await getAuthSession()
+      if (!session) {
         router.replace('/login')
         return
       }
 
-      setError(getPaymentErrorMessage(caughtError))
-    } finally {
-      setIsLoading(false)
-    }
-  }, [filter, historyStatusFilter, requestFilters])
+      setCurrentUserID(session.user.id)
+
+      try {
+        const result = await listPayments(requestFilters, { page, perPage: paymentPageSize })
+        const visiblePayments =
+          filter === 'history' && historyStatusFilter === 'all'
+            ? result.payments.filter((payment) => payment.status !== 'pending_confirmation')
+            : result.payments
+        setPayments((current) =>
+          page === 1
+            ? visiblePayments
+            : [...current, ...visiblePayments.filter((payment) => !current.some((item) => item.id === payment.id))],
+        )
+        setPaymentsPagination(result.pagination)
+      } catch (caughtError) {
+        if (isUnauthorizedPaymentError(caughtError)) {
+          await clearAuthSession()
+          router.replace('/login')
+          return
+        }
+
+        setError(getPaymentErrorMessage(caughtError))
+      } finally {
+        setIsLoading(false)
+        setIsLoadingMore(false)
+      }
+    },
+    [filter, historyStatusFilter, requestFilters],
+  )
 
   useFocusEffect(
     useCallback(() => {
-      void loadPayments()
+      void loadPayments(1)
     }, [loadPayments]),
   )
 
@@ -97,7 +114,7 @@ export function usePaymentActivity() {
       latestRealtimeEvent?.kind === 'notification.created' &&
       latestRealtimeEvent.notification?.entity_type === 'payment'
     ) {
-      void loadPayments()
+      void loadPayments(1)
     }
   }, [latestRealtimeEvent, loadPayments])
 
@@ -108,7 +125,7 @@ export function usePaymentActivity() {
 
       try {
         await reviewPayment(paymentID, type)
-        await loadPayments()
+        await loadPayments(1)
       } catch (caughtError) {
         if (isUnauthorizedPaymentError(caughtError)) {
           await clearAuthSession()
@@ -138,7 +155,7 @@ export function usePaymentActivity() {
         setReviewingPaymentID(payment.id)
         await reviewPayment(payment.id, 'confirm')
       }
-      await loadPayments()
+      await loadPayments(1)
     } catch (caughtError) {
       if (isUnauthorizedPaymentError(caughtError)) {
         await clearAuthSession()
@@ -146,13 +163,26 @@ export function usePaymentActivity() {
         return
       }
 
-      await loadPayments()
+      await loadPayments(1)
       setError(getPaymentErrorMessage(caughtError))
     } finally {
       setIsReviewingAll(false)
       setReviewingPaymentID(null)
     }
   }, [currentUserID, loadPayments, payments])
+
+  const loadNextPayments = useCallback(() => {
+    if (
+      isLoading ||
+      isLoadingMore ||
+      !paymentsPagination ||
+      paymentsPagination.page >= paymentsPagination.total_pages
+    ) {
+      return
+    }
+
+    void loadPayments(paymentsPagination.page + 1)
+  }, [isLoading, isLoadingMore, loadPayments, paymentsPagination])
 
   return {
     currentUserID,
@@ -161,8 +191,11 @@ export function usePaymentActivity() {
     historyStatusFilter,
     isReviewingAll,
     isLoading,
+    isLoadingMore,
+    loadNextPayments,
     loadPayments,
     payments,
+    paymentsPagination,
     review,
     reviewAll,
     reviewingPaymentID,

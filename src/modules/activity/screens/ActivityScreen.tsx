@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useCallback, useMemo } from 'react'
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, FlatList, Pressable, Text, View } from 'react-native'
 import {
   ActivityFilter,
   ActivityHistoryStatusFilter,
@@ -48,8 +48,11 @@ export function ActivityScreen() {
     historyStatusFilter,
     isReviewingAll,
     isLoading,
+    isLoadingMore,
+    loadNextPayments,
     loadPayments,
     payments,
+    paymentsPagination,
     review,
     reviewAll,
     reviewingPaymentID,
@@ -81,7 +84,7 @@ export function ActivityScreen() {
   }, [confirmAllDisabled, reviewAll, reviewablePaymentCount])
 
   return (
-    <Screen contentStyle={styles.content}>
+    <Screen contentStyle={styles.content} scroll={false}>
       <AppHeader />
       <View style={styles.inner}>
         <View style={styles.titleRow}>
@@ -93,7 +96,7 @@ export function ActivityScreen() {
             accessibilityLabel="Refresh activity"
             accessibilityRole="button"
             disabled={isLoading}
-            onPress={loadPayments}
+            onPress={() => loadPayments(1)}
             style={styles.refreshButton}
           >
             <Ionicons color={colors.primary} name="refresh" size={22} />
@@ -178,20 +181,42 @@ export function ActivityScreen() {
           </View>
         ) : null}
 
-        <View style={styles.list}>
-          {!isLoading && !error && payments.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Ionicons color={colors.textSoft} name="receipt-outline" size={30} />
-              <Text style={styles.emptyTitle}>No payment activity</Text>
-              <Text style={styles.emptyText}>
-                {filter === 'review'
-                  ? 'Payments submitted to you for confirmation will appear here.'
-                  : 'Submitted and reviewed payments will appear here.'}
-              </Text>
-            </Card>
-          ) : null}
-
-          {payments.map((payment) => {
+        <FlatList
+          contentContainerStyle={styles.list}
+          data={payments}
+          keyExtractor={(item) => item.id}
+          ListEmptyComponent={
+            !isLoading && !error ? (
+              <Card style={styles.emptyCard}>
+                <Ionicons color={colors.textSoft} name="receipt-outline" size={30} />
+                <Text style={styles.emptyTitle}>No payment activity</Text>
+                <Text style={styles.emptyText}>
+                  {filter === 'review'
+                    ? 'Payments submitted to you for confirmation will appear here.'
+                    : 'Submitted and reviewed payments will appear here.'}
+                </Text>
+              </Card>
+            ) : null
+          }
+          ListFooterComponent={
+            paymentsPagination && paymentsPagination.page < paymentsPagination.total_pages ? (
+              <Pressable
+                accessibilityLabel="Load more payment activity"
+                accessibilityRole="button"
+                accessibilityState={{ disabled: isLoadingMore }}
+                disabled={isLoadingMore}
+                onPress={loadNextPayments}
+                style={styles.loadMoreButton}
+              >
+                {isLoadingMore ? (
+                  <ActivityIndicator color={colors.primary} />
+                ) : (
+                  <Text style={styles.loadMoreText}>Load more</Text>
+                )}
+              </Pressable>
+            ) : null
+          }
+          renderItem={({ item: payment }) => {
             const isReceived = payment.received_by === currentUserID
             const isPendingReview = isReceived && payment.status === 'pending_confirmation'
             const isReviewingThisPayment = reviewingPaymentID === payment.id
@@ -271,8 +296,9 @@ export function ActivityScreen() {
                 ) : null}
               </Card>
             )
-          })}
-        </View>
+          }}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     </Screen>
   )
