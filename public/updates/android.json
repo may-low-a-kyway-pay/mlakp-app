@@ -1,9 +1,13 @@
 {
-  "latest_version": "1.0.0",
-  "latest_version_code": 1,
+  "latest_version": "1.1.0",
+  "latest_version_code": 2,
   "min_supported_version_code": 1,
   "force_update": false,
-  "apk_url": "/downloads/mlakp-v1.0.0.apk",
-  "message": "You are using the latest MLAKP release.",
-  "release_notes": []
+  "apk_url": "https://vjz11hqi5f53lwcr.public.blob.vercel-storage.com/downloads/mlakp-v1.1.0.apk",
+  "message": "A new MLAKP release is available.",
+  "release_notes": [
+    "Added paginated debt records and payment activity.",
+    "Added group expense list and expense details.",
+    "Improved notification context loading."
+  ]
 }
