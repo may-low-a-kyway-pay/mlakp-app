@@ -13,7 +13,7 @@ type NotificationsContextValue = {
 const NotificationsContext = createContext<NotificationsContextValue | null>(null)
 
 const reconnectDelayMs = 5000
-const notificationPollMs = 5000
+const notificationPollMs = 60000
 
 function realtimeURL(accessToken: string) {
   const baseURL = process.env.EXPO_PUBLIC_API_BASE_URL
@@ -154,6 +154,10 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
     }, reconnectDelayMs)
 
     const notificationPoll = setInterval(() => {
+      if (socketRef.current) {
+        return
+      }
+
       void refreshNotifications(true).catch(() => {
         setUnreadCount(0)
       })

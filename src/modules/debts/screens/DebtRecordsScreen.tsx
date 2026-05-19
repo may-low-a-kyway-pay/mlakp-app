@@ -41,7 +41,9 @@ export function DebtRecordsScreen() {
     isPaymentOpen,
     isPartialPayment,
     isLoading,
+    isLoadingMore,
     isSubmittingPayment,
+    loadNextRecords,
     loadRecords,
     openPayment,
     paymentAmount,
@@ -49,6 +51,7 @@ export function DebtRecordsScreen() {
     paymentNote,
     pendingPaymentDebtIDs,
     records,
+    recordsPagination,
     setPaymentAmount,
     setPaymentNote,
     setStatusFilter,
@@ -80,7 +83,7 @@ export function DebtRecordsScreen() {
           accessibilityLabel="Refresh balances"
           accessibilityRole="button"
           disabled={isLoading}
-          onPress={loadRecords}
+          onPress={() => loadRecords(1)}
           style={styles.iconButton}
         >
           <Ionicons color={colors.primary} name="refresh" size={22} />
@@ -149,6 +152,24 @@ export function DebtRecordsScreen() {
                   : 'Try another status or type filter.'}
               </Text>
             </Card>
+          ) : null
+        }
+        ListFooterComponent={
+          recordsPagination && recordsPagination.page < recordsPagination.total_pages ? (
+            <Pressable
+              accessibilityLabel="Load more balance records"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isLoadingMore }}
+              disabled={isLoadingMore}
+              onPress={loadNextRecords}
+              style={styles.loadMoreButton}
+            >
+              {isLoadingMore ? (
+                <ActivityIndicator color={colors.primary} />
+              ) : (
+                <Text style={styles.loadMoreText}>Load more</Text>
+              )}
+            </Pressable>
           ) : null
         }
         renderItem={({ item }) => {

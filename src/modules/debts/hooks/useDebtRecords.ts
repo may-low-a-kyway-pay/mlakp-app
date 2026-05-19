@@ -15,11 +15,13 @@ import {
   markDebtPayment,
 } from '@/src/modules/payments/api/paymentsApi'
 import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
+import { Pagination } from '@/src/shared/types/apiTypes'
 
 type StatusFilter = 'active' | 'all' | DebtStatus
 type TypeFilter = 'all' | DebtRecordType
 
 const activeStatuses: DebtStatus[] = ['pending', 'accepted', 'partially_settled']
+const debtPageSize = 20
 
 function parseAmountMinor(value: string) {
   const trimmed = value.trim()
@@ -40,12 +42,14 @@ export function useDebtRecords() {
   const [currentUserID, setCurrentUserID] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
   const [isSubmittingPayment, setIsSubmittingPayment] = useState(false)
   const [paymentAmount, setPaymentAmount] = useState('')
   const [paymentDebt, setPaymentDebt] = useState<DebtRecord | null>(null)
   const [paymentNote, setPaymentNote] = useState('')
   const [pendingPaymentDebtIDs, setPendingPaymentDebtIDs] = useState<Set<string>>(new Set())
+  const [recordsPagination, setRecordsPagination] = useState<Pagination | null>(null)
   const [updatingDebtID, setUpdatingDebtID] = useState<string | null>(null)
 
   const filters = useMemo<DebtRecordFilters>(
@@ -56,44 +60,57 @@ export function useDebtRecords() {
     [statusFilter, typeFilter],
   )
 
-  const loadRecords = useCallback(async () => {
-    setError(null)
-    setIsLoading(true)
+  const loadRecords = useCallback(
+    async (page = 1) => {
+      setError(null)
+      if (page === 1) {
+        setIsLoading(true)
+      } else {
+        setIsLoadingMore(true)
+      }
 
-    const session = await getAuthSession()
-    if (!session) {
-      router.replace('/login')
-      return
-    }
-
-    setCurrentUserID(session.user.id)
-
-    try {
-      const [loadedRecords, pendingPayments] = await Promise.all([
-        listDebtRecords(filters),
-        listPayments({ status: 'pending_confirmation', type: 'sent' }),
-      ])
-      setRecords(
-        statusFilter === 'active'
-          ? loadedRecords.filter((record) => activeStatuses.includes(record.status))
-          : loadedRecords,
-      )
-      setPendingPaymentDebtIDs(new Set(pendingPayments.map((payment) => payment.debt_id)))
-    } catch (caughtError) {
-      if (isUnauthorizedDebtRecordsError(caughtError) || isUnauthorizedPaymentError(caughtError)) {
-        await clearAuthSession()
+      const session = await getAuthSession()
+      if (!session) {
         router.replace('/login')
         return
       }
 
-      setError(getDebtRecordsErrorMessage(caughtError))
-    } finally {
-      setIsLoading(false)
-    }
-  }, [filters, statusFilter])
+      setCurrentUserID(session.user.id)
+
+      try {
+        const [recordResult, pendingPaymentResult] = await Promise.all([
+          listDebtRecords(filters, { page, perPage: debtPageSize }),
+          listPayments({ status: 'pending_confirmation', type: 'sent' }, { perPage: 50 }),
+        ])
+        const visibleRecords =
+          statusFilter === 'active'
+            ? recordResult.debts.filter((record) => activeStatuses.includes(record.status))
+            : recordResult.debts
+        setRecords((current) =>
+          page === 1
+            ? visibleRecords
+            : [...current, ...visibleRecords.filter((record) => !current.some((item) => item.id === record.id))],
+        )
+        setRecordsPagination(recordResult.pagination)
+        setPendingPaymentDebtIDs(new Set(pendingPaymentResult.payments.map((payment) => payment.debt_id)))
+      } catch (caughtError) {
+        if (isUnauthorizedDebtRecordsError(caughtError) || isUnauthorizedPaymentError(caughtError)) {
+          await clearAuthSession()
+          router.replace('/login')
+          return
+        }
+
+        setError(getDebtRecordsErrorMessage(caughtError))
+      } finally {
+        setIsLoading(false)
+        setIsLoadingMore(false)
+      }
+    },
+    [filters, statusFilter],
+  )
 
   useEffect(() => {
-    void loadRecords()
+    void loadRecords(1)
   }, [loadRecords])
 
   useEffect(() => {
@@ -106,7 +123,7 @@ export function useDebtRecords() {
       latestRealtimeEvent?.kind === 'notification.created' &&
       ['expense', 'debt', 'payment'].includes(latestRealtimeEvent.notification?.entity_type ?? '')
     ) {
-      void loadRecords()
+      void loadRecords(1)
     }
   }, [latestRealtimeEvent, loadRecords])
 
@@ -117,7 +134,7 @@ export function useDebtRecords() {
 
       try {
         await updateDebtStatus(debtID, type)
-        await loadRecords()
+        await loadRecords(1)
       } catch (caughtError) {
         if (isUnauthorizedDebtRecordsError(caughtError)) {
           await clearAuthSession()
@@ -195,7 +212,7 @@ export function useDebtRecords() {
       setPaymentDebt(null)
       setPaymentAmount('')
       setPaymentNote('')
-      await loadRecords()
+      await loadRecords(1)
     } catch (caughtError) {
       if (isUnauthorizedDebtRecordsError(caughtError)) {
         await clearAuthSession()
@@ -209,6 +226,14 @@ export function useDebtRecords() {
     }
   }, [loadRecords, paymentAmount, paymentAmountMinor, paymentDebt, paymentNote])
 
+  const loadNextRecords = useCallback(() => {
+    if (isLoading || isLoadingMore || !recordsPagination || recordsPagination.page >= recordsPagination.total_pages) {
+      return
+    }
+
+    void loadRecords(recordsPagination.page + 1)
+  }, [isLoading, isLoadingMore, loadRecords, recordsPagination])
+
   return {
     canSubmitPayment,
     closePayment,
@@ -221,14 +246,17 @@ export function useDebtRecords() {
       paymentAmountMinor > 0 &&
       paymentAmountMinor < (paymentDebt?.remaining_amount_minor ?? 0),
     isLoading,
+    isLoadingMore,
     isSubmittingPayment,
     loadRecords,
+    loadNextRecords,
     openPayment,
     paymentAmount,
     paymentDebt,
     paymentNote,
     pendingPaymentDebtIDs,
     records,
+    recordsPagination,
     setStatusFilter,
     setPaymentAmount,
     setPaymentNote,

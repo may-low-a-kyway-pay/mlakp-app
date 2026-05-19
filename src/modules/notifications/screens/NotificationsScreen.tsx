@@ -98,6 +98,17 @@ function contextFor(
   return {}
 }
 
+function needsPendingDebtContext(notification: AppNotification) {
+  return (
+    notification.entity_type === 'debt' &&
+    (notification.type === 'expense.created' || notification.type === 'debt.resent')
+  )
+}
+
+function needsPendingPaymentContext(notification: AppNotification) {
+  return notification.entity_type === 'payment' && notification.type === 'payment.marked'
+}
+
 function notificationIcon(notification: AppNotification, hasActions: boolean) {
   if (hasActions) {
     return 'alert-circle-outline'
@@ -224,10 +235,18 @@ export function NotificationsScreen() {
     setIsLoading(true)
 
     try {
-      const [data, debts, payments] = await Promise.all([listNotifications(100), listDebtRecords({}), listPayments({})])
+      const data = await listNotifications(100)
+      const shouldLoadDebtContext = data.notifications.some(needsPendingDebtContext)
+      const shouldLoadPaymentContext = data.notifications.some(needsPendingPaymentContext)
+      const [debtResult, paymentResult] = await Promise.all([
+        shouldLoadDebtContext ? listDebtRecords({ status: 'pending' }, { perPage: 50 }) : Promise.resolve(null),
+        shouldLoadPaymentContext
+          ? listPayments({ status: 'pending_confirmation', type: 'received' }, { perPage: 50 })
+          : Promise.resolve(null),
+      ])
       setNotifications(data.notifications)
-      setDebtByID(indexByID(debts))
-      setPaymentByID(indexByID(payments))
+      setDebtByID(indexByID(debtResult?.debts ?? []))
+      setPaymentByID(indexByID(paymentResult?.payments ?? []))
       await refreshNotifications()
     } catch (caughtError) {
       if (

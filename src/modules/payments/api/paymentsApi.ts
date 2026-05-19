@@ -3,9 +3,9 @@ import {
   BulkMarkPaymentRequest,
   BulkPaymentResponse,
   MarkPaymentRequest,
-  PaymentListItem,
   PaymentResponse,
   PaymentsResponse,
+  PaymentsResult,
   PaymentStatus,
   PaymentTypeFilter,
   ReviewPaymentType,
@@ -18,14 +18,27 @@ type ListPaymentsFilters = {
   type?: PaymentTypeFilter
 }
 
-export async function listPayments(filters: ListPaymentsFilters): Promise<PaymentListItem[]> {
+type ListPaymentsOptions = {
+  page?: number
+  perPage?: number
+}
+
+export async function listPayments(
+  filters: ListPaymentsFilters,
+  options: ListPaymentsOptions = {},
+): Promise<PaymentsResult> {
   const response = await apiClient.get<PaymentsResponse>('/v1/payments', {
     params: {
       status: filters.status,
       type: filters.type,
+      page: options.page,
+      per_page: options.perPage,
     },
   })
-  return response.data.data.payments
+  return {
+    payments: response.data.data.payments,
+    pagination: response.data.pagination,
+  }
 }
 
 export async function markDebtPayment(debtID: string, payload: MarkPaymentRequest) {

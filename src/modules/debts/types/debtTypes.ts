@@ -1,3 +1,5 @@
+import { Pagination } from '@/src/shared/types/apiTypes'
+
 export type DebtStatus = 'pending' | 'accepted' | 'rejected' | 'partially_settled' | 'settled'
 
 export type DebtRecordType = 'owed' | 'receivable'
@@ -29,9 +31,15 @@ export type DebtRecordsResponse = {
   data: {
     debts: DebtRecord[]
   }
+  pagination: Pagination
 }
 
 export type DebtRecordFilters = {
   status?: DebtStatus
   type?: DebtRecordType
+}
+
+export type DebtRecordsResult = {
+  debts: DebtRecord[]
+  pagination: Pagination
 }

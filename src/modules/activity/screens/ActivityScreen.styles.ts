@@ -9,6 +9,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
       paddingTop: 0,
     },
     inner: {
+      flex: 1,
       padding: 18,
     },
     titleRow: {
@@ -91,6 +92,51 @@ export function createStyles({ colors, shadows }: AppTheme) {
       fontSize: typography.size.bodySmall,
       fontWeight: typography.weight.medium,
     },
+    bulkReviewRow: {
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderColor: colors.surfaceVariant,
+      borderRadius: 8,
+      borderWidth: StyleSheet.hairlineWidth,
+      flexDirection: 'row',
+      gap: 12,
+      justifyContent: 'space-between',
+      marginBottom: 12,
+      padding: 14,
+    },
+    bulkReviewTextBlock: {
+      flex: 1,
+      gap: 3,
+    },
+    bulkReviewTitle: {
+      color: colors.text,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.bodySmall,
+      fontWeight: typography.weight.semibold,
+    },
+    bulkReviewText: {
+      color: colors.textMuted,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.caption,
+      fontWeight: typography.weight.medium,
+    },
+    confirmAllButton: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderRadius: 8,
+      flexDirection: 'row',
+      gap: 6,
+      justifyContent: 'center',
+      minHeight: 48,
+      minWidth: 128,
+      paddingHorizontal: 14,
+    },
+    confirmAllButtonText: {
+      color: colors.white,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.label,
+      fontWeight: typography.weight.semibold,
+    },
     errorBlock: {
       backgroundColor: colors.dangerSoft,
       borderRadius: 10,
@@ -106,6 +152,7 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     list: {
       gap: 12,
+      paddingBottom: 100,
     },
     item: {
       gap: 12,
@@ -221,6 +268,25 @@ export function createStyles({ colors, shadows }: AppTheme) {
       fontSize: typography.size.bodySmall,
       lineHeight: typography.lineHeight.bodySmall,
       textAlign: 'center',
+    },
+    loadMoreButton: {
+      alignItems: 'center',
+      alignSelf: 'center',
+      backgroundColor: colors.surface,
+      borderColor: colors.surfaceVariant,
+      borderRadius: 8,
+      borderWidth: StyleSheet.hairlineWidth,
+      justifyContent: 'center',
+      marginTop: 4,
+      minHeight: 48,
+      minWidth: 132,
+      paddingHorizontal: 16,
+    },
+    loadMoreText: {
+      color: colors.primary,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.label,
+      fontWeight: typography.weight.semibold,
     },
   })
 }

@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { useCallback, useMemo } from 'react'
+import { ActivityIndicator, Alert, FlatList, Pressable, Text, View } from 'react-native'
 import {
   ActivityFilter,
   ActivityHistoryStatusFilter,
@@ -45,17 +46,45 @@ export function ActivityScreen() {
     error,
     filter,
     historyStatusFilter,
+    isReviewingAll,
     isLoading,
+    isLoadingMore,
+    loadNextPayments,
     loadPayments,
     payments,
+    paymentsPagination,
     review,
+    reviewAll,
     reviewingPaymentID,
     setFilter,
     setHistoryStatusFilter,
   } = usePaymentActivity()
 
+  const reviewablePaymentCount = useMemo(
+    () =>
+      payments.filter((payment) => payment.received_by === currentUserID && payment.status === 'pending_confirmation')
+        .length,
+    [currentUserID, payments],
+  )
+  const confirmAllDisabled = reviewablePaymentCount === 0 || isLoading || isReviewingAll || Boolean(reviewingPaymentID)
+
+  const confirmAll = useCallback(() => {
+    if (confirmAllDisabled) {
+      return
+    }
+
+    Alert.alert(
+      'Confirm all payments',
+      `Confirm ${reviewablePaymentCount} pending ${reviewablePaymentCount === 1 ? 'payment' : 'payments'}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Confirm all', isPreferred: true, onPress: reviewAll, style: 'default' },
+      ],
+    )
+  }, [confirmAllDisabled, reviewAll, reviewablePaymentCount])
+
   return (
-    <Screen contentStyle={styles.content}>
+    <Screen contentStyle={styles.content} scroll={false}>
       <AppHeader />
       <View style={styles.inner}>
         <View style={styles.titleRow}>
@@ -67,7 +96,7 @@ export function ActivityScreen() {
             accessibilityLabel="Refresh activity"
             accessibilityRole="button"
             disabled={isLoading}
-            onPress={loadPayments}
+            onPress={() => loadPayments(1)}
             style={styles.refreshButton}
           >
             <Ionicons color={colors.primary} name="refresh" size={22} />
@@ -108,6 +137,37 @@ export function ActivityScreen() {
           </View>
         ) : null}
 
+        {filter === 'review' ? (
+          <View style={styles.bulkReviewRow}>
+            <View style={styles.bulkReviewTextBlock}>
+              <Text style={styles.bulkReviewTitle}>Pending review</Text>
+              <Text style={styles.bulkReviewText}>
+                {reviewablePaymentCount} {reviewablePaymentCount === 1 ? 'payment' : 'payments'}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityLabel="Confirm all pending payments"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: confirmAllDisabled }}
+              disabled={confirmAllDisabled}
+              onPress={confirmAll}
+              style={({ pressed }) => [
+                styles.confirmAllButton,
+                (pressed || confirmAllDisabled) && styles.actionPressed,
+              ]}
+            >
+              {isReviewingAll ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <>
+                  <Ionicons color={colors.white} name="checkmark-done" size={iconSize.small} />
+                  <Text style={styles.confirmAllButtonText}>Confirm all</Text>
+                </>
+              )}
+            </Pressable>
+          </View>
+        ) : null}
+
         {error ? (
           <View style={styles.errorBlock}>
             <Text style={styles.errorText}>{error}</Text>
@@ -121,23 +181,46 @@ export function ActivityScreen() {
           </View>
         ) : null}
 
-        <View style={styles.list}>
-          {!isLoading && !error && payments.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Ionicons color={colors.textSoft} name="receipt-outline" size={30} />
-              <Text style={styles.emptyTitle}>No payment activity</Text>
-              <Text style={styles.emptyText}>
-                {filter === 'review'
-                  ? 'Payments submitted to you for confirmation will appear here.'
-                  : 'Submitted and reviewed payments will appear here.'}
-              </Text>
-            </Card>
-          ) : null}
-
-          {payments.map((payment) => {
+        <FlatList
+          contentContainerStyle={styles.list}
+          data={payments}
+          keyExtractor={(item) => item.id}
+          ListEmptyComponent={
+            !isLoading && !error ? (
+              <Card style={styles.emptyCard}>
+                <Ionicons color={colors.textSoft} name="receipt-outline" size={30} />
+                <Text style={styles.emptyTitle}>No payment activity</Text>
+                <Text style={styles.emptyText}>
+                  {filter === 'review'
+                    ? 'Payments submitted to you for confirmation will appear here.'
+                    : 'Submitted and reviewed payments will appear here.'}
+                </Text>
+              </Card>
+            ) : null
+          }
+          ListFooterComponent={
+            paymentsPagination && paymentsPagination.page < paymentsPagination.total_pages ? (
+              <Pressable
+                accessibilityLabel="Load more payment activity"
+                accessibilityRole="button"
+                accessibilityState={{ disabled: isLoadingMore }}
+                disabled={isLoadingMore}
+                onPress={loadNextPayments}
+                style={styles.loadMoreButton}
+              >
+                {isLoadingMore ? (
+                  <ActivityIndicator color={colors.primary} />
+                ) : (
+                  <Text style={styles.loadMoreText}>Load more</Text>
+                )}
+              </Pressable>
+            ) : null
+          }
+          renderItem={({ item: payment }) => {
             const isReceived = payment.received_by === currentUserID
             const isPendingReview = isReceived && payment.status === 'pending_confirmation'
-            const isReviewing = reviewingPaymentID === payment.id
+            const isReviewingThisPayment = reviewingPaymentID === payment.id
+            const isReviewActionDisabled = isReviewingThisPayment || isReviewingAll
 
             return (
               <Card key={payment.id} style={styles.item}>
@@ -176,13 +259,13 @@ export function ActivityScreen() {
                     <Pressable
                       accessibilityLabel={`Reject payment from ${payment.paid_by_name}`}
                       accessibilityRole="button"
-                      accessibilityState={{ disabled: isReviewing }}
-                      disabled={isReviewing}
+                      accessibilityState={{ disabled: isReviewActionDisabled }}
+                      disabled={isReviewActionDisabled}
                       onPress={() => review(payment.id, 'reject')}
                       style={({ pressed }) => [
                         styles.reviewButton,
                         styles.rejectButton,
-                        (pressed || isReviewing) && styles.actionPressed,
+                        (pressed || isReviewActionDisabled) && styles.actionPressed,
                       ]}
                     >
                       <Ionicons color={colors.danger} name="close" size={iconSize.small} />
@@ -191,16 +274,16 @@ export function ActivityScreen() {
                     <Pressable
                       accessibilityLabel={`Confirm payment from ${payment.paid_by_name}`}
                       accessibilityRole="button"
-                      accessibilityState={{ disabled: isReviewing }}
-                      disabled={isReviewing}
+                      accessibilityState={{ disabled: isReviewActionDisabled }}
+                      disabled={isReviewActionDisabled}
                       onPress={() => review(payment.id, 'confirm')}
                       style={({ pressed }) => [
                         styles.reviewButton,
                         styles.confirmButton,
-                        (pressed || isReviewing) && styles.actionPressed,
+                        (pressed || isReviewActionDisabled) && styles.actionPressed,
                       ]}
                     >
-                      {isReviewing ? (
+                      {isReviewingThisPayment ? (
                         <ActivityIndicator color={colors.white} />
                       ) : (
                         <>
@@ -213,8 +296,9 @@ export function ActivityScreen() {
                 ) : null}
               </Card>
             )
-          })}
-        </View>
+          }}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     </Screen>
   )
