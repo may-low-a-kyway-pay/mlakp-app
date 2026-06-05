@@ -6,6 +6,7 @@ import { useAppTheme } from '@/src/shared/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
+import { useMemo } from 'react'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
 import { createStyles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
 
@@ -16,7 +17,7 @@ type AuthFormScreenProps = {
 export function AuthFormScreen({ mode }: AuthFormScreenProps) {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const {
     email,
     error,

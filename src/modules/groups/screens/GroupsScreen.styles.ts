@@ -270,6 +270,14 @@ export function createStyles({ colors, shadows }: AppTheme) {
       paddingHorizontal: 12,
       paddingVertical: 10,
     },
+    removeMemberButton: {
+      alignItems: 'center',
+      borderRadius: 24,
+      height: 48,
+      justifyContent: 'center',
+      marginLeft: 8,
+      width: 48,
+    },
     memberTitleRow: {
       alignItems: 'center',
       flexDirection: 'row',

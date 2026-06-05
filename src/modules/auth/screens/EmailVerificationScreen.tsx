@@ -15,7 +15,7 @@ import { createStyles } from '@/src/modules/auth/screens/AuthFormScreen.styles'
 export function EmailVerificationScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const params = useLocalSearchParams<{ email?: string; source?: string }>()
   const email = useMemo(() => String(params.email ?? '').trim(), [params.email])
   const hasRequestedInitialOTP = useRef(false)

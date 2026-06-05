@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native'
 import { router } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AuthUser } from '@/src/modules/auth/types/authTypes'
 import { clearAuthSession, getAuthSession } from '@/src/modules/auth/services/authSession'
 import {
@@ -17,6 +17,7 @@ import {
   getGroupsErrorMessage,
   isUnauthorizedGroupsError,
   listGroups,
+  removeGroupMember,
 } from '@/src/modules/groups/api/groupsApi'
 import { Group, GroupMember } from '@/src/modules/groups/types/groupTypes'
 import { searchUsersByUsername } from '@/src/modules/users/api/usersApi'
@@ -29,6 +30,11 @@ type SelectedGroup = {
 type SelectedExpense = {
   expense: Expense
   participants: ExpenseParticipant[]
+}
+
+type RemovingMember = {
+  groupID: string
+  userID: string
 }
 
 const expensePageSize = 20
@@ -52,6 +58,7 @@ export function useGroups() {
   const [isLoadingExpenseDetails, setIsLoadingExpenseDetails] = useState(false)
   const [isLoadingExpenses, setIsLoadingExpenses] = useState(false)
   const [isAddingMember, setIsAddingMember] = useState(false)
+  const [removingMember, setRemovingMember] = useState<RemovingMember | null>(null)
   const [isSearchingMembers, setIsSearchingMembers] = useState(false)
   const [isSearchingPeople, setIsSearchingPeople] = useState(false)
   const [groupExpenses, setGroupExpenses] = useState<Expense[]>([])
@@ -59,11 +66,16 @@ export function useGroups() {
   const [hasLoadedGroupExpenses, setHasLoadedGroupExpenses] = useState(false)
   const [selectedExpense, setSelectedExpense] = useState<SelectedExpense | null>(null)
   const [selectedGroup, setSelectedGroup] = useState<SelectedGroup | null>(null)
+  const selectedGroupIDRef = useRef<string | null>(null)
 
-  const canAddMembers = Boolean(
+  const canManageMembers = Boolean(
     currentUserID &&
     selectedGroup?.members.some((member) => member.user_id === currentUserID && member.role === 'owner'),
   )
+  const removingMemberID =
+    removingMember && removingMember.groupID === selectedGroup?.group.id ? removingMember.userID : null
+  const isRemovingMember = Boolean(removingMember)
+  const isMutatingMembers = isAddingMember || isRemovingMember
 
   const loadGroups = useCallback(async () => {
     setError(null)
@@ -208,8 +220,12 @@ export function useGroups() {
   }
 
   async function openGroupDetails(group: Group) {
+    selectedGroupIDRef.current = group.id
     setIsDetailsOpen(true)
     setIsLoadingDetails(true)
+    setIsLoadingExpenseDetails(false)
+    setIsLoadingExpenses(false)
+    setIsAddingMember(false)
     setGroupExpenses([])
     setGroupExpensePagination(null)
     setHasLoadedGroupExpenses(false)
@@ -228,7 +244,10 @@ export function useGroups() {
     setCurrentUserID(session.user.id)
 
     try {
-      setSelectedGroup(await getGroup(group.id))
+      const details = await getGroup(group.id)
+      if (selectedGroupIDRef.current === group.id) {
+        setSelectedGroup(details)
+      }
     } catch (caughtError) {
       if (isUnauthorizedGroupsError(caughtError) || isUnauthorizedExpenseError(caughtError)) {
         await clearAuthSession()
@@ -236,14 +255,23 @@ export function useGroups() {
         return
       }
 
-      setMemberError(getGroupsErrorMessage(caughtError))
+      if (selectedGroupIDRef.current === group.id) {
+        setMemberError(getGroupsErrorMessage(caughtError))
+      }
     } finally {
-      setIsLoadingDetails(false)
+      if (selectedGroupIDRef.current === group.id) {
+        setIsLoadingDetails(false)
+      }
     }
   }
 
   function closeGroupDetails() {
+    selectedGroupIDRef.current = null
     setIsDetailsOpen(false)
+    setIsLoadingDetails(false)
+    setIsLoadingExpenseDetails(false)
+    setIsLoadingExpenses(false)
+    setIsAddingMember(false)
     setSelectedGroup(null)
     setMemberError(null)
     setMemberUsername('')
@@ -260,17 +288,20 @@ export function useGroups() {
       return
     }
 
+    const groupID = selectedGroup.group.id
     setIsLoadingExpenses(true)
     setMemberError(null)
 
     try {
-      const result = await listGroupExpenses(selectedGroup.group.id, {
+      const result = await listGroupExpenses(groupID, {
         page,
         perPage: expensePageSize,
       })
-      setGroupExpenses((current) => (page === 1 ? result.expenses : [...current, ...result.expenses]))
-      setGroupExpensePagination(result.pagination)
-      setHasLoadedGroupExpenses(true)
+      if (selectedGroupIDRef.current === groupID) {
+        setGroupExpenses((current) => (page === 1 ? result.expenses : [...current, ...result.expenses]))
+        setGroupExpensePagination(result.pagination)
+        setHasLoadedGroupExpenses(true)
+      }
     } catch (caughtError) {
       if (isUnauthorizedExpenseError(caughtError)) {
         await clearAuthSession()
@@ -278,9 +309,13 @@ export function useGroups() {
         return
       }
 
-      setMemberError(getExpenseLoadErrorMessage(caughtError))
+      if (selectedGroupIDRef.current === groupID) {
+        setMemberError(getExpenseLoadErrorMessage(caughtError))
+      }
     } finally {
-      setIsLoadingExpenses(false)
+      if (selectedGroupIDRef.current === groupID) {
+        setIsLoadingExpenses(false)
+      }
     }
   }
 
@@ -293,12 +328,19 @@ export function useGroups() {
   }
 
   async function openExpenseDetails(expense: Expense) {
+    const groupID = selectedGroup?.group.id
+    if (!groupID) {
+      return
+    }
+
     setIsLoadingExpenseDetails(true)
     setMemberError(null)
 
     try {
       const details = await getExpense(expense.id)
-      setSelectedExpense({ expense: details.expense, participants: details.participants })
+      if (selectedGroupIDRef.current === groupID) {
+        setSelectedExpense({ expense: details.expense, participants: details.participants })
+      }
     } catch (caughtError) {
       if (isUnauthorizedExpenseError(caughtError)) {
         await clearAuthSession()
@@ -306,9 +348,13 @@ export function useGroups() {
         return
       }
 
-      setMemberError(getExpenseLoadErrorMessage(caughtError))
+      if (selectedGroupIDRef.current === groupID) {
+        setMemberError(getExpenseLoadErrorMessage(caughtError))
+      }
     } finally {
-      setIsLoadingExpenseDetails(false)
+      if (selectedGroupIDRef.current === groupID) {
+        setIsLoadingExpenseDetails(false)
+      }
     }
   }
 
@@ -338,7 +384,7 @@ export function useGroups() {
   }
 
   async function submitMember() {
-    if (!selectedGroup) {
+    if (!selectedGroup || isRemovingMember) {
       return
     }
     if (pendingMemberUsers.length === 0) {
@@ -346,6 +392,7 @@ export function useGroups() {
       return
     }
 
+    const groupID = selectedGroup.group.id
     setMemberError(null)
     setIsAddingMember(true)
 
@@ -353,7 +400,7 @@ export function useGroups() {
       const failedUsers: AuthUser[] = []
       for (const user of pendingMemberUsers) {
         try {
-          await addGroupMember(selectedGroup.group.id, user.username)
+          await addGroupMember(groupID, user.username)
         } catch (caughtError) {
           if (isUnauthorizedGroupsError(caughtError)) {
             await clearAuthSession()
@@ -365,14 +412,16 @@ export function useGroups() {
         }
       }
 
-      const details = await getGroup(selectedGroup.group.id)
-      setSelectedGroup(details)
-      setMemberUsername('')
-      setMemberSearchResults([])
-      setPendingMemberUsers(failedUsers)
+      const details = await getGroup(groupID)
+      if (selectedGroupIDRef.current === groupID) {
+        setSelectedGroup(details)
+        setMemberUsername('')
+        setMemberSearchResults([])
+        setPendingMemberUsers(failedUsers)
 
-      if (failedUsers.length > 0) {
-        setMemberError(`Could not add: ${failedUsers.map((user) => `@${user.username}`).join(', ')}`)
+        if (failedUsers.length > 0) {
+          setMemberError(`Could not add: ${failedUsers.map((user) => `@${user.username}`).join(', ')}`)
+        }
       }
     } catch (caughtError) {
       if (isUnauthorizedGroupsError(caughtError)) {
@@ -381,14 +430,54 @@ export function useGroups() {
         return
       }
 
-      setMemberError(getGroupsErrorMessage(caughtError))
+      if (selectedGroupIDRef.current === groupID) {
+        setMemberError(getGroupsErrorMessage(caughtError))
+      }
     } finally {
-      setIsAddingMember(false)
+      if (selectedGroupIDRef.current === groupID) {
+        setIsAddingMember(false)
+      }
+    }
+  }
+
+  async function removeMember(member: GroupMember) {
+    if (!selectedGroup || member.role === 'owner' || isMutatingMembers) {
+      return
+    }
+
+    const groupID = selectedGroup.group.id
+    setMemberError(null)
+    setRemovingMember({ groupID, userID: member.user_id })
+
+    try {
+      await removeGroupMember(groupID, member.user_id)
+      setSelectedGroup((current) =>
+        current?.group.id === groupID
+          ? {
+              ...current,
+              members: current.members.filter((currentMember) => currentMember.user_id !== member.user_id),
+            }
+          : current,
+      )
+    } catch (caughtError) {
+      if (isUnauthorizedGroupsError(caughtError)) {
+        await clearAuthSession()
+        router.replace('/login')
+        return
+      }
+
+      if (selectedGroupIDRef.current === groupID) {
+        setMemberError(getGroupsErrorMessage(caughtError))
+      }
+    } finally {
+      setRemovingMember((current) =>
+        current?.groupID === groupID && current.userID === member.user_id ? null : current,
+      )
     }
   }
 
   return {
-    canAddMembers,
+    canManageMembers,
     closeExpenseDetails,
     closeGroupDetails,
     error,
@@ -405,6 +494,7 @@ export function useGroups() {
     isLoadingDetails,
     isLoadingExpenseDetails,
     isLoadingExpenses,
+    isMutatingMembers,
     isSearchingMembers,
     isSearchingPeople,
     loadGroups,
@@ -418,7 +508,9 @@ export function useGroups() {
     peopleQuery,
     peopleSearchResults,
     pendingMemberUsers,
+    removeMember,
     removePendingMember,
+    removingMemberID,
     selectMemberUser,
     selectedExpense,
     selectedGroup,

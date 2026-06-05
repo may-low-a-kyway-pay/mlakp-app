@@ -35,6 +35,10 @@ export async function addGroupMember(groupID: string, username: string) {
   return response.data.data.member
 }
 
+export async function removeGroupMember(groupID: string, userID: string) {
+  await apiClient.delete(`/v1/groups/${groupID}/members/${userID}`)
+}
+
 export function getGroupsErrorMessage(error: unknown) {
   if (isAxiosError<ApiErrorResponse>(error)) {
     return error.response?.data?.error?.message ?? 'Unable to load your groups. Please try again.'

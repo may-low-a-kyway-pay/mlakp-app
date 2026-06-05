@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { useMemo } from 'react'
 import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { useDebtRecords } from '@/src/modules/debts/hooks/useDebtRecords'
 import { createStyles } from '@/src/modules/debts/screens/DebtRecordsScreen.styles'
@@ -32,7 +33,7 @@ const typeOptions: { label: string; value: 'all' | DebtRecordType }[] = [
 export function DebtRecordsScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const {
     canSubmitPayment,
     closePayment,

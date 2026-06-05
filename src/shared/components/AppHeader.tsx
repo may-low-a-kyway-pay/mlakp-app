@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
+import { useMemo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useNotifications } from '@/src/modules/notifications/context/NotificationsProvider'
 import { AppColors } from '@/src/shared/theme/colors'
@@ -10,7 +11,7 @@ import { typography } from '@/src/shared/theme/typography'
 export function AppHeader() {
   const { colors } = useAppTheme()
   const { unreadCount } = useNotifications()
-  const styles = createStyles(colors)
+  const styles = useMemo(() => createStyles(colors), [colors])
   const hasUnreadNotifications = unreadCount > 0
   const notificationAccessibilityLabel = hasUnreadNotifications
     ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`

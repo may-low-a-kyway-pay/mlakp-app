@@ -1,18 +1,23 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { getAccessToken, getAuthSession } from '@/src/modules/auth/services/authSession'
+import { AppState } from 'react-native'
+import { getAuthSession, subscribeAuthSession } from '@/src/modules/auth/services/authSession'
 import { listNotifications, markAllNotificationsRead } from '@/src/modules/notifications/api/notificationsApi'
 import { RealtimeNotificationEvent } from '@/src/modules/notifications/types/notificationTypes'
+
+type AuthSession = Awaited<ReturnType<typeof getAuthSession>>
 
 type NotificationsContextValue = {
   latestRealtimeEvent: RealtimeNotificationEvent | null
   markAllRead: () => Promise<void>
   refreshNotifications: () => Promise<void>
+  syncUnreadCount: (unreadCount: number) => void
   unreadCount: number
 }
 
 const NotificationsContext = createContext<NotificationsContextValue | null>(null)
 
-const reconnectDelayMs = 5000
+const initialReconnectDelayMs = 1000
+const maxReconnectDelayMs = 30000
 const notificationPollMs = 60000
 
 function realtimeURL(accessToken: string) {
@@ -30,12 +35,13 @@ function realtimeURL(accessToken: string) {
 export function NotificationsProvider({ children }: PropsWithChildren) {
   const [latestRealtimeEvent, setLatestRealtimeEvent] = useState<RealtimeNotificationEvent | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
-  const activeUserID = useRef<string | null>(null)
+  const activeSession = useRef<AuthSession>(null)
+  const appIsActive = useRef(AppState.currentState === 'active')
+  const reconnectAttempts = useRef(0)
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const socketRef = useRef<WebSocket | null>(null)
   const isDisposed = useRef(false)
   const latestNotificationID = useRef<string | null>(null)
-  const shouldReconnect = useRef(true)
 
   const refreshNotifications = useCallback(async (publishNewNotification = false) => {
     const session = await getAuthSession()
@@ -46,6 +52,12 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
     }
 
     const data = await listNotifications(20)
+    if (
+      activeSession.current?.accessToken !== session.accessToken ||
+      activeSession.current?.user.id !== session.user.id
+    ) {
+      return
+    }
     const newestNotification = data.notifications[0] ?? null
     const previousNotificationID = latestNotificationID.current
     latestNotificationID.current = newestNotification?.id ?? null
@@ -60,44 +72,58 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
     }
   }, [])
 
-  const closeSocket = useCallback((reconnect = true) => {
-    shouldReconnect.current = reconnect
-    if (socketRef.current) {
-      socketRef.current.close()
-      socketRef.current = null
+  const syncUnreadCount = useCallback((count: number) => {
+    setUnreadCount(count)
+  }, [])
+
+  const clearReconnectTimer = useCallback(() => {
+    if (reconnectTimer.current) {
+      clearTimeout(reconnectTimer.current)
+      reconnectTimer.current = null
     }
   }, [])
 
+  const closeSocket = useCallback(() => {
+    clearReconnectTimer()
+    const socket = socketRef.current
+    if (socket) {
+      socketRef.current = null
+      socket.close()
+    }
+  }, [clearReconnectTimer])
+
   const clearRealtimeState = useCallback(() => {
-    activeUserID.current = null
+    activeSession.current = null
     latestNotificationID.current = null
     setLatestRealtimeEvent(null)
     setUnreadCount(0)
-    closeSocket(false)
+    closeSocket()
   }, [closeSocket])
 
-  const connect = useCallback(async () => {
-    if (isDisposed.current || socketRef.current) {
+  const connect = useCallback(() => {
+    const session = activeSession.current
+    if (isDisposed.current || !appIsActive.current || socketRef.current || !session) {
       return
     }
 
-    const session = await getAuthSession()
-    if (!session) {
-      clearRealtimeState()
-      return
-    }
-
-    activeUserID.current = session.user.id
-    const accessToken = await getAccessToken()
-
-    if (!accessToken || activeUserID.current !== session.user.id) {
-      return
-    }
-
-    const socket = new WebSocket(realtimeURL(accessToken))
+    clearReconnectTimer()
+    const socket = new WebSocket(realtimeURL(session.accessToken))
     socketRef.current = socket
 
+    socket.onopen = () => {
+      if (socketRef.current !== socket) {
+        return
+      }
+      reconnectAttempts.current = 0
+      void refreshNotifications(true).catch(() => {
+        // The open socket and fallback polling can recover the snapshot later.
+      })
+    }
+
     socket.onmessage = (message) => {
+      if (socketRef.current !== socket) {
+        return
+      }
       try {
         const event = JSON.parse(String(message.data)) as RealtimeNotificationEvent
         latestNotificationID.current = event.notification?.id ?? latestNotificationID.current
@@ -109,68 +135,102 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
     }
 
     socket.onclose = () => {
-      socketRef.current = null
-      if (!isDisposed.current && shouldReconnect.current) {
-        reconnectTimer.current = setTimeout(() => {
-          void connect()
-        }, reconnectDelayMs)
+      if (socketRef.current !== socket) {
+        return
       }
-      shouldReconnect.current = true
+      socketRef.current = null
+      if (!isDisposed.current && appIsActive.current && activeSession.current) {
+        const delay = Math.min(initialReconnectDelayMs * 2 ** reconnectAttempts.current, maxReconnectDelayMs)
+        reconnectAttempts.current += 1
+        reconnectTimer.current = setTimeout(connect, delay)
+      }
     }
 
     socket.onerror = () => {
-      closeSocket()
+      if (socketRef.current === socket) {
+        socket.close()
+      }
     }
-  }, [clearRealtimeState, closeSocket])
+  }, [clearReconnectTimer, refreshNotifications])
 
   const markAllRead = useCallback(async () => {
     const data = await markAllNotificationsRead()
     setUnreadCount(data.unread_count)
-    await refreshNotifications()
-  }, [refreshNotifications])
+  }, [])
 
   useEffect(() => {
     isDisposed.current = false
-    void refreshNotifications().catch(() => {
-      setUnreadCount(0)
+    let authSessionChanged = false
+
+    void getAuthSession().then((session) => {
+      if (authSessionChanged || isDisposed.current) {
+        return
+      }
+      activeSession.current = session
+      if (!session) {
+        clearRealtimeState()
+        return
+      }
+      void refreshNotifications().catch(() => setUnreadCount(0))
+      connect()
     })
-    void connect()
 
-    const sessionPoll = setInterval(() => {
-      void getAuthSession().then((session) => {
-        if (!session) {
-          clearRealtimeState()
-          return
-        }
-
-        if (activeUserID.current && activeUserID.current !== session.user.id) {
-          closeSocket(false)
-          setLatestRealtimeEvent(null)
-          setUnreadCount(0)
-        }
-
-        void connect()
-      })
-    }, reconnectDelayMs)
-
-    const notificationPoll = setInterval(() => {
-      if (socketRef.current) {
+    const unsubscribeAuth = subscribeAuthSession((session) => {
+      authSessionChanged = true
+      const previous = activeSession.current
+      const connectionChanged = previous?.accessToken !== session?.accessToken || previous?.user.id !== session?.user.id
+      activeSession.current = session
+      if (!session) {
+        clearRealtimeState()
         return
       }
 
-      void refreshNotifications(true).catch(() => {
+      if (previous?.user.id !== session.user.id) {
+        latestNotificationID.current = null
+        setLatestRealtimeEvent(null)
         setUnreadCount(0)
+      }
+      if (connectionChanged) {
+        closeSocket()
+        if (appIsActive.current) {
+          void refreshNotifications().catch(() => {
+            // Keep the current badge until the next successful refresh.
+          })
+          connect()
+        }
+      }
+    })
+
+    const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+      const wasActive = appIsActive.current
+      appIsActive.current = nextState === 'active'
+      if (!appIsActive.current) {
+        closeSocket()
+        return
+      }
+      if (!wasActive) {
+        void refreshNotifications(true).catch(() => {
+          // Realtime reconnect and polling can recover later.
+        })
+        connect()
+      }
+    })
+
+    const notificationPoll = setInterval(() => {
+      if (!appIsActive.current || socketRef.current) {
+        return
+      }
+      void refreshNotifications(true).catch(() => {
+        // Keep the current badge until the next successful refresh.
       })
     }, notificationPollMs)
 
     return () => {
       isDisposed.current = true
-      clearInterval(sessionPoll)
       clearInterval(notificationPoll)
-      if (reconnectTimer.current) {
-        clearTimeout(reconnectTimer.current)
-      }
-      closeSocket(false)
+      unsubscribeAuth()
+      appStateSubscription.remove()
+      closeSocket()
     }
   }, [clearRealtimeState, closeSocket, connect, refreshNotifications])
 
@@ -179,9 +239,10 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
       latestRealtimeEvent,
       markAllRead,
       refreshNotifications,
+      syncUnreadCount,
       unreadCount,
     }),
-    [latestRealtimeEvent, markAllRead, refreshNotifications, unreadCount],
+    [latestRealtimeEvent, markAllRead, refreshNotifications, syncUnreadCount, unreadCount],
   )
 
   return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>

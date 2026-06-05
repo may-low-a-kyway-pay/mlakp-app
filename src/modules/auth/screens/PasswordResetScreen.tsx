@@ -16,7 +16,7 @@ type ResetMode = 'forgot' | 'account'
 export function PasswordResetScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const params = useLocalSearchParams<{ email?: string; mode?: ResetMode }>()
   const mode: ResetMode = params.mode === 'account' ? 'account' : 'forgot'
   const initialEmail = useMemo(() => String(params.email ?? '').trim(), [params.email])

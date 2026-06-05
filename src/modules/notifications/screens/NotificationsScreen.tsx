@@ -218,7 +218,7 @@ export function NotificationsScreen() {
   const theme = useAppTheme()
   const { colors } = theme
   const styles = useMemo(() => createStyles(colors), [colors])
-  const { latestRealtimeEvent, refreshNotifications } = useNotifications()
+  const { latestRealtimeEvent, syncUnreadCount } = useNotifications()
   const handledRealtimeEvent = useRef<unknown>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -247,7 +247,7 @@ export function NotificationsScreen() {
       setNotifications(data.notifications)
       setDebtByID(indexByID(debtResult?.debts ?? []))
       setPaymentByID(indexByID(paymentResult?.payments ?? []))
-      await refreshNotifications()
+      syncUnreadCount(data.unread_count)
     } catch (caughtError) {
       if (
         isUnauthorizedNotificationError(caughtError) ||
@@ -263,7 +263,7 @@ export function NotificationsScreen() {
     } finally {
       setIsLoading(false)
     }
-  }, [refreshNotifications])
+  }, [syncUnreadCount])
 
   useEffect(() => {
     void loadNotifications()
