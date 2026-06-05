@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
 import * as Linking from 'expo-linking'
+import { router } from 'expo-router'
 import { ComponentProps, useMemo } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 
@@ -42,9 +43,9 @@ const releaseFacts: {
   value: string
 }[] = [
   {
-    icon: 'lock-closed-outline',
-    label: 'Distribution',
-    value: 'Private APK',
+    icon: 'globe-outline',
+    label: 'Web access',
+    value: 'iPhone and desktop',
   },
   {
     icon: 'sync-outline',
@@ -72,6 +73,10 @@ export function DownloadLandingScreen() {
     void Linking.openURL(androidApkUrl)
   }
 
+  const openWebApp = () => {
+    router.push('/web-app' as never)
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.page} style={styles.root}>
       <View style={styles.topBar}>
@@ -95,8 +100,8 @@ export function DownloadLandingScreen() {
       <View style={styles.hero}>
         <View style={styles.heroContent}>
           <View style={styles.badge}>
-            <Ionicons color={colors.primary} name="logo-android" size={iconSize.small} />
-            <Text style={styles.badgeText}>Android APK private release</Text>
+            <Ionicons color={colors.primary} name="globe-outline" size={iconSize.small} />
+            <Text style={styles.badgeText}>Available on web and Android</Text>
           </View>
 
           <Text adjustsFontSizeToFit minimumFontScale={0.78} numberOfLines={isCompact ? 2 : 1} style={styles.title}>
@@ -108,14 +113,24 @@ export function DownloadLandingScreen() {
 
           <View style={styles.actions}>
             <Pressable
-              accessibilityHint="Opens the Android APK download"
+              accessibilityHint="Opens the MLAKP web application"
+              accessibilityLabel="Open MLAKP web app"
+              accessibilityRole="link"
+              onPress={openWebApp}
+              style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
+            >
+              <Ionicons color={colors.white} name="open-outline" size={iconSize.medium} />
+              <Text style={styles.primaryButtonText}>Open Web App</Text>
+            </Pressable>
+            <Pressable
+              accessibilityHint="Downloads the Android APK"
               accessibilityLabel={`Download MLAKP version ${version} APK`}
               accessibilityRole="link"
               onPress={handleDownload}
-              style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
+              style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
             >
-              <Ionicons color={colors.white} name="download-outline" size={iconSize.medium} />
-              <Text style={styles.primaryButtonText}>Download APK</Text>
+              <Ionicons color={colors.primary} name="logo-android" size={iconSize.medium} />
+              <Text style={styles.secondaryButtonText}>Download Android APK</Text>
             </Pressable>
             <View style={styles.versionBlock}>
               <Text style={styles.versionLabel}>Version {version}</Text>
@@ -124,10 +139,9 @@ export function DownloadLandingScreen() {
           </View>
 
           <View style={styles.installNote}>
-            <Ionicons color={colors.tertiary} name="shield-checkmark-outline" size={iconSize.medium} />
+            <Ionicons color={colors.tertiary} name="phone-portrait-outline" size={iconSize.medium} />
             <Text style={styles.installNoteText}>
-              If Android blocks installation, allow installs from this browser in Android settings and open the APK
-              again.
+              On iPhone or iPad, open the web app in Safari and use Share → Add to Home Screen for app-like access.
             </Text>
           </View>
 
@@ -375,7 +389,25 @@ function createStyles(
       fontFamily: typography.familyBold,
       fontSize: typography.size.bodyLarge,
     },
-    primaryButtonPressed: {
+    secondaryButton: {
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderColor: colors.primary,
+      borderRadius: 8,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 10,
+      minHeight: 54,
+      justifyContent: 'center',
+      paddingHorizontal: 24,
+      paddingVertical: 14,
+    },
+    secondaryButtonText: {
+      color: colors.primary,
+      fontFamily: typography.familyBold,
+      fontSize: typography.size.bodyLarge,
+    },
+    buttonPressed: {
       opacity: 0.82,
     },
     versionBlock: {

@@ -196,7 +196,28 @@ app/
     settings.tsx           Settings tab
 ```
 
-The root stack starts at `login`, then navigates into the tab group after authentication.
+The root stack starts at `index`, then exposes authentication or app routes based on the stored session.
+
+## Production Web App
+
+The static web export supports iPhone, iPad, and desktop browsers. The landing page exposes an **Open Web App** action
+that sends users through `/web-app` to login or dashboard based on their session. `vercel.json` enables clean URLs such
+as `/login` and `/dashboard`.
+
+Configure Vercel with:
+
+```text
+Build command: npx expo export --platform web
+Output directory: dist
+```
+
+The backend must allow the exact Vercel origin:
+
+```env
+CORS_ALLOWED_ORIGINS=https://mlakp.vercel.app
+```
+
+Safari users can open the web app and use **Share → Add to Home Screen** for standalone app-like access.
 
 ## Folder Structure
 

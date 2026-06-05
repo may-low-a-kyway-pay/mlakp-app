@@ -76,6 +76,7 @@ function RootNavigator() {
         <NotificationsProvider>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="web-app" options={{ headerShown: false }} />
             <Stack.Protected guard={!hasSession}>
               <Stack.Screen name="login" options={{ headerShown: false }} />
               <Stack.Screen name="register" options={{ headerShown: false }} />
