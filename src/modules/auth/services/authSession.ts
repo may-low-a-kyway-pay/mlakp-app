@@ -26,7 +26,9 @@ function notifyAuthSessionListeners() {
 
 export function subscribeAuthSession(listener: AuthSessionListener) {
   authSessionListeners.add(listener)
-  return () => authSessionListeners.delete(listener)
+  return () => {
+    authSessionListeners.delete(listener)
+  }
 }
 
 function canUseLocalStorage() {
