@@ -30,9 +30,6 @@ export function createStyles({ colors, shadows }: AppTheme) {
       paddingHorizontal: 16,
       paddingVertical: 14,
     },
-    settingRowDisabled: {
-      opacity: 0.55,
-    },
     iconCircle: {
       alignItems: 'center',
       borderRadius: 24,
@@ -42,9 +39,6 @@ export function createStyles({ colors, shadows }: AppTheme) {
     },
     settingText: {
       flex: 1,
-    },
-    trailingSpace: {
-      width: 24,
     },
     settingLabel: {
       color: colors.text,

@@ -80,7 +80,6 @@ export function SettingsScreen() {
         <Text style={styles.title}>Settings</Text>
         <Card style={styles.settingsCard}>
           {settingsItems.map((item, index) => {
-            const isEnabled = item.action === 'profile' || item.action === 'security'
             const handlePress =
               item.action === 'profile'
                 ? openProfile
@@ -88,12 +87,7 @@ export function SettingsScreen() {
 
             return (
               <View key={item.label}>
-                <Pressable
-                  accessibilityRole="button"
-                  disabled={!isEnabled}
-                  onPress={isEnabled ? handlePress : undefined}
-                  style={[styles.settingRow, !isEnabled && styles.settingRowDisabled]}
-                >
+                <Pressable accessibilityRole="button" onPress={handlePress} style={styles.settingRow}>
                   <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>
                     <Ionicons color={item.color} name={item.icon} size={24} />
                   </View>
@@ -101,11 +95,7 @@ export function SettingsScreen() {
                     <Text style={styles.settingLabel}>{item.label}</Text>
                     <Text style={styles.settingSublabel}>{item.sublabel}</Text>
                   </View>
-                  {isEnabled ? (
-                    <Ionicons color={colors.textSoft} name="chevron-forward" size={24} />
-                  ) : (
-                    <View style={styles.trailingSpace} />
-                  )}
+                  <Ionicons color={colors.textSoft} name="chevron-forward" size={24} />
                 </Pressable>
                 {index < settingsItems.length - 1 ? <View style={styles.divider} /> : null}
               </View>
