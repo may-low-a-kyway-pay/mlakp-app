@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useCallback, useMemo } from 'react'
-import { ActivityIndicator, Alert, FlatList, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, FlatList, Platform, Pressable, Text, View } from 'react-native'
 import {
   ActivityFilter,
   ActivityHistoryStatusFilter,
@@ -72,15 +72,19 @@ export function ActivityScreen() {
     if (confirmAllDisabled) {
       return
     }
+    const message = `Confirm ${reviewablePaymentCount} pending ${reviewablePaymentCount === 1 ? 'payment' : 'payments'}?`
 
-    Alert.alert(
-      'Confirm all payments',
-      `Confirm ${reviewablePaymentCount} pending ${reviewablePaymentCount === 1 ? 'payment' : 'payments'}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Confirm all', isPreferred: true, onPress: reviewAll, style: 'default' },
-      ],
-    )
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(message)) {
+        void reviewAll()
+      }
+      return
+    }
+
+    Alert.alert('Confirm all payments', message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Confirm all', isPreferred: true, onPress: () => void reviewAll(), style: 'default' },
+    ])
   }, [confirmAllDisabled, reviewAll, reviewablePaymentCount])
 
   return (

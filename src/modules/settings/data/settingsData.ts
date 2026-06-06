@@ -18,13 +18,5 @@ export function getSettingsItems(colors: AppColors) {
       sublabel: 'Change password and auth methods',
       action: 'security' as const,
     },
-    {
-      bg: colors.tertiary,
-      color: colors.tertiarySoft,
-      icon: 'globe-outline' as const,
-      label: 'Language',
-      sublabel: 'English (US)',
-      action: null,
-    },
   ]
 }
