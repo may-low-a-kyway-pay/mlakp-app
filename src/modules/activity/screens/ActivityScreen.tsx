@@ -40,7 +40,7 @@ function paymentTitle(paidByName: string, currentUserID: string | null, paidByID
 export function ActivityScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const {
     currentUserID,
     error,

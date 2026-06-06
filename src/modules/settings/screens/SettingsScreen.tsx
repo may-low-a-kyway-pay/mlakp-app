@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import { router } from 'expo-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ActivityIndicator, Modal, Pressable, Switch, Text, TextInput, View } from 'react-native'
 import { logout } from '@/src/modules/auth/api/authApi'
 import { clearAuthSession, getAuthSession, updateStoredUser } from '@/src/modules/auth/services/authSession'
@@ -19,8 +19,8 @@ const appVersion = Constants.expoConfig?.version ?? '1.0.0'
 export function SettingsScreen() {
   const theme = useAppTheme()
   const { colors, dark, preference, toggleDarkMode } = theme
-  const styles = createStyles(theme)
-  const settingsItems = getSettingsItems(colors)
+  const styles = useMemo(() => createStyles(theme), [theme])
+  const settingsItems = useMemo(() => getSettingsItems(colors), [colors])
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isSavingUsername, setIsSavingUsername] = useState(false)

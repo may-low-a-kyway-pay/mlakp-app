@@ -10,9 +10,26 @@ type StoredAuth = {
   user: AuthTokenData['user']
 }
 
+type AuthSessionListener = (session: StoredAuth | null) => void
+
 const authStorageKey = 'mlakp.auth'
 
 let memoryAuth: StoredAuth | null = null
+let isClearingAuth = false
+const authSessionListeners = new Set<AuthSessionListener>()
+
+function notifyAuthSessionListeners() {
+  for (const listener of authSessionListeners) {
+    listener(memoryAuth)
+  }
+}
+
+export function subscribeAuthSession(listener: AuthSessionListener) {
+  authSessionListeners.add(listener)
+  return () => {
+    authSessionListeners.delete(listener)
+  }
+}
 
 function canUseLocalStorage() {
   return Platform.OS === 'web' && typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
@@ -64,6 +81,7 @@ export async function saveAuthSession(data: AuthTokenData) {
   }
 
   await writeStoredAuth(memoryAuth)
+  notifyAuthSessionListeners()
 }
 
 export async function updateAuthTokens(data: AuthRefreshData) {
@@ -81,6 +99,7 @@ export async function updateAuthTokens(data: AuthRefreshData) {
   }
 
   await writeStoredAuth(memoryAuth)
+  notifyAuthSessionListeners()
 
   return memoryAuth
 }
@@ -97,9 +116,13 @@ export async function updateStoredUser(user: StoredAuth['user']) {
   }
 
   await writeStoredAuth(memoryAuth)
+  notifyAuthSessionListeners()
 }
 
 export async function getAuthSession() {
+  if (isClearingAuth) {
+    return null
+  }
   if (memoryAuth) {
     return memoryAuth
   }
@@ -130,7 +153,13 @@ export async function getRefreshToken() {
 }
 
 export async function clearAuthSession() {
+  isClearingAuth = true
   memoryAuth = null
 
-  await removeStoredAuth()
+  try {
+    await removeStoredAuth()
+  } finally {
+    isClearingAuth = false
+    notifyAuthSessionListeners()
+  }
 }

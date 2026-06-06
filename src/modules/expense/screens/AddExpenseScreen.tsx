@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { useMemo } from 'react'
 import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useAddExpense } from '@/src/modules/expense/hooks/useAddExpense'
 import { createStyles } from '@/src/modules/expense/screens/AddExpenseScreen.styles'
@@ -14,7 +15,7 @@ import { appCurrency, formatMoneyLabel } from '@/src/shared/utils/currency'
 export function AddExpenseScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const {
     amount,
     allMembersSelected,

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useMemo } from 'react'
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native'
 import { AppTheme } from '@/src/shared/theme/colors'
 import { useAppTheme } from '@/src/shared/theme/ThemeContext'
@@ -11,7 +11,7 @@ type CardProps = PropsWithChildren<
 
 export function Card({ children, style, ...viewProps }: CardProps) {
   const theme = useAppTheme()
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
 
   return (
     <View {...viewProps} style={[styles.card, style]}>

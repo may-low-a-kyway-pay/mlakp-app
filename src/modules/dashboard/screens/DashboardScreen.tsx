@@ -32,7 +32,7 @@ const dashboardTabOptions: { label: string; value: DashboardTab }[] = [
 export function DashboardScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const {
     balances,
     bulkPaymentAmount,

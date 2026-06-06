@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useMemo } from 'react'
 import { ScrollView, StyleSheet, ViewStyle } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { AppColors } from '@/src/shared/theme/colors'
@@ -11,7 +11,7 @@ type ScreenProps = PropsWithChildren<{
 
 export function Screen({ children, contentStyle, scroll = true }: ScreenProps) {
   const { colors } = useAppTheme()
-  const styles = createStyles(colors)
+  const styles = useMemo(() => createStyles(colors), [colors])
 
   if (!scroll) {
     return <SafeAreaView style={[styles.root, contentStyle]}>{children}</SafeAreaView>

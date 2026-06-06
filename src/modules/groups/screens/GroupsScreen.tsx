@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import * as Clipboard from 'expo-clipboard'
-import { useState } from 'react'
-import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { useMemo, useState } from 'react'
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { avatarTones, formatUpdatedAt, groupInitials } from '@/src/modules/groups/utils/groupFormatters'
 import { displayNameForMember, secondaryTextForMember } from '@/src/modules/groups/utils/memberFormatters'
 import { createStyles } from '@/src/modules/groups/screens/GroupsScreen.styles'
@@ -39,12 +39,12 @@ function formatExpenseDate(value: string) {
 export function GroupsScreen() {
   const theme = useAppTheme()
   const { colors } = theme
-  const styles = createStyles(theme)
+  const styles = useMemo(() => createStyles(theme), [theme])
   const [activeTab, setActiveTab] = useState<GroupsTab>('groups')
   const [copiedUsername, setCopiedUsername] = useState<string | null>(null)
   const [detailsTab, setDetailsTab] = useState<GroupDetailsTab>('members')
   const {
-    canAddMembers,
+    canManageMembers,
     closeExpenseDetails,
     closeGroupDetails,
     error,
@@ -61,6 +61,7 @@ export function GroupsScreen() {
     isLoadingDetails,
     isLoadingExpenseDetails,
     isLoadingExpenses,
+    isMutatingMembers,
     isSearchingMembers,
     isSearchingPeople,
     loadGroupExpenses,
@@ -74,7 +75,9 @@ export function GroupsScreen() {
     peopleQuery,
     peopleSearchResults,
     pendingMemberUsers,
+    removeMember,
     removePendingMember,
+    removingMemberID,
     selectMemberUser,
     selectedExpense,
     selectedGroup,
@@ -106,6 +109,25 @@ export function GroupsScreen() {
     if (tab === 'expenses' && !hasLoadedGroupExpenses && !isLoadingExpenses) {
       void loadGroupExpenses()
     }
+  }
+
+  function confirmMemberRemoval(member: NonNullable<typeof selectedGroup>['members'][number]) {
+    const memberName = displayNameForMember(member)
+    Alert.alert(
+      'Remove group member?',
+      `${memberName} will lose access to this group and cannot be included in new group expenses. Existing financial records will remain available.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => {
+            void removeMember(member)
+          },
+        },
+      ],
+      { cancelable: true },
+    )
   }
 
   const memberByUserID =
@@ -486,11 +508,32 @@ export function GroupsScreen() {
                                 </Text>
                               </View>
                             </View>
+                            {canManageMembers && member.role !== 'owner' ? (
+                              <Pressable
+                                accessibilityHint="Removes this person from the group"
+                                accessibilityLabel={`Remove ${displayNameForMember(member)} from group`}
+                                accessibilityRole="button"
+                                accessibilityState={{
+                                  busy: removingMemberID === member.user_id,
+                                  disabled: isMutatingMembers,
+                                }}
+                                disabled={isMutatingMembers}
+                                hitSlop={4}
+                                onPress={() => confirmMemberRemoval(member)}
+                                style={[styles.removeMemberButton, isMutatingMembers && styles.disabledButton]}
+                              >
+                                {removingMemberID === member.user_id ? (
+                                  <ActivityIndicator color={colors.danger} />
+                                ) : (
+                                  <Ionicons color={colors.danger} name="trash-outline" size={21} />
+                                )}
+                              </Pressable>
+                            ) : null}
                           </View>
                         ))}
                       </ScrollView>
 
-                      {canAddMembers ? (
+                      {canManageMembers ? (
                         <View style={styles.addMemberBlock}>
                           <View style={styles.fieldGroup}>
                             <Text style={styles.label}>Add Member by Username</Text>
@@ -584,12 +627,12 @@ export function GroupsScreen() {
                           <Pressable
                             accessibilityLabel="Add selected members"
                             accessibilityRole="button"
-                            accessibilityState={{ disabled: isAddingMember || pendingMemberUsers.length === 0 }}
-                            disabled={isAddingMember || pendingMemberUsers.length === 0}
+                            accessibilityState={{ disabled: isMutatingMembers || pendingMemberUsers.length === 0 }}
+                            disabled={isMutatingMembers || pendingMemberUsers.length === 0}
                             onPress={submitMember}
                             style={[
                               styles.createButton,
-                              (isAddingMember || pendingMemberUsers.length === 0) && styles.disabledButton,
+                              (isMutatingMembers || pendingMemberUsers.length === 0) && styles.disabledButton,
                             ]}
                           >
                             {isAddingMember ? (
